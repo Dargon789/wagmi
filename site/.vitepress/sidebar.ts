@@ -372,8 +372,8 @@ export function getSidebar() {
             link: '/react/api/hooks/useShowCallsStatus',
           },
           {
-            text: 'useWriteContracts',
-            link: '/react/api/hooks/useWriteContracts',
+            text: 'useWaitForCallsStatus',
+            link: '/react/api/hooks/useWaitForCallsStatus',
           },
         ],
       },
@@ -1005,8 +1005,8 @@ export function getSidebar() {
             link: '/core/api/actions/showCallsStatus',
           },
           {
-            text: 'writeContracts',
-            link: '/core/api/actions/writeContracts',
+            text: 'waitForCallsStatus',
+            link: '/core/api/actions/waitForCallsStatus',
           },
         ],
       },
