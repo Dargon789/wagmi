@@ -52,7 +52,7 @@
     "happy-dom": "^15.10.2",
     "knip": "^5.30.6",
     "prool": "^0.0.23",
-    "publint": "^0.2.11",
+    "publint": "^0.3.0",
     "sherif": "^1.0.0",
     "simple-git-hooks": "^2.11.1",
     "typescript": "5.5.4",
