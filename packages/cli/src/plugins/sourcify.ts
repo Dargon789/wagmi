@@ -29,18 +29,7 @@ export type SourcifyConfig<chainId extends number> = {
 }
 
 const SourcifyResponse = z.object({
-  compiler: z.object({
-    version: z.string(),
-  }),
-  language: z.string(),
-  output: z.object({
-    abi: AbiSchema,
-    devdoc: z.any(),
-    userdoc: z.any(),
-  }),
-  settings: z.any(),
-  sources: z.any(),
-  version: z.number(),
+  abi: AbiSchema,
 })
 
 /** Fetches contract ABIs from Sourcify. */
@@ -67,8 +56,7 @@ export function sourcify<chainId extends ChainId>(
       if (!parsed.success)
         throw fromZodError(parsed.error, { prefix: 'Invalid response' })
 
-      if (parsed.data.output.abi)
-        return parsed.data.output.abi as ContractConfig['abi']
+      if (parsed.data.abi) return parsed.data.abi as ContractConfig['abi']
       throw new Error('contract not found')
     },
     request({ address }) {
@@ -82,9 +70,8 @@ export function sourcify<chainId extends ChainId>(
         throw new Error(
           `No address found for chainId "${chainId}". Make sure chainId "${chainId}" is set as an address.`,
         )
-
       return {
-        url: `https://repo.sourcify.dev/contracts/full_match/${chainId}/${contractAddress}/metadata.json`,
+        url: `https://sourcify.dev/server/v2/contract/${chainId}/${contractAddress}?fields=abi`,
       }
     },
   })
@@ -238,6 +225,7 @@ type ChainId =
   | 44787 // Celo Alfajores Testnet
   | 46 // Darwinia Network
   | 486217935 // Gather Devnet Network
+  | 48898 // Zircuit Garfield Testnet
   | 48899 // Zircuit Testnet
   | 48900 // Zircuit Mainnet
   | 49797 // Energi Testnet
