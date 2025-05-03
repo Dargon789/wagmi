@@ -1,5 +1,6 @@
 ---
-
+"wagmi": patch
+"@wagmi/core": patch
 ---
 
-fix: fix chainId type in Sourcify API integration
+Added `chainId` parameter to `getCapabilities`/`useCapabilities`.
