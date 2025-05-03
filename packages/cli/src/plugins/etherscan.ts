@@ -199,6 +199,7 @@ type ChainId =
   | 1 // Ethereum Mainnet
   | 11155111 // Sepolia Testnet
   | 17000 // Holesky Testnet
+  | 560048 // Hoodi Testnet
   | 56 // BNB Smart Chain Mainnet
   | 97 // BNB Smart Chain Testnet
   | 137 // Polygon Mainnet
@@ -257,3 +258,12 @@ type ChainId =
   | 531050104 // Sophon Sepolia Testnet
   | 146 // Sonic Mainnet
   | 57054 // Sonic Blaze Testnet
+  | 130 // Unichain Mainnet
+  | 1301 // Unichain Sepolia Testnet
+  | 2741 // Abstract Mainnet
+  | 11124 // Abstract Sepolia Testnet
+  | 80094 // Berachain Mainnet
+  | 80069 // Berachain Bepolia Testnet
+  | 1923 // Swellchain Mainnet
+  | 1924 // Swellchain Testnet
+  | 10143 // Monad Testnet

@@ -1,17 +1,18 @@
-import { accounts, config, testClient } from '@wagmi/test'
+import { accounts, config, testClient, wait } from '@wagmi/test'
 import { parseEther } from 'viem'
 import { expect, test } from 'vitest'
 
-import { connect } from '../../actions/connect.js'
-import { disconnect } from '../../actions/disconnect.js'
-import { getCallsStatus } from './getCallsStatus.js'
+import { connect } from './connect.js'
+import { disconnect } from './disconnect.js'
 import { sendCalls } from './sendCalls.js'
+import { waitForCallsStatus } from './waitForCallsStatus.js'
 
 const connector = config.connectors[0]!
 
-test.skip('default', async () => {
+test('default', async () => {
   await connect(config, { connector })
-  const id = await sendCalls(config, {
+
+  const { id } = await sendCalls(config, {
     calls: [
       {
         data: '0xdeadbeef',
@@ -28,12 +29,18 @@ test.skip('default', async () => {
       },
     ],
   })
-  await testClient.mainnet.mine({ blocks: 1 })
-  const { receipts, status } = await getCallsStatus(config, {
-    id,
-  })
 
-  expect(status).toBe('CONFIRMED')
+  const [{ receipts, status }] = await Promise.all([
+    waitForCallsStatus(config, {
+      id,
+    }),
+    (async () => {
+      await wait(100)
+      await testClient.mainnet.mine({ blocks: 1 })
+    })(),
+  ])
+
+  expect(status).toBe('success')
   expect(
     receipts?.map((x) => ({ ...x, blockHash: undefined })),
   ).toMatchInlineSnapshot(

@@ -1,5 +1,61 @@
 # wagmi
 
+## 2.15.0
+
+### Minor Changes
+
+- [#4638](https://github.com/wevm/wagmi/pull/4638) [`799ee4d4b23c2ecd64e3f3668e67634e81939719`](https://github.com/wevm/wagmi/commit/799ee4d4b23c2ecd64e3f3668e67634e81939719) Thanks [@jxom](https://github.com/jxom)! - Stabilized EIP-5792 Actions & Hooks.
+
+### Patch Changes
+
+- Updated dependencies [[`88427b2bcd13ec375ef519e9ad1ccffef9f02a7b`](https://github.com/wevm/wagmi/commit/88427b2bcd13ec375ef519e9ad1ccffef9f02a7b), [`799ee4d4b23c2ecd64e3f3668e67634e81939719`](https://github.com/wevm/wagmi/commit/799ee4d4b23c2ecd64e3f3668e67634e81939719), [`3f8b2edc4f237cccff1009bcef03d51ca27a7324`](https://github.com/wevm/wagmi/commit/3f8b2edc4f237cccff1009bcef03d51ca27a7324)]:
+  - @wagmi/connectors@6.0.0
+  - @wagmi/core@2.17.0
+
+## 2.14.16
+
+### Patch Changes
+
+- Updated dependencies [[`b59c024b23c69f5459b17390531207cfdf126ce4`](https://github.com/wevm/wagmi/commit/b59c024b23c69f5459b17390531207cfdf126ce4)]:
+  - @wagmi/connectors@5.7.12
+
+## 2.14.15
+
+### Patch Changes
+
+- [`a4bd0623eed28e3761a27295831a60ad835f0ee0`](https://github.com/wevm/wagmi/commit/a4bd0623eed28e3761a27295831a60ad835f0ee0) Thanks [@jxom](https://github.com/jxom)! - **Experimental (EIP-5792):** Updated `id` parameter to be optional on `useWaitForCallsStatus`.
+
+- Updated dependencies [[`a4bd0623eed28e3761a27295831a60ad835f0ee0`](https://github.com/wevm/wagmi/commit/a4bd0623eed28e3761a27295831a60ad835f0ee0)]:
+  - @wagmi/core@2.16.7
+  - @wagmi/connectors@5.7.11
+
+## 2.14.14
+
+### Patch Changes
+
+- [#4586](https://github.com/wevm/wagmi/pull/4586) [`edf47477b2f6385a1c3ae01d36a8498c47f30a0b`](https://github.com/wevm/wagmi/commit/edf47477b2f6385a1c3ae01d36a8498c47f30a0b) Thanks [@jxom](https://github.com/jxom)! - **Experimental (EIP-5792):** Added `waitForCallsStatus` + `useWaitForCallsStatus`.
+
+- Updated dependencies [[`edf47477b2f6385a1c3ae01d36a8498c47f30a0b`](https://github.com/wevm/wagmi/commit/edf47477b2f6385a1c3ae01d36a8498c47f30a0b), [`e944812ebc234a72c1417b77cff341166f5e0fef`](https://github.com/wevm/wagmi/commit/e944812ebc234a72c1417b77cff341166f5e0fef)]:
+  - @wagmi/core@2.16.6
+  - @wagmi/connectors@5.7.10
+
+## 2.14.13
+
+### Patch Changes
+
+- Updated dependencies [[`5b7101fddb61df56e34b2e02b46bc409e496eaf9`](https://github.com/wevm/wagmi/commit/5b7101fddb61df56e34b2e02b46bc409e496eaf9)]:
+  - @wagmi/connectors@5.7.9
+
+## 2.14.12
+
+### Patch Changes
+
+- [`d0c9a86921a4e939373cc6e763284e53f2a2e93c`](https://github.com/wevm/wagmi/commit/d0c9a86921a4e939373cc6e763284e53f2a2e93c) Thanks [@jxom](https://github.com/jxom)! - **Experimental (ERC-5792)**: Added support for `account: null` in `sendCalls` to cater for sending calls without a connected account (account will be filled by the wallet).
+
+- Updated dependencies [[`d0c9a86921a4e939373cc6e763284e53f2a2e93c`](https://github.com/wevm/wagmi/commit/d0c9a86921a4e939373cc6e763284e53f2a2e93c)]:
+  - @wagmi/core@2.16.5
+  - @wagmi/connectors@5.7.8
+
 ## 2.14.11
 
 ### Patch Changes

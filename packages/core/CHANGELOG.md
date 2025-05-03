@@ -1,5 +1,29 @@
 # @wagmi/core
 
+## 2.17.0
+
+### Minor Changes
+
+- [#4638](https://github.com/wevm/wagmi/pull/4638) [`799ee4d4b23c2ecd64e3f3668e67634e81939719`](https://github.com/wevm/wagmi/commit/799ee4d4b23c2ecd64e3f3668e67634e81939719) Thanks [@jxom](https://github.com/jxom)! - Stabilized EIP-5792 Actions & Hooks.
+
+## 2.16.7
+
+### Patch Changes
+
+- [`a4bd0623eed28e3761a27295831a60ad835f0ee0`](https://github.com/wevm/wagmi/commit/a4bd0623eed28e3761a27295831a60ad835f0ee0) Thanks [@jxom](https://github.com/jxom)! - **Experimental (EIP-5792):** Updated `id` parameter to be optional on `useWaitForCallsStatus`.
+
+## 2.16.6
+
+### Patch Changes
+
+- [#4586](https://github.com/wevm/wagmi/pull/4586) [`edf47477b2f6385a1c3ae01d36a8498c47f30a0b`](https://github.com/wevm/wagmi/commit/edf47477b2f6385a1c3ae01d36a8498c47f30a0b) Thanks [@jxom](https://github.com/jxom)! - **Experimental (EIP-5792):** Added `waitForCallsStatus` + `useWaitForCallsStatus`.
+
+## 2.16.5
+
+### Patch Changes
+
+- [`d0c9a86921a4e939373cc6e763284e53f2a2e93c`](https://github.com/wevm/wagmi/commit/d0c9a86921a4e939373cc6e763284e53f2a2e93c) Thanks [@jxom](https://github.com/jxom)! - **Experimental (ERC-5792)**: Added support for `account: null` in `sendCalls` to cater for sending calls without a connected account (account will be filled by the wallet).
+
 ## 2.16.4
 
 ### Patch Changes

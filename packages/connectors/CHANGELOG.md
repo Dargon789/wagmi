@@ -1,5 +1,51 @@
 # @wagmi/connectors
 
+## 5.7.13
+
+### Patch Changes
+
+- [#4622](https://github.com/wevm/wagmi/pull/4622) [`88427b2bcd13ec375ef519e9ad1ccffef9f02a7b`](https://github.com/wevm/wagmi/commit/88427b2bcd13ec375ef519e9ad1ccffef9f02a7b) Thanks [@dan1kov](https://github.com/dan1kov)! - Added `rdns` property to Coinbase Wallet v3 connector
+
+- [#4605](https://github.com/wevm/wagmi/pull/4605) [`3f8b2edc4f237cccff1009bcef03d51ca27a7324`](https://github.com/wevm/wagmi/commit/3f8b2edc4f237cccff1009bcef03d51ca27a7324) Thanks [@chybisov](https://github.com/chybisov)! - Bumped `@safe-global/safe-apps-provider` version to `0.18.6`.
+
+- Updated dependencies [[`799ee4d4b23c2ecd64e3f3668e67634e81939719`](https://github.com/wevm/wagmi/commit/799ee4d4b23c2ecd64e3f3668e67634e81939719)]:
+  - @wagmi/core@2.17.0
+
+## 5.7.12
+
+### Patch Changes
+
+- [#4608](https://github.com/wevm/wagmi/pull/4608) [`b59c024b23c69f5459b17390531207cfdf126ce4`](https://github.com/wevm/wagmi/commit/b59c024b23c69f5459b17390531207cfdf126ce4) Thanks [@jxom](https://github.com/jxom)! - Updated `@walletconnect/ethereum-provider`.
+
+## 5.7.11
+
+### Patch Changes
+
+- Updated dependencies [[`a4bd0623eed28e3761a27295831a60ad835f0ee0`](https://github.com/wevm/wagmi/commit/a4bd0623eed28e3761a27295831a60ad835f0ee0)]:
+  - @wagmi/core@2.16.7
+
+## 5.7.10
+
+### Patch Changes
+
+- [#4573](https://github.com/wevm/wagmi/pull/4573) [`e944812ebc234a72c1417b77cff341166f5e0fef`](https://github.com/wevm/wagmi/commit/e944812ebc234a72c1417b77cff341166f5e0fef) Thanks [@ganchoradkov](https://github.com/ganchoradkov)! - updated `@walletconnect/ethereum-provider` to `2.19.1`
+
+- Updated dependencies [[`edf47477b2f6385a1c3ae01d36a8498c47f30a0b`](https://github.com/wevm/wagmi/commit/edf47477b2f6385a1c3ae01d36a8498c47f30a0b)]:
+  - @wagmi/core@2.16.6
+
+## 5.7.9
+
+### Patch Changes
+
+- [#4571](https://github.com/wevm/wagmi/pull/4571) [`5b7101fddb61df56e34b2e02b46bc409e496eaf9`](https://github.com/wevm/wagmi/commit/5b7101fddb61df56e34b2e02b46bc409e496eaf9) Thanks [@ganchoradkov](https://github.com/ganchoradkov)! - Updated `@walletconnect/ethereum-provider` to `2.19.0`
+
+## 5.7.8
+
+### Patch Changes
+
+- Updated dependencies [[`d0c9a86921a4e939373cc6e763284e53f2a2e93c`](https://github.com/wevm/wagmi/commit/d0c9a86921a4e939373cc6e763284e53f2a2e93c)]:
+  - @wagmi/core@2.16.5
+
 ## 5.7.7
 
 ### Patch Changes
