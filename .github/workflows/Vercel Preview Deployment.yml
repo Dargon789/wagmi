@@ -4,6 +4,8 @@ on:
   repository_dispatch:
     types:
       - 'vercel.deployment.success'
+permissions:
+  contents: read
 jobs:
   run-e2es:
     if: github.event_name == 'repository_dispatch'
