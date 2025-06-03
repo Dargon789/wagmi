@@ -1,5 +1,25 @@
 # @wagmi/core
 
+## 2.17.2
+
+### Patch Changes
+
+- [`29297a48af72b537173d948ccd2fe37d39914c66`](https://github.com/wevm/wagmi/commit/29297a48af72b537173d948ccd2fe37d39914c66) Thanks [@jxom](https://github.com/jxom)! - Fixed `sendCalls` generics.
+
+- [`07370106d5fb6b8fe300992d93abf25b3d0eaf57`](https://github.com/wevm/wagmi/commit/07370106d5fb6b8fe300992d93abf25b3d0eaf57) Thanks [@jxom](https://github.com/jxom)! - Fixed propagation of `waitForCallsStatus` parameters.
+
+## 2.17.1
+
+### Patch Changes
+
+- [#4649](https://github.com/wevm/wagmi/pull/4649) [`01f64e64fa4f85cdd30023903f972f4f9023681f`](https://github.com/wevm/wagmi/commit/01f64e64fa4f85cdd30023903f972f4f9023681f) Thanks [@jxom](https://github.com/jxom)! - Added `chainId` parameter to `getCapabilities`/`useCapabilities`.
+
+## 2.17.0
+
+### Minor Changes
+
+- [#4638](https://github.com/wevm/wagmi/pull/4638) [`799ee4d4b23c2ecd64e3f3668e67634e81939719`](https://github.com/wevm/wagmi/commit/799ee4d4b23c2ecd64e3f3668e67634e81939719) Thanks [@jxom](https://github.com/jxom)! - Stabilized EIP-5792 Actions & Hooks.
+
 ## 2.16.7
 
 ### Patch Changes

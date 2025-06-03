@@ -1,5 +1,23 @@
 # @wagmi/cli
 
+## 2.3.1
+
+### Patch Changes
+
+- [#4655](https://github.com/wevm/wagmi/pull/4655) [`43241c8417f3c342036bb46ec8e507d052ae2691`](https://github.com/wevm/wagmi/commit/43241c8417f3c342036bb46ec8e507d052ae2691) Thanks [@tmm](https://github.com/tmm)! - Bumped internal deps.
+
+## 2.3.0
+
+### Minor Changes
+
+- [#4629](https://github.com/wevm/wagmi/pull/4629) [`66dec7d75d580b3121ebc7e8162c1f9ae37cfd41`](https://github.com/wevm/wagmi/commit/66dec7d75d580b3121ebc7e8162c1f9ae37cfd41) Thanks [@allezxandre](https://github.com/allezxandre)! - Upgraded to Sourcify v2 API in `sourcify` plugin
+
+## 2.2.1
+
+### Patch Changes
+
+- [`7b0dbe3886c1a7c6dbbdab945d7436ec20ad8f93`](https://github.com/wevm/wagmi/commit/7b0dbe3886c1a7c6dbbdab945d7436ec20ad8f93) Thanks [@tmm](https://github.com/tmm)! - Updated block explorer chains.
+
 ## 2.2.0
 
 ### Minor Changes

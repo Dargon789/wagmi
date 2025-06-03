@@ -3,11 +3,11 @@ import {
   type WaitForCallsStatusParameters as viem_WaitForCallsStatusParameters,
   type WaitForCallsStatusReturnType as viem_WaitForCallsStatusReturnType,
   waitForCallsStatus as viem_waitForCallsStatus,
-} from 'viem/experimental'
+} from 'viem/actions'
 
-import { getConnectorClient } from '../../actions/getConnectorClient.js'
-import type { Config } from '../../createConfig.js'
-import type { ConnectorParameter } from '../../types/properties.js'
+import type { Config } from '../createConfig.js'
+import type { ConnectorParameter } from '../types/properties.js'
+import { getConnectorClient } from './getConnectorClient.js'
 
 export type WaitForCallsStatusParameters = viem_WaitForCallsStatusParameters &
   ConnectorParameter
@@ -21,7 +21,7 @@ export async function waitForCallsStatus<config extends Config>(
   config: config,
   parameters: WaitForCallsStatusParameters,
 ): Promise<WaitForCallsStatusReturnType> {
-  const { connector, id } = parameters
+  const { connector } = parameters
   const client = await getConnectorClient(config, { connector })
-  return viem_waitForCallsStatus(client, { id })
+  return viem_waitForCallsStatus(client, parameters)
 }

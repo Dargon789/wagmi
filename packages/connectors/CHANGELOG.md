@@ -1,5 +1,48 @@
 # @wagmi/connectors
 
+## 5.8.3
+
+### Patch Changes
+
+- [#4660](https://github.com/wevm/wagmi/pull/4660) [`42b1fed58e9ac09da0f8ebf3e9271f98a707aaac`](https://github.com/wevm/wagmi/commit/42b1fed58e9ac09da0f8ebf3e9271f98a707aaac) Thanks [@ganchoradkov](https://github.com/ganchoradkov)! - Updated `@walletconnect/ethereum-provider` version to `2.20.2`
+
+## 5.8.2
+
+### Patch Changes
+
+- Updated dependencies [[`29297a48af72b537173d948ccd2fe37d39914c66`](https://github.com/wevm/wagmi/commit/29297a48af72b537173d948ccd2fe37d39914c66), [`07370106d5fb6b8fe300992d93abf25b3d0eaf57`](https://github.com/wevm/wagmi/commit/07370106d5fb6b8fe300992d93abf25b3d0eaf57)]:
+  - @wagmi/core@2.17.2
+
+## 5.8.1
+
+### Patch Changes
+
+- Updated dependencies [[`01f64e64fa4f85cdd30023903f972f4f9023681f`](https://github.com/wevm/wagmi/commit/01f64e64fa4f85cdd30023903f972f4f9023681f)]:
+  - @wagmi/core@2.17.1
+
+## 5.8.0
+
+### Minor Changes
+
+- [#4644](https://github.com/wevm/wagmi/pull/4644) [`cc5517ff6880bb630f1b201930acc20dd1a0b451`](https://github.com/wevm/wagmi/commit/cc5517ff6880bb630f1b201930acc20dd1a0b451) Thanks [@lukaisailovic](https://github.com/lukaisailovic)! - Updated `@walletconnect/etherereum-provider` to `2.20.0`.
+
+## 5.7.13
+
+### Patch Changes
+
+- [#4622](https://github.com/wevm/wagmi/pull/4622) [`88427b2bcd13ec375ef519e9ad1ccffef9f02a7b`](https://github.com/wevm/wagmi/commit/88427b2bcd13ec375ef519e9ad1ccffef9f02a7b) Thanks [@dan1kov](https://github.com/dan1kov)! - Added `rdns` property to Coinbase Wallet v3 connector
+
+- [#4605](https://github.com/wevm/wagmi/pull/4605) [`3f8b2edc4f237cccff1009bcef03d51ca27a7324`](https://github.com/wevm/wagmi/commit/3f8b2edc4f237cccff1009bcef03d51ca27a7324) Thanks [@chybisov](https://github.com/chybisov)! - Bumped `@safe-global/safe-apps-provider` version to `0.18.6`.
+
+- Updated dependencies [[`799ee4d4b23c2ecd64e3f3668e67634e81939719`](https://github.com/wevm/wagmi/commit/799ee4d4b23c2ecd64e3f3668e67634e81939719)]:
+  - @wagmi/core@2.17.0
+
+## 5.7.12
+
+### Patch Changes
+
+- [#4608](https://github.com/wevm/wagmi/pull/4608) [`b59c024b23c69f5459b17390531207cfdf126ce4`](https://github.com/wevm/wagmi/commit/b59c024b23c69f5459b17390531207cfdf126ce4) Thanks [@jxom](https://github.com/jxom)! - Updated `@walletconnect/ethereum-provider`.
+
 ## 5.7.11
 
 ### Patch Changes

@@ -81,7 +81,7 @@ test('insufficient funds', async () => {
       value:  100000 ETH
 
     Details: Insufficient funds for gas * price + value
-    Version: viem@2.23.12]
+    Version: viem@2.29.2]
   `)
 })
 
@@ -104,7 +104,7 @@ test('maxFeePerGas less than maxPriorityFeePerGas', async () => {
       maxFeePerGas:          20 gwei
       maxPriorityFeePerGas:  22 gwei
 
-    Version: viem@2.23.12]
+    Version: viem@2.29.2]
   `)
 })
 
@@ -116,15 +116,15 @@ test('contract revert (contract error)', async () => {
       to: address.wagmiMintExample,
     }),
   ).rejects.toThrowErrorMatchingInlineSnapshot(`
-    [CallExecutionError: Execution reverted with reason: revert: Token ID is taken.
+    [CallExecutionError: Execution reverted with reason: Token ID is taken.
 
     Raw Call Arguments:
       from:  0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
       to:    0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2
       data:  0xa0712d6800000000000000000000000000000000000000000000000000000000000001a4
 
-    Details: execution reverted: revert: Token ID is taken
-    Version: viem@2.23.12]
+    Details: execution reverted: Token ID is taken
+    Version: viem@2.29.2]
   `)
 })
 
@@ -144,6 +144,6 @@ test('contract revert (insufficient params)', async () => {
       data:  0xa0712d68
 
     Details: execution reverted
-    Version: viem@2.23.12]
+    Version: viem@2.29.2]
   `)
 })
