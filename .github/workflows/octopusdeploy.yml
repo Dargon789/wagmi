@@ -104,7 +104,7 @@ jobs:
           packages: '*:${{ needs.build.outputs.image_tag }}'
 
       - name: Deploy Release
-        uses: OctopusDeploy/deploy-release-action@b10a606c903b0a5bce24102af9d066638ab429ac #v3.2.1
+        uses: OctopusDeploy/deploy-release-action@32954ab4aca322ad8e1f134bd0bd6d53d6959b67 #v3.2.3
         with:
           project: '${{ env.OCTOPUS_PROJECT }}'
           space: '${{ env.OCTOPUS_SPACE }}'
