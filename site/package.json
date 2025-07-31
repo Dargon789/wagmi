@@ -19,7 +19,7 @@
     "abitype": "*",
     "nuxt": "^3.16.0",
     "react": "catalog:",
-    "unocss": "^0.59.4",
+    "unocss": "^66.3.3",
     "viem": "2.*",
     "vitepress": "1.6.3",
     "vue": "catalog:",
