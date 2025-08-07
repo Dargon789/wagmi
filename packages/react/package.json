@@ -100,7 +100,7 @@
     "@testing-library/react": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@types/use-sync-external-store": "^0.0.6",
+    "@types/use-sync-external-store": "^1.5.0",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
