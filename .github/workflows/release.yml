@@ -27,7 +27,11 @@ jobs:
         with:
           node-version: 22.x
 
-      - name: Install Dependencies
+      # ... other steps
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
         run: pnpm install
 
       - name: Create Release Pull Request or Publish to npm
