@@ -1,5 +1,60 @@
 # wagmi
 
+## 2.16.8
+
+### Patch Changes
+
+- Updated dependencies [[`a03da817a388646c9b4885792101a67eef3616e7`](https://github.com/wevm/wagmi/commit/a03da817a388646c9b4885792101a67eef3616e7)]:
+  - @wagmi/connectors@5.9.8
+
+## 2.16.7
+
+### Patch Changes
+
+- Updated dependencies [[`986b96427a4bb743d2673dfbc7e8cb5041316db3`](https://github.com/wevm/wagmi/commit/986b96427a4bb743d2673dfbc7e8cb5041316db3)]:
+  - @wagmi/core@2.20.2
+  - @wagmi/connectors@5.9.7
+
+## 2.16.6
+
+### Patch Changes
+
+- [#4773](https://github.com/wevm/wagmi/pull/4773) [`d4c367ca46c508598c997cf229a31593a1e2b8b8`](https://github.com/wevm/wagmi/commit/d4c367ca46c508598c997cf229a31593a1e2b8b8) Thanks [@tmm](https://github.com/tmm)! - Fixed issue with codegen actions/hooks, where `syncConnectedChain: false` did not work as intended.
+
+- Updated dependencies [[`d4c367ca46c508598c997cf229a31593a1e2b8b8`](https://github.com/wevm/wagmi/commit/d4c367ca46c508598c997cf229a31593a1e2b8b8)]:
+  - @wagmi/core@2.20.1
+  - @wagmi/connectors@5.9.6
+
+## 2.16.5
+
+### Patch Changes
+
+- Updated dependencies [[`a13aa2b68890f180f6ac3f741cbb9817494cb66c`](https://github.com/wevm/wagmi/commit/a13aa2b68890f180f6ac3f741cbb9817494cb66c)]:
+  - @wagmi/core@2.20.0
+  - @wagmi/connectors@5.9.5
+
+## 2.16.4
+
+### Patch Changes
+
+- Updated dependencies [[`f4039419b83b52b2984de149db85c11f503ffe39`](https://github.com/wevm/wagmi/commit/f4039419b83b52b2984de149db85c11f503ffe39)]:
+  - @wagmi/connectors@5.9.4
+
+## 2.16.3
+
+### Patch Changes
+
+- Updated dependencies [[`909324d28c81e15c9df312b277dcff1983fbae4d`](https://github.com/wevm/wagmi/commit/909324d28c81e15c9df312b277dcff1983fbae4d)]:
+  - @wagmi/connectors@5.9.3
+
+## 2.16.2
+
+### Patch Changes
+
+- Updated dependencies [[`b5f017dbc707729eb0b36d617352be224d1139d4`](https://github.com/wevm/wagmi/commit/b5f017dbc707729eb0b36d617352be224d1139d4)]:
+  - @wagmi/core@2.19.0
+  - @wagmi/connectors@5.9.2
+
 ## 2.16.1
 
 ### Patch Changes
