@@ -1,0 +1,8 @@
+name: "CodeQL config for grief shell UX rail"
+paths:
+  - packages/react
+  - packages/core
+  - packages/connectors
+languages: 
+  - javascript
+  - typescript
