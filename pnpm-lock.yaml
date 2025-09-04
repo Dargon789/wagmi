@@ -36,12 +36,19 @@ catalogs:
 
 patchedDependencies:
   prool:
-    hash: lvy5e23lv2bpph2vcwhe44cj4e
+    hash: 6ea470deaa7c0b09169321c017f09f7cc1c25c3c8051259b8efa8c34c8aaf823
     path: patches/prool.patch
 
 importers:
 
   .:
+    dependencies:
+      '@wagmi/core':
+        specifier: workspace:^
+        version: link:packages/core
+      flag:
+        specifier: ^5.0.1
+        version: 5.0.1(react@18.3.1)
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.16.4
@@ -66,7 +73,7 @@ importers:
         version: 3.2.4(bufferutil@4.0.8)(msw@2.4.9(typescript@5.9.2))(playwright@1.54.1)(utf-8-validate@5.0.10)(vite@5.4.10(@types/node@20.12.10)(terser@5.31.0))(vitest@3.2.4)
       '@vitest/coverage-v8':
         specifier: ^3.2.4
-        version: 3.2.4(@vitest/browser@3.2.4(bufferutil@4.0.8)(msw@2.4.9(typescript@5.9.2))(playwright@1.54.1)(utf-8-validate@5.0.10)(vite@5.4.10(@types/node@20.12.10)(terser@5.31.0))(vitest@3.2.4))(vitest@3.2.4(@types/node@20.12.10)(@vitest/browser@3.2.4)(happy-dom@18.0.1)(msw@2.4.9(typescript@5.9.2))(terser@5.31.0))
+        version: 3.2.4(@vitest/browser@3.2.4)(vitest@3.2.4)
       '@wagmi/test':
         specifier: workspace:*
         version: link:packages/test
@@ -84,7 +91,7 @@ importers:
         version: 1.54.1
       prool:
         specifier: ^0.0.24
-        version: 0.0.24(patch_hash=lvy5e23lv2bpph2vcwhe44cj4e)
+        version: 0.0.24(patch_hash=6ea470deaa7c0b09169321c017f09f7cc1c25c3c8051259b8efa8c34c8aaf823)
       publint:
         specifier: ^0.2.11
         version: 0.2.11
@@ -111,7 +118,7 @@ importers:
         version: 3.2.4(@types/node@20.12.10)(@vitest/browser@3.2.4)(happy-dom@18.0.1)(msw@2.4.9(typescript@5.9.2))(terser@5.31.0)
       vitest-browser-react:
         specifier: ^2.0.0-beta.1
-        version: 2.0.0-beta.1(@types/react-dom@18.3.0)(@types/react@18.3.1)(@vitest/browser@3.2.4(bufferutil@4.0.8)(msw@2.4.9(typescript@5.9.2))(playwright@1.54.1)(utf-8-validate@5.0.10)(vite@5.4.10(@types/node@20.12.10)(terser@5.31.0))(vitest@3.2.4))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@3.2.4(@types/node@20.12.10)(@vitest/browser@3.2.4)(happy-dom@18.0.1)(msw@2.4.9(typescript@5.9.2))(terser@5.31.0))
+        version: 2.0.0-beta.1(@types/react-dom@18.3.0)(@types/react@18.3.1)(@vitest/browser@3.2.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@3.2.4)
 
   packages/cli:
     dependencies:
@@ -3771,6 +3778,9 @@ packages:
   async-mutex@0.2.6:
     resolution: {integrity: sha512-Hs4R+4SPgamu6rSGW8C7cV9gaWUKEHykfzCCvIRuaVv636Ju10ZdeUbvb4TBEW0INuq2DHZqXbK4Nd3yG4RaRw==}
 
+  async-ref@0.1.6:
+    resolution: {integrity: sha512-gIvfC7ahv452pM+nwnxZJd/vhUh8UFMrd1DCvIvWjoy9WrRmYroXTTDxwg91oiD+4CqQKrg+11uCxZrzat4UvQ==}
+
   async-sema@3.1.1:
     resolution: {integrity: sha512-tLRNUXati5MFePdAk8dw7Qt7DpxPB60ofAgn8WRhW6a2rcimZnYBP9oxHiv0OHy+Wz7kPMG+t4LGdt31+4EmGg==}
 
@@ -3905,6 +3915,7 @@ packages:
 
   bun@1.1.29:
     resolution: {integrity: sha512-SKhpyKNZtgxrVel9ec9xon3LDv8mgpiuFhARgcJo1YIbggY2PBrKHRNiwQ6Qlb+x3ivmRurfuwWgwGexjpgBRg==}
+    cpu: [arm64, x64]
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -4828,6 +4839,11 @@ packages:
 
   fixturez@1.1.0:
     resolution: {integrity: sha512-c4q9eZsAmCzj9gkrEO/YwIRlrHWt/TXQiX9jR9WeLFOqeeV6EyzdiiV28CpSzF6Ip+gyYrSv5UeOHqyzfcNTVA==}
+
+  flag@5.0.1:
+    resolution: {integrity: sha512-4P/rvPGKcFBneboyYHMOKbKaJL5ZhNjScbY7bGToas7FgBvrTWbh76yxRaoSoFe3HSjWc6IJ0EajUwSadcP6Lg==}
+    peerDependencies:
+      react: ^18
 
   flat@5.0.2:
     resolution: {integrity: sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==}
@@ -11641,7 +11657,7 @@ snapshots:
       - utf-8-validate
       - vite
 
-  '@vitest/coverage-v8@3.2.4(@vitest/browser@3.2.4(bufferutil@4.0.8)(msw@2.4.9(typescript@5.9.2))(playwright@1.54.1)(utf-8-validate@5.0.10)(vite@5.4.10(@types/node@20.12.10)(terser@5.31.0))(vitest@3.2.4))(vitest@3.2.4(@types/node@20.12.10)(@vitest/browser@3.2.4)(happy-dom@18.0.1)(msw@2.4.9(typescript@5.9.2))(terser@5.31.0))':
+  '@vitest/coverage-v8@3.2.4(@vitest/browser@3.2.4)(vitest@3.2.4)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 1.0.2
@@ -12761,6 +12777,8 @@ snapshots:
   async-mutex@0.2.6:
     dependencies:
       tslib: 2.8.1
+
+  async-ref@0.1.6: {}
 
   async-sema@3.1.1: {}
 
@@ -13931,6 +13949,12 @@ snapshots:
       globby: 7.1.1
       signal-exit: 3.0.7
       tempy: 0.2.1
+
+  flag@5.0.1(react@18.3.1):
+    dependencies:
+      '@types/react': 18.3.1
+      async-ref: 0.1.6
+      react: 18.3.1
 
   flat@5.0.2: {}
 
@@ -16300,7 +16324,7 @@ snapshots:
       kleur: 3.0.3
       sisteransi: 1.0.5
 
-  prool@0.0.24(patch_hash=lvy5e23lv2bpph2vcwhe44cj4e):
+  prool@0.0.24(patch_hash=6ea470deaa7c0b09169321c017f09f7cc1c25c3c8051259b8efa8c34c8aaf823):
     dependencies:
       change-case: 5.4.4
       eventemitter3: 5.0.1
@@ -17690,7 +17714,7 @@ snapshots:
       - typescript
       - universal-cookie
 
-  vitest-browser-react@2.0.0-beta.1(@types/react-dom@18.3.0)(@types/react@18.3.1)(@vitest/browser@3.2.4(bufferutil@4.0.8)(msw@2.4.9(typescript@5.9.2))(playwright@1.54.1)(utf-8-validate@5.0.10)(vite@5.4.10(@types/node@20.12.10)(terser@5.31.0))(vitest@3.2.4))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@3.2.4(@types/node@20.12.10)(@vitest/browser@3.2.4)(happy-dom@18.0.1)(msw@2.4.9(typescript@5.9.2))(terser@5.31.0)):
+  vitest-browser-react@2.0.0-beta.1(@types/react-dom@18.3.0)(@types/react@18.3.1)(@vitest/browser@3.2.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@3.2.4):
     dependencies:
       '@vitest/browser': 3.2.4(bufferutil@4.0.8)(msw@2.4.9(typescript@5.9.2))(playwright@1.54.1)(utf-8-validate@5.0.10)(vite@5.4.10(@types/node@20.12.10)(terser@5.31.0))(vitest@3.2.4)
       react: 18.3.1
