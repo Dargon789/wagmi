@@ -2,21 +2,47 @@ name: Playwright Tests
 
 on:
   repository_dispatch:
-    types:
-      - 'vercel.deployment.success'
+    types: [vercel.deployment.success]
+
 permissions:
   contents: read
+  deployments: read
+  statuses: write
+
 jobs:
   run-e2es:
     if: github.event_name == 'repository_dispatch'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - name: Validate payload
+        run: |
+          echo "SHA: ${{ github.event.client_payload.git.sha }}"
+          echo "URL: ${{ github.event.client_payload.url }}"
+          test -n "${{ github.event.client_payload.git.sha }}" || exit 1
+          test -n "${{ github.event.client_payload.url }}" || exit 1
+
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.client_payload.git.sha }}
+
+      - name: Wait for deployment to stabilize
+        run: |
+          for i in {1..10}; do
+            curl -sSf ${{ github.event.client_payload.url }} && break
+            echo "Waiting for deployment..."
+            sleep 5
+          done
+
       - name: Install dependencies
         run: npm ci && npx playwright install --with-deps
-      - name: Run tests
+
+      - name: Run Playwright tests
         run: npx playwright test
         env:
           BASE_URL: ${{ github.event.client_payload.url }}
+
+      - name: Report status
+        if: always()
+        run: echo "Tests completed. Status: ${{ job.status }}"
