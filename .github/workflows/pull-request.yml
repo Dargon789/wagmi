@@ -10,6 +10,8 @@ concurrency:
 jobs:
   verify:
     name: Verify
+    permissions:
+      contents: write
     uses: ./.github/workflows/verify.yml
     secrets: inherit
 
@@ -23,7 +25,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@main

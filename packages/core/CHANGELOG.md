@@ -1,5 +1,35 @@
 # @wagmi/core
 
+## 2.20.3
+
+### Patch Changes
+
+- [#4752](https://github.com/wevm/wagmi/pull/4752) [`ce06e137e7bfaf000464b1cecd6c86e19a66ebcf`](https://github.com/wevm/wagmi/commit/ce06e137e7bfaf000464b1cecd6c86e19a66ebcf) Thanks [@iamakulov](https://github.com/iamakulov)! - Fixed `deepEqual` crashing for objects with no prototype
+
+## 2.20.2
+
+### Patch Changes
+
+- [#4733](https://github.com/wevm/wagmi/pull/4733) [`986b96427a4bb743d2673dfbc7e8cb5041316db3`](https://github.com/wevm/wagmi/commit/986b96427a4bb743d2673dfbc7e8cb5041316db3) Thanks [@effie-ms](https://github.com/effie-ms)! - Fixed `getConnectorClient` chain ID race condition.
+
+## 2.20.1
+
+### Patch Changes
+
+- [#4773](https://github.com/wevm/wagmi/pull/4773) [`d4c367ca46c508598c997cf229a31593a1e2b8b8`](https://github.com/wevm/wagmi/commit/d4c367ca46c508598c997cf229a31593a1e2b8b8) Thanks [@tmm](https://github.com/tmm)! - Fixed issue with codegen actions/hooks, where `syncConnectedChain: false` did not work as intended.
+
+## 2.20.0
+
+### Minor Changes
+
+- [#4770](https://github.com/wevm/wagmi/pull/4770) [`a13aa2b68890f180f6ac3f741cbb9817494cb66c`](https://github.com/wevm/wagmi/commit/a13aa2b68890f180f6ac3f741cbb9817494cb66c) Thanks [@tmm](https://github.com/tmm)! - Added internal `revalidate` function.
+
+## 2.19.0
+
+### Minor Changes
+
+- [#4756](https://github.com/wevm/wagmi/pull/4756) [`b5f017dbc707729eb0b36d617352be224d1139d4`](https://github.com/wevm/wagmi/commit/b5f017dbc707729eb0b36d617352be224d1139d4) Thanks [@plusminushalf](https://github.com/plusminushalf)! - Added `getAction` to `sendCalls` and `getCallsStatus`
+
 ## 2.18.1
 
 ### Patch Changes

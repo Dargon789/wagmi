@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ secrets.GH_PTOKEN }}
 
@@ -47,7 +47,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@main
@@ -70,12 +70,12 @@ jobs:
     timeout-minutes: 5
     strategy:
       matrix:
-        typescript-version: ['5.7.3', '5.8.3', 'latest']
+        typescript-version: ['5.7.3', '5.8.3', '5.9.2', 'latest']
         viem-version: ['2.31.7', 'latest']
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@main
@@ -107,7 +107,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@main

@@ -206,6 +206,38 @@ test('behavior: re-render does not invalidate query', async () => {
     .toEqual(initialClient.element())
 })
 
+test('behavior: connector is on a different chain', async () => {
+  await disconnect(config, { connector })
+  await connect(config, { connector })
+  config.setState((state) => {
+    const uid = state.current!
+    const connection = state.connections.get(uid)!
+    return {
+      ...state,
+      connections: new Map(state.connections).set(uid, {
+        ...connection,
+        chainId: 456,
+      }),
+    }
+  })
+
+  const { result } = await renderHook(() => useConnectorClient())
+
+  await vi.waitUntil(() => result.current.isError, 10_000)
+
+  const { error } = result.current
+  expect(error?.message).toMatchInlineSnapshot(`
+    "The current chain of the connector (id: 1) does not match the connection's chain (id: 456).
+
+    Current Chain ID:  1
+    Expected Chain ID: 456
+
+    Version: @wagmi/core@x.y.z"
+  `)
+
+  await disconnect(config, { connector })
+})
+
 function Parent() {
   const [renderCount, setRenderCount] = React.useState(1)
 
