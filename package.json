@@ -57,7 +57,7 @@
     "knip": "^5.30.6",
     "playwright": "1.54.1",
     "prool": "^0.0.24",
-    "publint": "^0.2.11",
+    "publint": "^0.3.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sherif": "^1.0.0",
