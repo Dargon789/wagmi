@@ -18,7 +18,7 @@
     "@wagmi/svelte": "workspace:*",
     "@wagmi/vue": "workspace:*",
     "abitype": "*",
-    "nuxt": "^3.11.2",
+    "nuxt": "^3.16.0",
     "react": "catalog:",
     "unocss": "^0.59.4",
     "viem": "2.*",
