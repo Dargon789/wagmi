@@ -101,7 +101,7 @@
   "dependencies": {
     "eventemitter3": "5.0.1",
     "mipd": "0.0.7",
-    "zustand": "5.0.7"
+    "zustand": "5.0.8"
   },
   "devDependencies": {
     "@tanstack/query-core": "catalog:"
