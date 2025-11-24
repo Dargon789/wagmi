@@ -68,7 +68,7 @@ const config = {
   },
   typescript: {
     // Disable type checking since eslint handles this
-    ignoreBuildErrors: true,
+    // ignoreBuildErrors: true,
   },
 }
 
