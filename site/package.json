@@ -17,7 +17,7 @@
     "@wagmi/core": "workspace:*",
     "@wagmi/vue": "workspace:*",
     "abitype": "*",
-    "nuxt": "^4.1.1",
+    "nuxt": "^3.12.2",
     "react": "catalog:",
     "unocss": "^0.59.4",
     "viem": "2.*",
