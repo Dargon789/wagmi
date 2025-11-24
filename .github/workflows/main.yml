@@ -112,6 +112,8 @@ jobs:
 
   build:
     name: Build
+    permissions:
+      contents: read
     needs: lint
     runs-on: ubuntu-latest
     strategy:
