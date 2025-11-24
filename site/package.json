@@ -22,7 +22,7 @@
     "react": "catalog:",
     "unocss": "^0.59.4",
     "viem": "2.*",
-    "vitepress": "1.6.4",
+    "vitepress": "^1.2.3",
     "vue": "catalog:",
     "wagmi": "workspace:*"
   }
