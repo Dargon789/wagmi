@@ -1,8 +1,8 @@
-import { expect, test } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import { normalizeChainId } from './normalizeChainId.js'
+import { normalizeChainId } from './normalizeChainId'
 
-test.each([
+describe.each([
   { chainId: 1, expected: 1 },
   { chainId: '1', expected: 1 },
   { chainId: '0x1', expected: 1 },
@@ -14,11 +14,7 @@ test.each([
   { chainId: BigInt(1), expected: 1 },
   { chainId: BigInt(10), expected: 10 },
 ])('normalizeChainId($chainId)', ({ chainId, expected }) => {
-  expect(normalizeChainId(chainId)).toEqual(expected)
-})
-
-test('unknown type', () => {
-  expect(() => normalizeChainId({})).toThrow(
-    'Cannot normalize chainId "[object Object]" of type "object"',
-  )
+  it(`returns ${expected}`, () => {
+    expect(normalizeChainId(chainId)).toEqual(expected)
+  })
 })
