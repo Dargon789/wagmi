@@ -1,5 +1,114 @@
 # wagmi
 
+## 3.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`856548a`](https://github.com/wevm/wagmi/commit/856548a5ae23c8771e3a51a919e1e978b83c4b00)]:
+  - @wagmi/connectors@7.0.1
+
+## 3.0.0
+
+### Major Changes
+
+- All connector dependencies are now optional peer dependencies. This means that if you want to use a specific connector, you need to install its required dependencies. ([#4857](https://github.com/wevm/wagmi/pull/4857))
+
+  #### baseAccount
+
+  [`baseAccount`](https://wagmi.sh/react/api/connectors/baseAccount) requires `@base-org/account`
+
+  ```
+  pnpm add @base-org/account@~2.4.0
+  ```
+
+  #### coinbaseWallet
+
+  [`coinbaseWallet`](https://wagmi.sh/react/api/connectors/coinbaseWallet) requires `@coinbase/wallet-sdk`
+
+  ```
+  pnpm add @coinbase/wallet-sdk@~4.3.6
+  ```
+
+  #### gemini
+
+  [`gemini`](https://wagmi.sh/react/api/connectors/gemini) requires `@gemini-wallet/core`
+
+  ```
+  pnpm add @gemini-wallet/core@~0.3.1
+  ```
+
+  #### metaMask
+
+  [`metaMask`](https://wagmi.sh/react/api/connectors/metaMask) requires `@metamask/sdk`
+
+  ```
+  pnpm add @metamask/sdk@~0.33.1
+  ```
+
+  #### porto
+
+  [`porto`](https://wagmi.sh/react/api/connectors/porto) requires `porto`
+
+  ```
+  pnpm add porto@~0.2.35
+  ```
+
+  #### safe
+
+  [`safe`](https://wagmi.sh/react/api/connectors/safe) requires `@safe-global/safe-apps-provider` and `@safe-global/safe-apps-sdk`
+
+  ```
+  pnpm add @safe-global/safe-apps-provider@~0.18.6 @safe-global/safe-apps-sdk@~9.1.0
+  ```
+
+  #### walletConnect
+
+  [`walletConnect`](https://wagmi.sh/react/api/connectors/walletConnect) requires `walletconnect/ethereum-provider`
+
+  ```
+  pnpm add @walletconnect/ethereum-provider@~2.21.1
+  ```
+
+### Patch Changes
+
+- Updated dependencies [[`73e7326`](https://github.com/wevm/wagmi/commit/73e7326ac21303d7790765c78a7076b319b2ad26)]:
+  - @wagmi/connectors@7.0.0
+  - @wagmi/core@3.0.0
+
+## 2.19.5
+
+### Patch Changes
+
+- Updated dependencies [[`5388de5`](https://github.com/wevm/wagmi/commit/5388de593847b23368c42646c27ee5438260062d)]:
+  - @wagmi/connectors@6.2.0
+
+## 2.19.4
+
+### Patch Changes
+
+- Optimized internal `chainId` computation for `useReadContracts` to reduce unnecessary query invalidations. ([#4872](https://github.com/wevm/wagmi/pull/4872))
+
+## 2.19.3
+
+### Patch Changes
+
+- Updated dependencies [[`2ddb506`](https://github.com/wevm/wagmi/commit/2ddb506b67fcb2abb464765d2af88df2eb58de60)]:
+  - @wagmi/connectors@6.1.4
+
+## 2.19.2
+
+### Patch Changes
+
+- Updated dependencies [[`65cf154`](https://github.com/wevm/wagmi/commit/65cf1544d65bfb1fb830c405a371e8cd3c3fb73e)]:
+  - @wagmi/connectors@6.1.3
+
+## 2.19.1
+
+### Patch Changes
+
+- Updated dependencies [[`faf3eed`](https://github.com/wevm/wagmi/commit/faf3eeddb97c300f971083f8ee9b02a29ad23cbb)]:
+  - @wagmi/connectors@6.1.2
+
 ## 2.19.0
 
 ### Minor Changes
