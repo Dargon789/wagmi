@@ -1,18 +1,6 @@
 packages:
-  - packages/*
-  - "!packages/register-tests"
-  - packages/cli/src/plugins/__fixtures__/hardhat
-  - packages/register-tests/*
-  - playgrounds/*
-  - site
-
-catalog:
-  "@vitejs/plugin-react": "^4.3.3"
-  "@tanstack/query-core": "5.49.1"
-  "@tanstack/react-query": "5.49.2"
-  "@tanstack/vue-query": "5.49.1"
-  "@types/react": "18.3.1"
-  "@types/react-dom": "18.3.0"
-  react-dom: "18.3.1"
-  react: "18.3.1"
-  vue: "3.4.27"
+  - 'docs'
+  - 'examples/*'
+  - 'packages/*'
+  - 'packages/**/__fixtures__/*'
+  - 'references/packages/*'

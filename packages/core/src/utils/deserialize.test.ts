@@ -1,54 +1,55 @@
-import { expect, test } from 'vitest'
+import { BigNumber } from 'ethers'
+import { describe, expect, it } from 'vitest'
 
-import { deserialize } from './deserialize.js'
-import { serialize } from './serialize.js'
+import { deserialize } from './deserialize'
 
-test('deserializes', () => {
-  const deserializedCache = deserialize(
-    serialize({
-      some: 'complex',
-      object: {
-        that: 'has',
-        many: [
-          { many: 'many', manymany: 'many' },
-          { many: 'many' },
-          { many: 'many' },
-          {
-            many: {
-              properties: {
-                ones: {
-                  that: {
-                    have: {
-                      functions: () => null,
+describe('deserialize', () => {
+  it('deserializes', () => {
+    const deserializedCache = deserialize(
+      JSON.stringify({
+        some: 'complex',
+        object: {
+          that: 'has',
+          many: [
+            { many: 'many', manymany: 'many' },
+            { many: 'many' },
+            { many: 'many' },
+            {
+              many: {
+                properties: {
+                  ones: {
+                    that: {
+                      have: {
+                        functions: () => null,
+                      },
                     },
                   },
                 },
               },
             },
-          },
-        ],
-      },
-      and: {
-        ones: {
-          that: {
-            have: {
-              bigints: 123456789012345678901234567890n,
+          ],
+        },
+        and: {
+          ones: {
+            that: {
+              have: {
+                bignumbers: BigNumber.from('0x01'),
+              },
             },
           },
         },
-      },
-      also: {
-        ones: {
-          that: {
-            have: {
-              proxies: new Proxy({ lol: 'nice' }, {}),
+        also: {
+          ones: {
+            that: {
+              have: {
+                proxies: new Proxy({ lol: 'nice' }, {}),
+              },
             },
           },
         },
-      },
-    }),
-  )
-  expect(deserializedCache).toMatchInlineSnapshot(`
+      }),
+    )
+    expect(deserializedCache).toMatchInlineSnapshot(`
       {
         "also": {
           "ones": {
@@ -65,7 +66,10 @@ test('deserializes', () => {
           "ones": {
             "that": {
               "have": {
-                "bigints": 123456789012345678901234567890n,
+                "bignumbers": {
+                  "hex": "0x01",
+                  "type": "BigNumber",
+                },
               },
             },
           },
@@ -99,16 +103,5 @@ test('deserializes', () => {
         "some": "complex",
       }
     `)
-})
-
-test('Map', () => {
-  const map = new Map().set('foo', { bar: 'baz' })
-  const deserializedCache = deserialize(serialize({ map }))
-  expect(deserializedCache).toEqual({ map })
-})
-
-test('bigint', () => {
-  const bigint = 123n
-  const deserializedCache = deserialize(serialize({ bigint }))
-  expect(deserializedCache).toEqual({ bigint })
+  })
 })

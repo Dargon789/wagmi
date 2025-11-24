@@ -1,8 +1,8 @@
+import * as allChains from '@wagmi/chains'
 import { capitalCase } from 'change-case'
 import dedent from 'dedent'
-import * as allChains from 'viem/chains'
 
-import type { Contract } from '../config.js'
+import type { Contract } from '../config'
 
 const chainMap: Record<allChains.Chain['id'], allChains.Chain> = {}
 for (const chain of Object.values(allChains)) {
@@ -11,31 +11,32 @@ for (const chain of Object.values(allChains)) {
   chainMap[chain.id] = chain
 }
 
-export function getAddressDocString(parameters: {
+export function getAddressDocString({
+  address,
+}: {
   address: Contract['address']
 }) {
-  const { address } = parameters
   if (!address || typeof address === 'string') return ''
 
   if (Object.keys(address).length === 1)
     return `* ${getLink({
-      address: address[Number.parseInt(Object.keys(address)[0]!)]!,
-      chainId: Number.parseInt(Object.keys(address)[0]!),
+      address: address[parseInt(Object.keys(address)[0]!)]!,
+      chainId: parseInt(Object.keys(address)[0]!),
     })}`
 
   const addresses = Object.entries(address).filter(
-    (x) => chainMap[Number.parseInt(x[0])],
+    (x) => chainMap[parseInt(x[0])],
   )
   if (addresses.length === 0) return ''
   if (addresses.length === 1 && addresses[0])
     return `* ${getLink({
       address: addresses[0][1],
-      chainId: Number.parseInt(addresses[0][0])!,
+      chainId: parseInt(addresses[0][0])!,
     })}`
 
   return dedent`
     ${addresses.reduce((prev, curr) => {
-      const chainId = Number.parseInt(curr[0])
+      const chainId = parseInt(curr[0])
       const address = curr[1]
       return `${prev}\n* - ${getLink({ address, chainId })}`
     }, '')}

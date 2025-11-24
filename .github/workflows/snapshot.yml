@@ -1,32 +1,38 @@
 name: Snapshot
-on:
-  workflow_dispatch:
+
+on: workflow_dispatch
 
 jobs:
-  snapshot:
-    name: Release snapshot version
-    permissions:
-      contents: write
-      id-token: write
+  release:
+    name: Publish Snapshot
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-
+    strategy:
+      matrix:
+        node-version: [19]
+        pnpm-version: [8]
     steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
+        with:
+          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies
-        uses: wevm/actions/.github/actions/pnpm@main
+      - uses: pnpm/action-setup@v2.2.4
+        with:
+          version: ${{ matrix.pnpm-version }}
+      - name: Set up Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          cache: 'pnpm'
+          node-version: ${{ matrix.node-version }}
 
-      - name: Publish Snapshots
-        continue-on-error: true
+      - name: Install Dependencies
+        run: pnpm i
+
+      - name: Publish to npm
+        uses: seek-oss/changesets-snapshot@v0
+        with:
+          pre-publish: pnpm build
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          snapshot=$(git branch --show-current | tr -cs '[:alnum:]-' '-' | tr '[:upper:]' '[:lower:]' | sed 's/-$//')
-          npm config set "//registry.npmjs.org/:_authToken" "$NPM_TOKEN"
-          pnpm clean
-          pnpm changeset version --no-git-tag --snapshot $snapshot
-          pnpm changeset:prepublish
-          pnpm changeset publish --no-git-tag --snapshot $snapshot --tag $snapshot
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
