@@ -18,6 +18,8 @@ env:
 jobs:
   vhs:
     name: vhs
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     strategy:
       matrix:
