@@ -1,4 +1,6 @@
 name: Main
+permissions:
+  contents: read
 
 on:
   pull_request:
@@ -56,6 +58,8 @@ jobs:
         run: pnpm dev
 
   lint:
+    permissions:
+      contents: write
     name: Lint
     needs: install
     runs-on: ubuntu-latest
