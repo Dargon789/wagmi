@@ -23,6 +23,7 @@ If applicable, add screenshots to help explain your problem.
  - `wagmi` version:
  - `viem` version:
  - OS: [e.g. Windows, macOS, Ubuntu]
+ - Browser: [e.g. Chrome, Safari]
  - Browser: [e.g. chrome, safari]
  - Framework: [e.g. Next.js, Vite, etc.]
 
