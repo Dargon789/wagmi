@@ -5,11 +5,16 @@ permissions:
   contents: read
 
 # This specifies when the workflow should run.
+
 on:
+
   # The workflow will run on every 'push' to the 'main' branch.
+  
   push:
     branches:
+      - master
       - main
+      - dev
       
   # This allows you to manually trigger the workflow from the GitHub Actions page.
   
