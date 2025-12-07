@@ -1,5 +1,42 @@
 # @wagmi/vue
 
+## 0.4.3
+
+### Patch Changes
+
+- Deprecated custom mutate function names and renamed to `mutate`/`mutateAsync` to reduce destructure key renaming fatigue and align with TanStack Query terminology. ([#4878](https://github.com/wevm/wagmi/pull/4878))
+
+  **Before**
+
+  Had to destructure hook result and often rename keys when using multiple of the same hook. Could decide not to destructure, but syntax becomes awkward for mutate functions (e.g. `connect.connect` or `connect.connectAsync`).
+
+  ```ts
+  const { connect, isPending: connectIsPending } = useConnect();
+  const {
+    writeContract: transfer,
+    error: transferError,
+    isPending: transferIsPending,
+  } = useWriteContract();
+  const { writeContract: approve, error: approveError } = useWriteContract();
+  ```
+
+  **After**
+
+  Allows you to name the hook result whatever you want and not worry about also renaming properties.
+
+  ```ts
+  const connect = useConnect(); // connect.isPending
+  const transfer = useWriteContract(); // transfer.mutate, transfer.error, transfer.isPending
+  const approve = useWriteContract(); // approve.mutate, approve.error
+  ```
+
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies [[`0a46561`](https://github.com/wevm/wagmi/commit/0a4656137e1f9ed101dd1f79545d516aba32a92e)]:
+  - @wagmi/connectors@7.0.2
+
 ## 0.4.1
 
 ### Patch Changes
