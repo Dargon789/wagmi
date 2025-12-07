@@ -1,4 +1,4 @@
-# @wagmi/vue
+# @wagmi/svelte
 
 Svelte Runes for Ethereum
 
