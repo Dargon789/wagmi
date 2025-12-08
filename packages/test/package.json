@@ -22,8 +22,7 @@
     "!src/**/*.test.ts",
     "!src/**/*.test-d.ts",
     "react/**",
-    "vue/**",
-    "svelte/**"
+    "vue/**"
   ],
   "sideEffects": false,
   "type": "module",
@@ -43,32 +42,29 @@
       "types": "./dist/types/exports/vue.d.ts",
       "default": "./dist/esm/exports/vue.js"
     },
-    "./svelte": {
-      "types": "./dist/types/exports/svelte.svelte.d.ts",
-      "default": "./dist/esm/exports/svelte.svelte.js"
-    },
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
-      "react": ["./dist/types/exports/react.d.ts"],
-      "vue": ["./dist/types/exports/vue.d.ts"],
-      "svelte": ["./dist/types/exports/svelte.svelte.d.ts"]
+      "react": [
+        "./dist/types/exports/react.d.ts"
+      ],
+      "vue": [
+        "./dist/types/exports/vue.d.ts"
+      ]
     }
   },
   "peerDependencies": {
     "@tanstack/react-query": ">=5.0.0",
-    "@tanstack/svelte-query": "^5.59.20",
     "@tanstack/vue-query": ">=5.0.0",
-    "@testing-library/react": ">=14.0.0",
     "@types/react": ">=18",
     "@types/react-dom": ">=18",
     "@wagmi/core": "workspace:*",
     "@wagmi/vue": "workspace:*",
-    "prool": "^0.0.23",
+    "prool": "^0.0.24",
     "react": ">=18",
     "react-dom": ">=18",
-    "typescript": ">=5.0.4",
+    "typescript": ">=5.7.3",
     "viem": "2.x",
     "vue": ">=3",
     "wagmi": "workspace:*"
@@ -78,12 +74,6 @@
       "optional": true
     },
     "@tanstack/vue-query": {
-      "optional": true
-    },
-    "@tanstack/svelte-query": {
-      "optional": true
-    },
-    "@testing-library/react": {
       "optional": true
     },
     "@types/react": {
@@ -109,11 +99,8 @@
     }
   },
   "devDependencies": {
-    "@tanstack/svelte-query": "^5.59.20",
     "@tanstack/react-query": "catalog:",
     "@tanstack/vue-query": "catalog:",
-    "@testing-library/dom": "catalog:",
-    "@testing-library/react": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@wagmi/core": "workspace:*",
@@ -123,7 +110,16 @@
     "vue": "catalog:",
     "wagmi": "workspace:*"
   },
-  "contributors": ["awkweb.eth <t@wevm.dev>", "jxom.eth <j@wevm.dev>"],
+  "contributors": [
+    "awkweb.eth <t@wevm.dev>",
+    "jxom.eth <j@wevm.dev>"
+  ],
   "funding": "https://github.com/sponsors/wevm",
-  "keywords": ["eth", "ethereum", "dapps", "wallet", "web3"]
+  "keywords": [
+    "eth",
+    "ethereum",
+    "dapps",
+    "wallet",
+    "web3"
+  ]
 }
