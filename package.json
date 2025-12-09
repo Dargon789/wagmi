@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm run --r --filter \"./packages/**\" build",
-    "changeset:prepublish": "pnpm version:update && pnpm build && node scripts/formatPackageJson.ts && node scripts/generateProxyPackages.ts",
+    "changeset:prepublish": "pnpm version:update && pnpm build && bun scripts/formatPackageJson.ts && bun scripts/generateProxyPackages.ts",
     "changeset:publish": "pnpm changeset:prepublish && changeset publish",
     "changeset:version": "changeset version && pnpm version:update && pnpm format",
     "check": "biome check --write",
@@ -12,7 +12,6 @@
     "check:unused": "pnpm clean && knip",
     "clean": "pnpm run --r --parallel clean && rm -rf packages/**/*.json.tmp",
     "deps": "pnpx taze -r",
-    "deps:ci": "pnpx actions-up",
     "dev": "pnpm dev:react",
     "dev:cli": "pnpm --filter cli dev",
     "dev:core": "pnpm --filter vite-core dev",
@@ -24,11 +23,11 @@
     "docs:dev": "pnpm --filter site dev",
     "format": "biome format --write",
     "postinstall": "pnpm preconstruct",
-    "preconstruct": "node scripts/preconstruct.ts",
+    "preconstruct": "bun scripts/preconstruct.ts",
     "preinstall": "pnpx only-allow pnpm",
     "prepare": "pnpm simple-git-hooks",
     "test": "vitest",
-    "test:build": "node scripts/generateProxyPackages.ts && pnpm run --r --parallel test:build",
+    "test:build": "bun scripts/generateProxyPackages.ts && pnpm run --r --parallel test:build",
     "test:cli": "vitest --project @wagmi/cli",
     "test:connectors": "vitest --project @wagmi/connectors",
     "test:core": "vitest --project @wagmi/core",
@@ -38,23 +37,23 @@
     "test:typecheck": "vitest typecheck",
     "test:update": "vitest --update",
     "test:vue": "vitest --project @wagmi/vue",
-    "version:update": "node scripts/updateVersion.ts",
-    "version:update:viem": "node scripts/updateViemVersion.ts"
+    "version:update": "bun scripts/updateVersion.ts",
+    "version:update:viem": "bun scripts/updateViemVersion.ts"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.16.4",
-    "@biomejs/biome": "^2.2.4",
-    "@changesets/cli": "^3.0.0-next.0",
-    "@svitejs/changesets-changelog-github-compact": "^1.2.0",
-    "@types/node": "^24.5.1",
+    "@biomejs/biome": "^2.0.6",
+    "@changesets/changelog-github": "0.4.6",
+    "@changesets/cli": "^2.27.8",
+    "@types/bun": "^1.1.10",
     "@vitejs/plugin-react": "catalog:",
-    "@vitest/browser": "^4.0.8",
-    "@vitest/browser-playwright": "^4.0.8",
-    "@vitest/coverage-v8": "^4.0.8",
+    "@vitest/browser": "^3.2.4",
+    "@vitest/coverage-v8": "^3.2.4",
     "@wagmi/test": "workspace:*",
-    "happy-dom": "^20.0.0",
-    "knip": "^5.69.0",
-    "playwright": "1.56.1",
+    "bun": "^1.1.29",
+    "happy-dom": "^18.0.1",
+    "knip": "^5.30.6",
+    "playwright": "1.54.1",
     "prool": "^0.0.24",
     "publint": "^0.2.11",
     "react": "catalog:",
@@ -62,18 +61,32 @@
     "sherif": "^1.0.0",
     "simple-git-hooks": "^2.11.1",
     "typescript": "5.9.2",
-    "viem": "2.38.0",
-    "vite-plugin-react-fallback-throttle": "^0.1.1",
-    "vitest": "^4.0.8",
-    "vitest-browser-react": "^2.0.2"
+    "viem": "2.31.7",
+    "vitest": "^3.2.4",
+    "vitest-browser-react": "^2.0.0-beta.1"
   },
-  "packageManager": "pnpm@10.22.0",
-  "devEngines": {
-    "runtime": {
-      "name": "node",
-      "version": "^24.5.1",
-      "onFail": "download"
-    }
+  "packageManager": "pnpm@10.15.1+sha512.34e538c329b5553014ca8e8f4535997f96180a1d0f614339357449935350d924e22f8614682191264ec33d1462ac21561aff97f6bb18065351c162c7e8f6de67",
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@algolia/client-search",
+        "react",
+        "react-native",
+        "search-insights"
+      ]
+    },
+    "patchedDependencies": {
+      "prool": "patches/prool.patch"
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "keccak",
+      "secp256k1",
+      "vue-demi"
+    ]
+  },
+  "engines": {
+    "node": "22.x"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm check"
@@ -102,18 +115,7 @@
         ]
       },
       "packages/connectors": {
-        "entry": "src/exports/index.ts!",
-        "ignoreDependencies": [
-          "@base-org/account",
-          "@coinbase/wallet-sdk",
-          "@gemini-wallet/core",
-          "@metamask/sdk",
-          "@safe-global/safe-apps-provider",
-          "@safe-global/safe-apps-sdk",
-          "@wagmi/core",
-          "@walletconnect/ethereum-provider",
-          "porto"
-        ]
+        "entry": "src/exports/index.ts!"
       },
       "packages/core": {
         "entry": "src/exports/{actions,chains,codegen,experimental,index,internal,query}.ts!",
@@ -129,7 +131,7 @@
       },
       "packages/react": {
         "entry": [
-          "src/exports/{actions,chains,codegen,connectors,experimental,index,internal,query}.ts!",
+          "src/exports/{actions,chains,codegen,connectors,experimental,index,query}.ts!",
           "src/exports/actions/experimental.ts!"
         ],
         "ignore": [
@@ -144,7 +146,7 @@
       },
       "packages/vue": {
         "entry": [
-          "src/exports/{actions,chains,connectors,index,internal,nuxt,query}.ts!",
+          "src/exports/{actions,chains,connectors,index,nuxt,query}.ts!",
           "src/exports/actions/experimental.ts!"
         ],
         "ignore": [
@@ -156,5 +158,9 @@
         ]
       }
     }
+  },
+  "dependencies": {
+    "@wagmi/core": "workspace:^",
+    "flag": "^5.0.1"
   }
 }
