@@ -14,7 +14,7 @@
     "next": "^14.2.32",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "viem": "2.15.1",
+    "viem": "catalog:",
     "wagmi": "workspace:*"
   },
   "devDependencies": {
