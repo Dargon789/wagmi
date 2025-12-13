@@ -50,12 +50,12 @@
     "@vitest/browser": "^3.2.4",
     "@vitest/coverage-v8": "^3.2.4",
     "@wagmi/test": "workspace:*",
-    "bun": "^1.1.40",
+    "bun": "^1.1.29",
     "happy-dom": "^18.0.1",
     "knip": "^5.30.6",
-    "playwright": "1.55.0",
+    "playwright": "1.54.1",
     "prool": "^0.0.24",
-    "publint": "^0.3.0",
+    "publint": "^0.2.11",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sherif": "^1.0.0",
@@ -65,7 +65,7 @@
     "vitest": "^3.2.4",
     "vitest-browser-react": "^2.0.0-beta.1"
   },
-  "packageManager": "pnpm@9.11.0",
+  "packageManager": "pnpm@10.15.1+sha512.34e538c329b5553014ca8e8f4535997f96180a1d0f614339357449935350d924e22f8614682191264ec33d1462ac21561aff97f6bb18065351c162c7e8f6de67",
   "pnpm": {
     "peerDependencyRules": {
       "ignoreMissing": [
@@ -77,7 +77,13 @@
     },
     "patchedDependencies": {
       "prool": "patches/prool.patch"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "keccak",
+      "secp256k1",
+      "vue-demi"
+    ]
   },
   "engines": {
     "node": "22.x"
@@ -152,5 +158,9 @@
         ]
       }
     }
+  },
+  "dependencies": {
+    "@wagmi/core": "workspace:^",
+    "flag": "^5.0.1"
   }
 }
