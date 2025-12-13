@@ -122,7 +122,7 @@
     "zustand": "^4.3.1"
   },
   "devDependencies": {
-    "ethers": "^6.0.0"
+    "ethers": "^5.7.1"
   },
   "keywords": [
     "eth",
