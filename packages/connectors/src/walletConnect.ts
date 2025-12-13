@@ -266,7 +266,7 @@ export function walletConnect(parameters: WalletConnectParameters) {
       const provider = await this.getProvider()
       return provider.accounts.map((x) => getAddress(x))
     },
-    async getProvider() {
+    async getProvider({ chainId } = {}) {
       async function initProvider() {
         const optionalChains = config.chains.map((x) => x.id) as [number]
         if (!optionalChains.length) return
@@ -296,6 +296,7 @@ export function walletConnect(parameters: WalletConnectParameters) {
         provider_ = await providerPromise
         provider_?.events.setMaxListeners(Number.POSITIVE_INFINITY)
       }
+      if (chainId) await this.switchChain?.({ chainId })
       return provider_!
     },
     async getChainId() {
@@ -450,7 +451,7 @@ export function walletConnect(parameters: WalletConnectParameters) {
     getNamespaceChainsIds() {
       if (!provider_) return []
       const chainIds = provider_.session?.namespaces[NAMESPACE]?.accounts?.map(
-        (account) => Number.parseInt(account.split(':')[1] || ''),
+        (account) => Number.parseInt(account.split(':')[1] || '', 10),
       )
       return chainIds ?? []
     },

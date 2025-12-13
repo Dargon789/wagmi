@@ -16,8 +16,8 @@ import {
 
 import type { ConfigParameter, QueryParameter } from '../types/properties.js'
 import { type UseQueryReturnType, useQuery } from '../utils/query.js'
-import { useAccount } from './useAccount.js'
 import { useConfig } from './useConfig.js'
+import { useConnection } from './useConnection.js'
 
 export type UseCapabilitiesParameters<
   config extends Config = Config,
@@ -50,7 +50,7 @@ export function useCapabilities<
 ): UseCapabilitiesReturnType<config, chainId, selectData> {
   const { account, query = {} } = parameters
 
-  const { address } = useAccount()
+  const { address } = useConnection()
   const config = useConfig(parameters)
 
   const options = getCapabilitiesQueryOptions(config, {
@@ -58,5 +58,8 @@ export function useCapabilities<
     account: account ?? address,
   })
 
-  return useQuery({ ...query, ...options })
+  return useQuery({
+    ...query,
+    ...options,
+  } as never) as UseCapabilitiesReturnType<config, chainId, selectData>
 }

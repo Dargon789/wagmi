@@ -1,4 +1,4 @@
-import { connect, disconnect, getAccount } from '@wagmi/core'
+import { connect, disconnect, getConnection } from '@wagmi/core'
 import { config, privateKey } from '@wagmi/test'
 import { renderHook } from '@wagmi/test/react'
 import { recoverMessageAddress } from 'viem'
@@ -14,14 +14,14 @@ test('default', async () => {
   const { result } = await renderHook(() => useSignMessage())
 
   result.current.signMessage({ message: 'foo bar baz' })
-  await vi.waitUntil(() => result.current.isSuccess)
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   await expect(
     recoverMessageAddress({
       message: 'foo bar baz',
       signature: result.current.data!,
     }),
-  ).resolves.toEqual(getAccount(config).address)
+  ).resolves.toEqual(getConnection(config).address)
 
   await disconnect(config, { connector })
 })
@@ -31,7 +31,7 @@ test('behavior: local account', async () => {
 
   const account = privateKeyToAccount(privateKey)
   result.current.signMessage({ account, message: 'foo bar baz' })
-  await vi.waitUntil(() => result.current.isSuccess)
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   await expect(
     recoverMessageAddress({

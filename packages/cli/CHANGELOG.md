@@ -1,5 +1,29 @@
 # @wagmi/cli
 
+## 2.8.0
+
+### Minor Changes
+
+- Added option to React plugin to disable generating hooks for each function/event in ABI. ([#4866](https://github.com/wevm/wagmi/pull/4866))
+
+## 2.7.1
+
+### Patch Changes
+
+- Bumped chains for block explorer plugins. ([`ed2d473`](https://github.com/wevm/wagmi/commit/ed2d473172e8d063f29400b8edcec33e5d21a659))
+
+## 2.7.0
+
+### Minor Changes
+
+- Updated block explorer plugins supported chains. ([#4830](https://github.com/wevm/wagmi/pull/4830))
+
+## 2.6.0
+
+### Minor Changes
+
+- Bumped internal deps. ([#4808](https://github.com/wevm/wagmi/pull/4808))
+
 ## 2.5.1
 
 ### Patch Changes

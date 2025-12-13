@@ -1,5 +1,164 @@
 # @wagmi/connectors
 
+## 7.0.1
+
+### Patch Changes
+
+- Fixed `baseAccount` reconnect behavior ([#4884](https://github.com/wevm/wagmi/pull/4884))
+
+## 7.0.0
+
+### Major Changes
+
+- All connector dependencies are now optional peer dependencies. This means that if you want to use a specific connector, you need to install its required dependencies. ([#4857](https://github.com/wevm/wagmi/pull/4857))
+
+  #### baseAccount
+
+  [`baseAccount`](https://wagmi.sh/core/api/connectors/baseAccount) requires `@base-org/account`
+
+  ```
+  pnpm add @base-org/account@~2.4.0
+  ```
+
+  #### coinbaseWallet
+
+  [`coinbaseWallet`](https://wagmi.sh/core/api/connectors/coinbaseWallet) requires `@coinbase/wallet-sdk`
+
+  ```
+  pnpm add @coinbase/wallet-sdk@~4.3.6
+  ```
+
+  #### gemini
+
+  [`gemini`](https://wagmi.sh/core/api/connectors/gemini) requires `@gemini-wallet/core`
+
+  ```
+  pnpm add @gemini-wallet/core@~0.3.1
+  ```
+
+  #### metaMask
+
+  [`metaMask`](https://wagmi.sh/core/api/connectors/metaMask) requires `@metamask/sdk`
+
+  ```
+  pnpm add @metamask/sdk@~0.33.1
+  ```
+
+  #### porto
+
+  [`porto`](https://wagmi.sh/core/api/connectors/porto) requires `porto`
+
+  ```
+  pnpm add porto@~0.2.35
+  ```
+
+  #### safe
+
+  [`safe`](https://wagmi.sh/core/api/connectors/safe) requires `@safe-global/safe-apps-provider` and `@safe-global/safe-apps-sdk`
+
+  ```
+  pnpm add @safe-global/safe-apps-provider@~0.18.6 @safe-global/safe-apps-sdk@~9.1.0
+  ```
+
+  #### walletConnect
+
+  [`walletConnect`](https://wagmi.sh/core/api/connectors/walletConnect) requires `walletconnect/ethereum-provider`
+
+  ```
+  pnpm add @walletconnect/ethereum-provider@~2.21.1
+  ```
+
+### Patch Changes
+
+- Updated dependencies [[`73e7326`](https://github.com/wevm/wagmi/commit/73e7326ac21303d7790765c78a7076b319b2ad26)]:
+  - @wagmi/core@3.0.0
+
+## 6.2.0
+
+### Minor Changes
+
+- Added support for `'wallet_connect'` capabilities to `baseAccount` connector ([#4877](https://github.com/wevm/wagmi/pull/4877))
+
+## 6.1.4
+
+### Patch Changes
+
+- Bumped Gemini package version ([`2ddb506`](https://github.com/wevm/wagmi/commit/2ddb506b67fcb2abb464765d2af88df2eb58de60))
+
+## 6.1.3
+
+### Patch Changes
+
+- Added warning to `walletConnect` about vulnerability and relicensing. ([`65cf154`](https://github.com/wevm/wagmi/commit/65cf1544d65bfb1fb830c405a371e8cd3c3fb73e))
+
+## 6.1.2
+
+### Patch Changes
+
+- Bumped connector deps ([#4843](https://github.com/wevm/wagmi/pull/4843))
+
+## 6.1.1
+
+### Patch Changes
+
+- Bumped Porto version ([`990dd23`](https://github.com/wevm/wagmi/commit/990dd2339e96b302931056e0fb898bd2dd42a04d))
+
+## 6.1.0
+
+### Minor Changes
+
+- Added `getPortoInstance` method to `porto`. ([#4837](https://github.com/wevm/wagmi/pull/4837))
+
+## 6.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`74100b0`](https://github.com/wevm/wagmi/commit/74100b0dea2dfe7b057fdbe1660596554c70642e)]:
+  - @wagmi/core@2.22.1
+
+## 6.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`ebb2352`](https://github.com/wevm/wagmi/commit/ebb2352375e05e52d0bcf6ae1a60ac4e798bf29f)]:
+  - @wagmi/core@2.22.0
+
+## 5.11.2
+
+### Patch Changes
+
+- Added `chainId` parameter on `walletConnect#getProvider` ([#4806](https://github.com/wevm/wagmi/pull/4806))
+
+- Updated dependencies [[`866aeb0`](https://github.com/wevm/wagmi/commit/866aeb0e6361ef9114246e50149c1077bc05bf10)]:
+  - @wagmi/core@2.21.2
+
+## 5.11.1
+
+### Patch Changes
+
+- Updated `porto`. ([`41eb70e`](https://github.com/wevm/wagmi/commit/41eb70e072774b282053a5e98669a7d01c0e2438))
+
+- Pulled `porto` connector implementation. ([#4801](https://github.com/wevm/wagmi/pull/4801))
+
+## 5.11.0
+
+### Minor Changes
+
+- Added `porto` connector. ([#4794](https://github.com/wevm/wagmi/pull/4794))
+
+## 5.10.2
+
+### Patch Changes
+
+- Updated dependencies [[`72b703a`](https://github.com/wevm/wagmi/commit/72b703ab379c74ecf88f637cf47f31786c823a48)]:
+  - @wagmi/core@2.21.1
+
+## 5.10.1
+
+### Patch Changes
+
+- Bumped MetaMask SDK version in accordance with [security advisory](https://github.com/advisories/GHSA-qj3p-xc97-xw74). ([`5937456`](https://github.com/wevm/wagmi/commit/59374562f2c3a41245687eb1c29ee8023737c7cc))
+
 ## 5.10.0
 
 ### Minor Changes
