@@ -1,5 +1,6 @@
 import path from 'node:path'
-import react from '@vitejs/plugin-react'
+import { playwright } from '@vitest/browser-playwright'
+import reactFallbackThrottlePlugin from 'vite-plugin-react-fallback-throttle'
 import { defineConfig } from 'vitest/config'
 
 const alias = {
@@ -21,7 +22,6 @@ export default defineConfig({
   },
   test: {
     coverage: {
-      all: false,
       reporter: process.env.CI ? ['lcov'] : ['text', 'json', 'html'],
       exclude: [
         '**/dist/**',
@@ -34,11 +34,13 @@ export default defineConfig({
         'packages/core/src/connectors/injected.ts',
       ],
     },
-    globalSetup: ['./packages/test/src/globalSetup.ts'],
+    globalSetup: process.env.TYPES
+      ? ['./packages/test/src/setup.global.types.ts']
+      : ['./packages/test/src/setup.global.ts'],
     projects: [
       {
         test: {
-          name: '@wagmi/cli',
+          name: 'cli',
           environment: 'node',
           include: ['./packages/cli/src/**/*.test.ts'],
           testTimeout: 10_000,
@@ -47,7 +49,7 @@ export default defineConfig({
       },
       {
         test: {
-          name: '@wagmi/connectors',
+          name: 'connectors',
           include: ['./packages/connectors/src/**/*.test.ts'],
           environment: 'happy-dom',
         },
@@ -55,8 +57,11 @@ export default defineConfig({
       },
       {
         test: {
-          name: '@wagmi/core',
-          include: ['./packages/core/src/**/*.test.ts'],
+          name: 'core',
+          include: [
+            ...(process.env.TYPES ? ['**/*.bench-d.ts'] : []),
+            './packages/core/src/**/*.test.ts',
+          ],
           environment: 'happy-dom',
           testTimeout: 10_000,
           setupFiles: ['./packages/core/test/setup.ts'],
@@ -72,15 +77,15 @@ export default defineConfig({
         },
       },
       {
-        plugins: [react()],
+        plugins: [reactFallbackThrottlePlugin()],
         resolve: { alias },
         test: {
-          name: 'wagmi',
+          name: 'react',
           browser: {
             enabled: true,
             headless: true,
             instances: [{ browser: 'chromium' }],
-            provider: 'playwright',
+            provider: playwright(),
             screenshotFailures: false,
           },
           include: ['./packages/react/src/**/*.test.ts?(x)'],
@@ -90,7 +95,7 @@ export default defineConfig({
       },
       {
         test: {
-          name: '@wagmi/vue',
+          name: 'vue',
           include: ['./packages/vue/src/**/*.test.ts?(x)'],
           environment: 'happy-dom',
           testTimeout: 10_000,
@@ -100,14 +105,7 @@ export default defineConfig({
       },
       {
         test: {
-          name: 'react-register',
-          include: ['./packages/register-tests/react/src/**/*.test.ts'],
-        },
-        resolve: { alias },
-      },
-      {
-        test: {
-          name: '@wagmi/test',
+          name: 'test',
           include: ['./packages/test/src/**/*.test.ts'],
         },
         resolve: { alias },

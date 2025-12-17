@@ -59,10 +59,7 @@ export type WriteContractParameters<
     >
   }[number] &
     Compute<ChainIdParameter<config, chainId>> &
-    ConnectorParameter & {
-      /** @deprecated */
-      __mode?: 'prepared'
-    }
+    ConnectorParameter
 >
 
 export type WriteContractReturnType = viem_WriteContractReturnType
@@ -99,6 +96,7 @@ export async function writeContract<
   else
     client = await getConnectorClient(config, {
       account: account ?? undefined,
+      assertChainId: false,
       chainId,
       connector,
     })

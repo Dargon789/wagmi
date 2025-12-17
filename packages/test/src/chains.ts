@@ -1,3 +1,5 @@
+/// <reference types="./vite-env.d.ts" />
+
 import type { Compute } from '@wagmi/core/internal'
 import {
   type Chain as viem_Chain,
@@ -15,8 +17,9 @@ export type Chain = Compute<
 >
 
 const mainnetFork = {
-  blockNumber: 19_258_213n,
+  blockNumber: 23_535_880n,
   url:
+    // biome-ignore lint/complexity/useOptionalChain: _
     (typeof process !== 'undefined' && process.env.VITE_MAINNET_FORK_URL) ||
     (typeof import.meta !== 'undefined' &&
       import.meta.env.VITE_MAINNET_FORK_URL) ||
@@ -38,11 +41,12 @@ export const mainnet2 = {
 } as const satisfies Chain
 
 export const optimism = {
-  ...getRpcUrls({ port: 8547 }),
   ...viem_optimism,
+  ...getRpcUrls({ port: 8547 }),
   fork: {
     blockNumber: 107_317_577n,
     url:
+      // biome-ignore lint/complexity/useOptionalChain: _
       (typeof process !== 'undefined' && process.env.VITE_OPTIMISM_FORK_URL) ||
       (typeof import.meta !== 'undefined' &&
         import.meta.env.VITE_OPTIMISM_FORK_URL) ||

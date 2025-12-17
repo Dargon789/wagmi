@@ -19,6 +19,8 @@ jobs:
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@main
+        with:
+          node-version: 24.5
 
       - name: Check repo
         run: pnpm check:repo
@@ -87,6 +89,9 @@ jobs:
 
       - name: Check types
         run: pnpm check:types
+
+      - name: Bench types
+        run: pnpm bench:types
 
       # Redundant with `pnpm check:types`
       # If Vitest adds special features in the future, e.g. type coverage, can add this back!
