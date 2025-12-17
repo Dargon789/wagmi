@@ -40,8 +40,11 @@ minimumReleaseAgeExclude:
   - '@wagmi/core'
   - '@wagmi/test'
   - '@wagmi/vue'
+  - abitype
+  - ox
   - porto
   - wagmi
+  - viem
 overrides:
   cookie@<0.7.0: 0.7.0
   elliptic@<=6.6.0: '>=6.6.1'
