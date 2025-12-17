@@ -4,16 +4,29 @@ import {
   type SignMessageData,
   type SignMessageMutate,
   type SignMessageMutateAsync,
-  type SignMessageOptions,
   type SignMessageVariables,
   signMessageMutationOptions,
 } from '@wagmi/core/query'
+
 import type { ConfigParameter } from '../types/properties.js'
-import { type UseMutationReturnType, useMutation } from '../utils/query.js'
+import {
+  type UseMutationParameters,
+  type UseMutationReturnType,
+  useMutation,
+} from '../utils/query.js'
 import { useConfig } from './useConfig.js'
 
 export type UseSignMessageParameters<context = unknown> = Compute<
-  ConfigParameter & SignMessageOptions<context>
+  ConfigParameter & {
+    mutation?:
+      | UseMutationParameters<
+          SignMessageData,
+          SignMessageErrorType,
+          SignMessageVariables,
+          context
+        >
+      | undefined
+  }
 >
 
 export type UseSignMessageReturnType<context = unknown> = Compute<
@@ -21,10 +34,10 @@ export type UseSignMessageReturnType<context = unknown> = Compute<
     SignMessageData,
     SignMessageErrorType,
     SignMessageVariables,
-    context,
-    SignMessageMutate<context>,
-    SignMessageMutateAsync<context>
+    context
   > & {
+    mutate: SignMessageMutate<context>
+    mutateAsync: SignMessageMutateAsync<context>
     /** @deprecated use `mutate` instead */
     signMessage: SignMessageMutate<context>
     /** @deprecated use `mutateAsync` instead */
@@ -37,12 +50,11 @@ export function useSignMessage<context = unknown>(
   parameters: UseSignMessageParameters<context> = {},
 ): UseSignMessageReturnType<context> {
   const config = useConfig(parameters)
-  const options = signMessageMutationOptions(config, parameters)
-  const mutation = useMutation(options)
-  type Return = UseSignMessageReturnType<context>
+  const mutationOptions = signMessageMutationOptions(config)
+  const mutation = useMutation({ ...parameters.mutation, ...mutationOptions })
   return {
-    ...(mutation as Return),
-    signMessage: mutation.mutate as Return['mutate'],
-    signMessageAsync: mutation.mutateAsync as Return['mutateAsync'],
+    ...mutation,
+    signMessage: mutation.mutate,
+    signMessageAsync: mutation.mutateAsync,
   }
 }

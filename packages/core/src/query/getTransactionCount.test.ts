@@ -10,7 +10,6 @@ test('default', () => {
     getTransactionCountQueryOptions(config, { address }),
   ).toMatchInlineSnapshot(`
     {
-      "enabled": true,
       "queryFn": [Function],
       "queryKey": [
         "transactionCount",
@@ -29,18 +28,17 @@ test('parameters: chainId', () => {
       chainId: chain.mainnet.id,
     }),
   ).toMatchInlineSnapshot(`
-    {
-      "enabled": true,
-      "queryFn": [Function],
-      "queryKey": [
-        "transactionCount",
-        {
-          "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
-          "chainId": 1,
-        },
-      ],
-    }
-  `)
+      {
+        "queryFn": [Function],
+        "queryKey": [
+          "transactionCount",
+          {
+            "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
+            "chainId": 1,
+          },
+        ],
+      }
+    `)
 })
 
 test('parameters: blockNumber', () => {
@@ -50,18 +48,17 @@ test('parameters: blockNumber', () => {
       blockNumber: 13677382n,
     }),
   ).toMatchInlineSnapshot(`
-    {
-      "enabled": true,
-      "queryFn": [Function],
-      "queryKey": [
-        "transactionCount",
-        {
-          "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
-          "blockNumber": 13677382n,
-        },
-      ],
-    }
-  `)
+      {
+        "queryFn": [Function],
+        "queryKey": [
+          "transactionCount",
+          {
+            "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
+            "blockNumber": 13677382n,
+          },
+        ],
+      }
+    `)
 })
 
 test('parameters: blockTag', () => {
@@ -71,16 +68,15 @@ test('parameters: blockTag', () => {
       blockTag: 'earliest',
     }),
   ).toMatchInlineSnapshot(`
-    {
-      "enabled": true,
-      "queryFn": [Function],
-      "queryKey": [
-        "transactionCount",
-        {
-          "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
-          "blockTag": "earliest",
-        },
-      ],
-    }
-  `)
+      {
+        "queryFn": [Function],
+        "queryKey": [
+          "transactionCount",
+          {
+            "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
+            "blockTag": "earliest",
+          },
+        ],
+      }
+    `)
 })

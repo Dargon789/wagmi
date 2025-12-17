@@ -2,4 +2,7 @@
 // Types
 ////////////////////////////////////////////////////////////////////////////////
 
-export type { ConfigParameter } from '../types/properties.js'
+export type {
+  ConfigParameter,
+  QueryParameter,
+} from '../types/properties.js'

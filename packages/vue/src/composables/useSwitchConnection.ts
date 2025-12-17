@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/vue-query'
 import type {
   Config,
   Connector,
@@ -9,21 +10,34 @@ import {
   type SwitchConnectionData,
   type SwitchConnectionMutate,
   type SwitchConnectionMutateAsync,
-  type SwitchConnectionOptions,
   type SwitchConnectionVariables,
   switchConnectionMutationOptions,
 } from '@wagmi/core/query'
 import { computed, type Ref } from 'vue'
 
 import type { ConfigParameter } from '../types/properties.js'
-import { type UseMutationReturnType, useMutation } from '../utils/query.js'
+import type {
+  UseMutationParameters,
+  UseMutationReturnType,
+} from '../utils/query.js'
 import { useConfig } from './useConfig.js'
 import { useConnections } from './useConnections.js'
 
 export type UseSwitchConnectionParameters<
   config extends Config = Config,
   context = unknown,
-> = Compute<ConfigParameter<config> & SwitchConnectionOptions<config, context>>
+> = Compute<
+  ConfigParameter<config> & {
+    mutation?:
+      | UseMutationParameters<
+          SwitchConnectionData<config>,
+          SwitchConnectionErrorType,
+          SwitchConnectionVariables,
+          context
+        >
+      | undefined
+  }
+>
 
 export type UseSwitchConnectionReturnType<
   config extends Config = Config,
@@ -59,17 +73,18 @@ export function useSwitchConnection<
 ): UseSwitchConnectionReturnType<config, context> {
   const config = useConfig(parameters)
   const connections = useConnections({ config })
-  const options = switchConnectionMutationOptions(config, parameters as any)
-  const mutation = useMutation(options)
-  type Return = UseSwitchConnectionReturnType<config, context>
+  const mutationOptions = switchConnectionMutationOptions(config)
+  const mutation = useMutation({ ...parameters.mutation, ...mutationOptions })
   return {
-    ...(mutation as Return),
+    ...mutation,
     connectors: computed(() =>
       connections.value.map((connection) => connection.connector),
     ),
-    switchAccount: mutation.mutate as Return['mutate'],
-    switchAccountAsync: mutation.mutateAsync as Return['mutateAsync'],
-    switchConnection: mutation.mutate as Return['mutate'],
-    switchConnectionAsync: mutation.mutateAsync as Return['mutateAsync'],
+    mutate: mutation.mutate,
+    mutateAsync: mutation.mutateAsync,
+    switchAccount: mutation.mutate,
+    switchAccountAsync: mutation.mutateAsync,
+    switchConnection: mutation.mutate,
+    switchConnectionAsync: mutation.mutateAsync,
   }
 }

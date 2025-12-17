@@ -4,17 +4,18 @@
   "type": "module",
   "scripts": {
     "dev": "vitepress dev",
-    "build": "NODE_OPTIONS=\"--max-old-space-size=16384\" vitepress build",
+    "build": "vitepress build",
     "preview": "vitepress preview"
   },
   "devDependencies": {
-    "@shikijs/vitepress-twoslash": "3.20.0",
+    "@shikijs/vitepress-twoslash": "3.18.0",
     "@tanstack/query-core": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/vue-query": "catalog:",
     "@types/react": "catalog:",
     "@wagmi/connectors": "workspace:*",
     "@wagmi/core": "workspace:*",
+    "@wagmi/svelte": "workspace:*",
     "@wagmi/vue": "workspace:*",
     "abitype": "*",
     "nuxt": "^3.19.2",

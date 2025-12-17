@@ -1,4 +1,5 @@
 'use client'
+
 import { useMutation } from '@tanstack/react-query'
 import type {
   Config,
@@ -10,19 +11,33 @@ import {
   type DeployContractData,
   type DeployContractMutate,
   type DeployContractMutateAsync,
-  type DeployContractOptions,
   type DeployContractVariables,
   deployContractMutationOptions,
 } from '@wagmi/core/query'
 import type { Abi } from 'viem'
+
 import type { ConfigParameter } from '../types/properties.js'
-import type { UseMutationReturnType } from '../utils/query.js'
+import type {
+  UseMutationParameters,
+  UseMutationReturnType,
+} from '../utils/query.js'
 import { useConfig } from './useConfig.js'
 
 export type UseDeployContractParameters<
   config extends Config = Config,
   context = unknown,
-> = Compute<ConfigParameter<config> & DeployContractOptions<config, context>>
+> = Compute<
+  ConfigParameter<config> & {
+    mutation?:
+      | UseMutationParameters<
+          DeployContractData,
+          DeployContractErrorType,
+          DeployContractVariables<Abi, config, config['chains'][number]['id']>,
+          context
+        >
+      | undefined
+  }
+>
 
 export type UseDeployContractReturnType<
   config extends Config = Config,
@@ -31,14 +46,14 @@ export type UseDeployContractReturnType<
   DeployContractData,
   DeployContractErrorType,
   DeployContractVariables<Abi, config, config['chains'][number]['id']>,
-  context,
-  DeployContractMutate<config, context>,
-  DeployContractMutateAsync<config, context>
+  context
 > & {
   /** @deprecated use `mutate` instead */
   deployContract: DeployContractMutate<config, context>
   /** @deprecated use `mutateAsync` instead */
   deployContractAsync: DeployContractMutateAsync<config, context>
+  mutate: DeployContractMutate<config, context>
+  mutateAsync: DeployContractMutateAsync<config, context>
 }
 
 /** https://wagmi.sh/react/api/hooks/useDeployContract */
@@ -49,12 +64,14 @@ export function useDeployContract<
   parameters: UseDeployContractParameters<config, context> = {},
 ): UseDeployContractReturnType<config, context> {
   const config = useConfig(parameters)
-  const options = deployContractMutationOptions(config, parameters)
-  const mutation = useMutation(options)
+  const mutationOptions = deployContractMutationOptions(config)
+  const mutation = useMutation({ ...parameters.mutation, ...mutationOptions })
   type Return = UseDeployContractReturnType<config, context>
   return {
-    ...(mutation as Return),
+    ...mutation,
     deployContract: mutation.mutate as Return['mutate'],
     deployContractAsync: mutation.mutateAsync as Return['mutateAsync'],
+    mutate: mutation.mutate as Return['mutate'],
+    mutateAsync: mutation.mutateAsync as Return['mutateAsync'],
   }
 }

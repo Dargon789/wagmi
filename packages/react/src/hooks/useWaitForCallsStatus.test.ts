@@ -36,7 +36,7 @@ test('default', async () => {
   })
 
   await vi.waitUntil(() => useSendCalls_render.result.current.isSuccess, {
-    timeout: 10_000,
+    timeout: 5_000,
   })
 
   expect(useWaitForCallsStatus_render.result.current.fetchStatus).toBe('idle')
@@ -50,7 +50,7 @@ test('default', async () => {
 
   await vi.waitUntil(
     () => useWaitForCallsStatus_render.result.current.isSuccess,
-    { timeout: 10_000 },
+    { timeout: 5_000 },
   )
 
   expect(useWaitForCallsStatus_render.result.current.data?.status).toBe(
@@ -60,7 +60,6 @@ test('default', async () => {
     useWaitForCallsStatus_render.result.current.data?.receipts?.map((x) => ({
       ...x,
       blockHash: undefined,
-      transactionHash: undefined,
     })),
   ).toMatchInlineSnapshot(
     `
@@ -71,7 +70,7 @@ test('default', async () => {
         "gasUsed": 21160n,
         "logs": [],
         "status": "success",
-        "transactionHash": undefined,
+        "transactionHash": "0x7add018cb41f4b86d793758248d20cb8394364d9379d201cb7747db29c4aac18",
       },
       {
         "blockHash": undefined,
@@ -79,7 +78,7 @@ test('default', async () => {
         "gasUsed": 21000n,
         "logs": [],
         "status": "success",
-        "transactionHash": undefined,
+        "transactionHash": "0x5019ef03b9ee83c6398d1a68490b56878300c1f83697c3b3eeaf666baf63abff",
       },
       {
         "blockHash": undefined,
@@ -87,7 +86,7 @@ test('default', async () => {
         "gasUsed": 21000n,
         "logs": [],
         "status": "success",
-        "transactionHash": undefined,
+        "transactionHash": "0xe61204827da836e4bc51fbfe15f04e5b1307c50f160d1add15675c8654663f20",
       },
     ]
   `,

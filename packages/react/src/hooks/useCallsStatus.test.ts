@@ -36,9 +36,7 @@ test('default', async () => {
   const { result: result_2 } = await renderHook(() =>
     useCallsStatus({ id: result.current.data?.id! }),
   )
-  await vi.waitFor(() => expect(result_2.current.isSuccess).toBeTruthy(), {
-    timeout: 5_000,
-  })
+  await vi.waitFor(() => expect(result_2.current.isSuccess).toBeTruthy())
 
   expect(result_2.current.data).toMatchInlineSnapshot(
     `
@@ -59,9 +57,7 @@ test('default', async () => {
   const { result: result_3 } = await renderHook(() =>
     useCallsStatus({ id: result.current.data?.id! }),
   )
-  await vi.waitFor(() => expect(result_3.current.isSuccess).toBeTruthy(), {
-    timeout: 5_000,
-  })
+  await vi.waitFor(() => expect(result_3.current.isSuccess).toBeTruthy())
 
   expect(result_3.current.data?.status).toBe('success')
   expect(result_3.current.data?.statusCode).toBe(200)
@@ -69,7 +65,6 @@ test('default', async () => {
     result_3.current.data?.receipts?.map((x) => ({
       ...x,
       blockHash: undefined,
-      transactionHash: undefined,
     })),
   ).toMatchInlineSnapshot(
     `
@@ -80,7 +75,7 @@ test('default', async () => {
         "gasUsed": 21160n,
         "logs": [],
         "status": "success",
-        "transactionHash": undefined,
+        "transactionHash": "0x7add018cb41f4b86d793758248d20cb8394364d9379d201cb7747db29c4aac18",
       },
       {
         "blockHash": undefined,
@@ -88,7 +83,7 @@ test('default', async () => {
         "gasUsed": 21000n,
         "logs": [],
         "status": "success",
-        "transactionHash": undefined,
+        "transactionHash": "0x5019ef03b9ee83c6398d1a68490b56878300c1f83697c3b3eeaf666baf63abff",
       },
       {
         "blockHash": undefined,
@@ -96,7 +91,7 @@ test('default', async () => {
         "gasUsed": 21000n,
         "logs": [],
         "status": "success",
-        "transactionHash": undefined,
+        "transactionHash": "0xe61204827da836e4bc51fbfe15f04e5b1307c50f160d1add15675c8654663f20",
       },
     ]
   `,

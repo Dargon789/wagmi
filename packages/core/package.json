@@ -1,7 +1,7 @@
 {
   "name": "@wagmi/core",
   "description": "VanillaJS library for Ethereum",
-  "version": "3.2.3",
+  "version": "3.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -9,10 +9,10 @@
     "directory": "packages/core"
   },
   "scripts": {
-    "build": "pnpm run build:esm+types",
+    "build": "pnpm run clean && pnpm run build:esm+types",
     "build:esm+types": "tsc --project tsconfig.build.json --outDir ./dist/esm --declaration --declarationMap --declarationDir ./dist/types",
     "check:types": "tsc --noEmit",
-    "clean": "rm -rf dist tsconfig.tsbuildinfo actions chains codegen internal query tempo",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo actions chains codegen internal query",
     "test:build": "publint --strict && attw --pack --ignore-rules cjs-resolves-to-esm"
   },
   "files": [
@@ -24,8 +24,7 @@
     "/actions",
     "/chains",
     "/internal",
-    "/query",
-    "/tempo"
+    "/query"
   ],
   "sideEffects": false,
   "type": "module",
@@ -57,10 +56,6 @@
       "types": "./dist/types/exports/query.d.ts",
       "default": "./dist/esm/exports/query.js"
     },
-    "./tempo": {
-      "types": "./dist/types/exports/tempo.d.ts",
-      "default": "./dist/esm/exports/tempo.js"
-    },
     "./package.json": "./package.json"
   },
   "typesVersions": {
@@ -79,23 +74,16 @@
       ],
       "query": [
         "./dist/types/exports/query.d.ts"
-      ],
-      "tempo": [
-        "./dist/types/exports/tempo.d.ts"
       ]
     }
   },
   "peerDependencies": {
     "@tanstack/query-core": ">=5.0.0",
-    "ox": ">=0.11.1",
     "typescript": ">=5.7.3",
     "viem": "2.x"
   },
   "peerDependenciesMeta": {
     "@tanstack/query-core": {
-      "optional": true
-    },
-    "ox": {
       "optional": true
     },
     "typescript": {
@@ -108,8 +96,7 @@
     "zustand": "5.0.0"
   },
   "devDependencies": {
-    "@tanstack/query-core": "catalog:",
-    "ox": "catalog:"
+    "@tanstack/query-core": "catalog:"
   },
   "contributors": [
     "awkweb.eth <t@wevm.dev>",

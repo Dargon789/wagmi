@@ -1,4 +1,5 @@
 'use client'
+
 import { useMutation } from '@tanstack/react-query'
 import type {
   Config,
@@ -11,19 +12,33 @@ import {
   type SwitchConnectionData,
   type SwitchConnectionMutate,
   type SwitchConnectionMutateAsync,
-  type SwitchConnectionOptions,
   type SwitchConnectionVariables,
   switchConnectionMutationOptions,
 } from '@wagmi/core/query'
+
 import type { ConfigParameter } from '../types/properties.js'
-import type { UseMutationReturnType } from '../utils/query.js'
+import type {
+  UseMutationParameters,
+  UseMutationReturnType,
+} from '../utils/query.js'
 import { useConfig } from './useConfig.js'
 import { useConnections } from './useConnections.js'
 
 export type UseSwitchConnectionParameters<
   config extends Config = Config,
   context = unknown,
-> = Compute<ConfigParameter<config> & SwitchConnectionOptions<config, context>>
+> = Compute<
+  ConfigParameter<config> & {
+    mutation?:
+      | UseMutationParameters<
+          SwitchConnectionData<config>,
+          SwitchConnectionErrorType,
+          SwitchConnectionVariables,
+          context
+        >
+      | undefined
+  }
+>
 
 export type UseSwitchConnectionReturnType<
   config extends Config = Config,
@@ -33,12 +48,12 @@ export type UseSwitchConnectionReturnType<
     SwitchConnectionData<config>,
     SwitchConnectionErrorType,
     SwitchConnectionVariables,
-    context,
-    SwitchConnectionMutate<config, context>,
-    SwitchConnectionMutateAsync<config, context>
+    context
   > & {
     /** @deprecated use `useConnections` instead */
     connectors: readonly Connector[]
+    mutate: SwitchConnectionMutate<config, context>
+    mutateAsync: SwitchConnectionMutateAsync<config, context>
     /** @deprecated use `mutate` instead */
     switchAccount: SwitchConnectionMutate<config, context>
     /** @deprecated use `mutateAsync` instead */
@@ -58,14 +73,16 @@ export function useSwitchConnection<
   parameters: UseSwitchConnectionParameters<config, context> = {},
 ): UseSwitchConnectionReturnType<config, context> {
   const config = useConfig(parameters)
-  const options = switchConnectionMutationOptions(config, parameters)
-  const mutation = useMutation(options)
+  const mutationOptions = switchConnectionMutationOptions(config)
+  const mutation = useMutation({ ...parameters.mutation, ...mutationOptions })
   type Return = UseSwitchConnectionReturnType<config, context>
   return {
-    ...(mutation as Return),
+    ...mutation,
     connectors: useConnections({ config }).map(
       (connection) => connection.connector,
     ),
+    mutate: mutation.mutate as Return['mutate'],
+    mutateAsync: mutation.mutateAsync as Return['mutateAsync'],
     switchAccount: mutation.mutate as Return['mutate'],
     switchAccountAsync: mutation.mutateAsync as Return['mutateAsync'],
     switchConnection: mutation.mutate as Return['mutate'],

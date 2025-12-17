@@ -1,16 +1,12 @@
 import { accounts, config, testClient, wait } from '@wagmi/test'
 import { parseEther } from 'viem'
-import { beforeEach, expect, test } from 'vitest'
+import { expect, test } from 'vitest'
 
 import { connect } from './connect.js'
 import { disconnect } from './disconnect.js'
 import { sendCallsSync } from './sendCallsSync.js'
 
 const connector = config.connectors[0]!
-
-beforeEach(async () => {
-  await disconnect(config).catch(() => {})
-})
 
 test('default', async () => {
   await connect(config, { connector })

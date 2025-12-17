@@ -5,7 +5,8 @@ import type {
 } from '@wagmi/core'
 import { config } from '@wagmi/test'
 import type { Address, Hex } from 'viem'
-import { assertType, expectTypeOf, test } from 'vitest'
+import { expectTypeOf, test } from 'vitest'
+
 import { useConnect } from './useConnect.js'
 
 const connector = config.connectors[0]!
@@ -15,28 +16,28 @@ test('context', () => {
   const connect = useConnect({
     mutation: {
       onMutate(variables) {
-        assertType<{
+        expectTypeOf(variables).toEqualTypeOf<{
           chainId?: number | undefined
           connector: Connector | CreateConnectorFn
           withCapabilities?: boolean | undefined
-        }>(variables)
+        }>()
         return contextValue
       },
       onError(error, variables, context) {
-        assertType<{
+        expectTypeOf(variables).toEqualTypeOf<{
           chainId?: number | undefined
           connector: Connector | CreateConnectorFn
           withCapabilities?: boolean | undefined
-        }>(variables)
+        }>()
         expectTypeOf(error).toEqualTypeOf<ConnectErrorType>()
         expectTypeOf(context).toEqualTypeOf<typeof contextValue | undefined>()
       },
       onSuccess(data, variables, context) {
-        expectTypeOf<{
+        expectTypeOf(variables).toEqualTypeOf<{
           chainId?: number | undefined
           connector: Connector | CreateConnectorFn
           withCapabilities?: boolean | undefined
-        }>(variables)
+        }>()
         expectTypeOf(data).toEqualTypeOf<{
           accounts:
             | readonly [Address, ...Address[]]
@@ -70,12 +71,12 @@ test('context', () => {
             }
           | undefined
         >()
-        assertType<{
+        expectTypeOf(error).toEqualTypeOf<ConnectErrorType | null>()
+        expectTypeOf(variables).toEqualTypeOf<{
           chainId?: number | undefined
           connector: Connector | CreateConnectorFn
           withCapabilities?: boolean | undefined
-        }>(variables)
-        expectTypeOf(error).toEqualTypeOf<ConnectErrorType | null>()
+        }>()
         expectTypeOf(context).toEqualTypeOf<typeof contextValue | undefined>()
       },
     },
