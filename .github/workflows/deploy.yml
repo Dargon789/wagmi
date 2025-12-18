@@ -13,6 +13,7 @@ on:
   push:
     branches:
             - main
+            - master
       
   # This allows you to manually trigger the workflow from the GitHub Actions page.
   
