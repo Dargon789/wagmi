@@ -65,6 +65,10 @@ export function getSidebar() {
             link: '/react/guides/faq',
           },
           {
+            text: 'Migrate from v2 to v3',
+            link: '/react/guides/migrate-from-v2-to-v3',
+          },
+          {
             text: 'Migrate from v1 to v2',
             link: '/react/guides/migrate-from-v1-to-v2',
           },
@@ -82,8 +86,12 @@ export function getSidebar() {
             link: '/react/api/connectors',
             items: [
               {
-                text: 'coinbaseWallet',
-                link: '/react/api/connectors/coinbaseWallet',
+                text: 'baseAccount',
+                link: '/react/api/connectors/baseAccount',
+              },
+              {
+                text: 'gemini',
+                link: '/react/api/connectors/gemini',
               },
               { text: 'injected', link: '/react/api/connectors/injected' },
               {
@@ -93,6 +101,10 @@ export function getSidebar() {
               {
                 text: 'mock',
                 link: '/react/api/connectors/mock',
+              },
+              {
+                text: 'porto',
+                link: '/react/api/connectors/porto',
               },
               {
                 text: 'safe',
@@ -138,11 +150,6 @@ export function getSidebar() {
         text: 'Hooks',
         link: '/react/api/hooks',
         items: [
-          { text: 'useAccount', link: '/react/api/hooks/useAccount' },
-          {
-            text: 'useAccountEffect',
-            link: '/react/api/hooks/useAccountEffect',
-          },
           { text: 'useBalance', link: '/react/api/hooks/useBalance' },
           {
             text: 'useBlockNumber',
@@ -161,11 +168,24 @@ export function getSidebar() {
             link: '/react/api/hooks/useBytecode',
           },
           { text: 'useCall', link: '/react/api/hooks/useCall' },
+          {
+            text: 'useCallsStatus',
+            link: '/react/api/hooks/useCallsStatus',
+          },
+          {
+            text: 'useCapabilities',
+            link: '/react/api/hooks/useCapabilities',
+          },
           { text: 'useChainId', link: '/react/api/hooks/useChainId' },
           { text: 'useChains', link: '/react/api/hooks/useChains' },
           { text: 'useClient', link: '/react/api/hooks/useClient' },
           { text: 'useConfig', link: '/react/api/hooks/useConfig' },
           { text: 'useConnect', link: '/react/api/hooks/useConnect' },
+          { text: 'useConnection', link: '/react/api/hooks/useConnection' },
+          {
+            text: 'useConnectionEffect',
+            link: '/react/api/hooks/useConnectionEffect',
+          },
           {
             text: 'useConnections',
             link: '/react/api/hooks/useConnections',
@@ -240,8 +260,24 @@ export function getSidebar() {
           },
           { text: 'useReconnect', link: '/react/api/hooks/useReconnect' },
           {
+            text: 'useSendCalls',
+            link: '/react/api/hooks/useSendCalls',
+          },
+          {
+            text: 'useSendCallsSync',
+            link: '/react/api/hooks/useSendCallsSync',
+          },
+          {
             text: 'useSendTransaction',
             link: '/react/api/hooks/useSendTransaction',
+          },
+          {
+            text: 'useSendTransactionSync',
+            link: '/react/api/hooks/useSendTransactionSync',
+          },
+          {
+            text: 'useShowCallsStatus',
+            link: '/react/api/hooks/useShowCallsStatus',
           },
           {
             text: 'useSignMessage',
@@ -260,12 +296,12 @@ export function getSidebar() {
             link: '/react/api/hooks/useStorageAt',
           },
           {
-            text: 'useSwitchAccount',
-            link: '/react/api/hooks/useSwitchAccount',
-          },
-          {
             text: 'useSwitchChain',
             link: '/react/api/hooks/useSwitchChain',
+          },
+          {
+            text: 'useSwitchConnection',
+            link: '/react/api/hooks/useSwitchConnection',
           },
           {
             text: 'useTransaction',
@@ -284,8 +320,8 @@ export function getSidebar() {
             link: '/react/api/hooks/useTransactionReceipt',
           },
           {
-            text: 'useToken',
-            link: '/react/api/hooks/useToken',
+            text: 'useWaitForCallsStatus',
+            link: '/react/api/hooks/useWaitForCallsStatus',
           },
           {
             text: 'useWaitForTransactionReceipt',
@@ -343,37 +379,8 @@ export function getSidebar() {
                 link: '/react/api/utilities/cookieToInitialState',
               },
               { text: 'deserialize', link: '/react/api/utilities/deserialize' },
-              {
-                text: 'normalizeChainId',
-                link: '/react/api/utilities/normalizeChainId',
-              },
               { text: 'serialize', link: '/react/api/utilities/serialize' },
             ],
-          },
-        ],
-      },
-      {
-        text: 'Experimental',
-        items: [
-          {
-            text: 'useCallsStatus',
-            link: '/react/api/hooks/useCallsStatus',
-          },
-          {
-            text: 'useCapabilities',
-            link: '/react/api/hooks/useCapabilities',
-          },
-          {
-            text: 'useSendCalls',
-            link: '/react/api/hooks/useSendCalls',
-          },
-          {
-            text: 'useShowCallsStatus',
-            link: '/react/api/hooks/useShowCallsStatus',
-          },
-          {
-            text: 'useWaitForCallsStatus',
-            link: '/react/api/hooks/useWaitForCallsStatus',
           },
         ],
       },
@@ -445,8 +452,12 @@ export function getSidebar() {
             link: '/vue/api/connectors',
             items: [
               {
-                text: 'coinbaseWallet',
-                link: '/vue/api/connectors/coinbaseWallet',
+                text: 'baseAccount',
+                link: '/vue/api/connectors/baseAccount',
+              },
+              {
+                text: 'gemini',
+                link: '/vue/api/connectors/gemini',
               },
               { text: 'injected', link: '/vue/api/connectors/injected' },
               {
@@ -456,6 +467,10 @@ export function getSidebar() {
               {
                 text: 'mock',
                 link: '/vue/api/connectors/mock',
+              },
+              {
+                text: 'porto',
+                link: '/vue/api/connectors/porto',
               },
               {
                 text: 'safe',
@@ -502,11 +517,6 @@ export function getSidebar() {
         text: 'Composables',
         link: '/vue/api/composables',
         items: [
-          { text: 'useAccount', link: '/vue/api/composables/useAccount' },
-          {
-            text: 'useAccountEffect',
-            link: '/vue/api/composables/useAccountEffect',
-          },
           {
             text: 'useBalance',
             link: '/vue/api/composables/useBalance',
@@ -524,6 +534,11 @@ export function getSidebar() {
           { text: 'useClient', link: '/vue/api/composables/useClient' },
           { text: 'useConfig', link: '/vue/api/composables/useConfig' },
           { text: 'useConnect', link: '/vue/api/composables/useConnect' },
+          { text: 'useConnection', link: '/vue/api/composables/useConnection' },
+          {
+            text: 'useConnectionEffect',
+            link: '/vue/api/composables/useConnectionEffect',
+          },
           {
             text: 'useConnections',
             link: '/vue/api/composables/useConnections',
@@ -577,12 +592,12 @@ export function getSidebar() {
             link: '/vue/api/composables/useSimulateContract',
           },
           {
-            text: 'useSwitchAccount',
-            link: '/vue/api/composables/useSwitchAccount',
-          },
-          {
             text: 'useSwitchChain',
             link: '/vue/api/composables/useSwitchChain',
+          },
+          {
+            text: 'useSwitchConnection',
+            link: '/vue/api/composables/useSwitchConnection',
           },
           {
             text: 'useTransaction',
@@ -671,6 +686,10 @@ export function getSidebar() {
             link: '/core/guides/faq',
           },
           {
+            text: 'Migrate from v2 to v3',
+            link: '/core/guides/migrate-from-v2-to-v3',
+          },
+          {
             text: 'Migrate from v1 to v2',
             link: '/core/guides/migrate-from-v1-to-v2',
           },
@@ -689,8 +708,12 @@ export function getSidebar() {
             link: '/core/api/connectors',
             items: [
               {
-                text: 'coinbaseWallet',
-                link: '/core/api/connectors/coinbaseWallet',
+                text: 'baseAccount',
+                link: '/core/api/connectors/baseAccount',
+              },
+              {
+                text: 'gemini',
+                link: '/core/api/connectors/gemini',
               },
               { text: 'injected', link: '/core/api/connectors/injected' },
               {
@@ -700,6 +723,10 @@ export function getSidebar() {
               {
                 text: 'mock',
                 link: '/core/api/connectors/mock',
+              },
+              {
+                text: 'porto',
+                link: '/core/api/connectors/porto',
               },
               {
                 text: 'safe',
@@ -760,7 +787,6 @@ export function getSidebar() {
             text: 'estimateMaxPriorityFeePerGas',
             link: '/core/api/actions/estimateMaxPriorityFeePerGas',
           },
-          { text: 'getAccount', link: '/core/api/actions/getAccount' },
           { text: 'getBalance', link: '/core/api/actions/getBalance' },
           {
             text: 'getBlock',
@@ -778,12 +804,21 @@ export function getSidebar() {
             text: 'getBytecode',
             link: '/core/api/actions/getBytecode',
           },
+          {
+            text: 'getCallsStatus',
+            link: '/core/api/actions/getCallsStatus',
+          },
+          {
+            text: 'getCapabilities',
+            link: '/core/api/actions/getCapabilities',
+          },
           { text: 'getChainId', link: '/core/api/actions/getChainId' },
           { text: 'getChains', link: '/core/api/actions/getChains' },
           {
             text: 'getClient',
             link: '/core/api/actions/getClient',
           },
+          { text: 'getConnection', link: '/core/api/actions/getConnection' },
           {
             text: 'getConnections',
             link: '/core/api/actions/getConnections',
@@ -830,7 +865,6 @@ export function getSidebar() {
             text: 'getStorageAt',
             link: '/core/api/actions/getStorageAt',
           },
-          { text: 'getToken', link: '/core/api/actions/getToken' },
           {
             text: 'getTransaction',
             link: '/core/api/actions/getTransaction',
@@ -869,8 +903,24 @@ export function getSidebar() {
             link: '/core/api/actions/readContracts',
           },
           {
+            text: 'sendCalls',
+            link: '/core/api/actions/sendCalls',
+          },
+          {
+            text: 'sendCallsSync',
+            link: '/core/api/actions/sendCallsSync',
+          },
+          {
             text: 'sendTransaction',
             link: '/core/api/actions/sendTransaction',
+          },
+          {
+            text: 'sendTransactionSync',
+            link: '/core/api/actions/sendTransactionSync',
+          },
+          {
+            text: 'showCallsStatus',
+            link: '/core/api/actions/showCallsStatus',
           },
           {
             text: 'signMessage',
@@ -885,12 +935,12 @@ export function getSidebar() {
             link: '/core/api/actions/simulateContract',
           },
           {
-            text: 'switchAccount',
-            link: '/core/api/actions/switchAccount',
-          },
-          {
             text: 'switchChain',
             link: '/core/api/actions/switchChain',
+          },
+          {
+            text: 'switchConnection',
+            link: '/core/api/actions/switchConnection',
           },
           {
             text: 'verifyMessage',
@@ -901,12 +951,12 @@ export function getSidebar() {
             link: '/core/api/actions/verifyTypedData',
           },
           {
-            text: 'waitForTransactionReceipt',
-            link: '/core/api/actions/waitForTransactionReceipt',
+            text: 'waitForCallsStatus',
+            link: '/core/api/actions/waitForCallsStatus',
           },
           {
-            text: 'watchAccount',
-            link: '/core/api/actions/watchAccount',
+            text: 'waitForTransactionReceipt',
+            link: '/core/api/actions/waitForTransactionReceipt',
           },
           {
             text: 'watchAsset',
@@ -927,6 +977,10 @@ export function getSidebar() {
           {
             text: 'watchClient',
             link: '/core/api/actions/watchClient',
+          },
+          {
+            text: 'watchConnection',
+            link: '/core/api/actions/watchConnection',
           },
           {
             text: 'watchConnections',
@@ -967,37 +1021,8 @@ export function getSidebar() {
                 link: '/core/api/utilities/cookieToInitialState',
               },
               { text: 'deserialize', link: '/core/api/utilities/deserialize' },
-              {
-                text: 'normalizeChainId',
-                link: '/core/api/utilities/normalizeChainId',
-              },
               { text: 'serialize', link: '/core/api/utilities/serialize' },
             ],
-          },
-        ],
-      },
-      {
-        text: 'Experimental',
-        items: [
-          {
-            text: 'getCallsStatus',
-            link: '/core/api/actions/getCallsStatus',
-          },
-          {
-            text: 'getCapabilities',
-            link: '/core/api/actions/getCapabilities',
-          },
-          {
-            text: 'sendCalls',
-            link: '/core/api/actions/sendCalls',
-          },
-          {
-            text: 'showCallsStatus',
-            link: '/core/api/actions/showCallsStatus',
-          },
-          {
-            text: 'waitForCallsStatus',
-            link: '/core/api/actions/waitForCallsStatus',
           },
         ],
       },
