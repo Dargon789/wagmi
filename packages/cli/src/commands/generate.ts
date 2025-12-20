@@ -1,22 +1,26 @@
-import { mkdir, writeFile } from 'node:fs/promises'
+import type { Address } from 'abitype'
 import { Abi as AbiSchema } from 'abitype/zod'
 import { camelCase } from 'change-case'
-import type { ChokidarOptions, FSWatcher } from 'chokidar'
+import type { FSWatcher, WatchOptions } from 'chokidar'
 import { watch } from 'chokidar'
 import { default as dedent } from 'dedent'
+import { ensureDir, default as fse } from 'fs-extra'
 import { basename, dirname, resolve } from 'pathe'
 import pc from 'picocolors'
-import { type Abi, type Address, getAddress } from 'viem'
+import { getAddress } from 'viem'
 import { z } from 'zod'
 
-import type { Contract, ContractConfig, Plugin, Watch } from '../config.js'
-import { fromZodError } from '../errors.js'
-import * as logger from '../logger.js'
-import { findConfig } from '../utils/findConfig.js'
-import { format } from '../utils/format.js'
-import { getAddressDocString } from '../utils/getAddressDocString.js'
-import { getIsUsingTypeScript } from '../utils/getIsUsingTypeScript.js'
-import { resolveConfig } from '../utils/resolveConfig.js'
+import { version as packageVersion } from '../../package.json'
+import type { Contract, ContractConfig, Plugin, Watch } from '../config'
+import { fromZodError } from '../errors'
+import * as logger from '../logger'
+import {
+  findConfig,
+  format,
+  getAddressDocString,
+  getIsUsingTypeScript,
+  resolveConfig,
+} from '../utils'
 
 const Generate = z.object({
   /** Path to config file */
@@ -52,12 +56,12 @@ export async function generate(options: Generate = {}) {
   type Watcher = FSWatcher & { config?: Watch }
   const watchers: Watcher[] = []
   const watchWriteDelay = 100
-  const watchOptions = {
+  const watchOptions: WatchOptions = {
     atomic: true,
     // awaitWriteFinish: true,
     ignoreInitial: true,
     persistent: true,
-  } satisfies ChokidarOptions
+  }
 
   const outNames = new Set<string>()
   const isArrayConfig = Array.isArray(resolvedConfigs)
@@ -75,12 +79,12 @@ export async function generate(options: Generate = {}) {
       ...x,
       id: `${x.name}-${i}`,
     }))
-    const spinner = logger.spinner('Validating plugins')
-    spinner.start()
+    const spinner = logger.spinner()
+    spinner.start('Validating plugins')
     for (const plugin of plugins) {
       await plugin.validate?.()
     }
-    spinner.success()
+    spinner.succeed()
 
     // Add plugin contracts to config contracts
     const contractConfigs = config.contracts ?? []
@@ -104,19 +108,16 @@ export async function generate(options: Generate = {}) {
         )
       const contract = await getContract({ ...contractConfig, isTypeScript })
       contractMap.set(contract.name, contract)
-
       contractNames.add(contractConfig.name)
     }
 
-    // Sort contracts by name Ascending (low to high) as the key is `String`
-    const sortedAscContractMap = new Map([...contractMap].sort())
-    const contracts = [...sortedAscContractMap.values()]
+    const contracts = [...contractMap.values()]
     if (!contracts.length && !options.watch) {
-      spinner.error()
+      spinner.fail()
       logger.warn('No contracts found.')
       return
     }
-    spinner.success()
+    spinner.succeed()
 
     // Run plugins
     const imports = []
@@ -124,7 +125,7 @@ export async function generate(options: Generate = {}) {
     const content = []
     type Output = {
       plugin: Pick<Plugin, 'name'>
-    } & Awaited<ReturnType<NonNullable<Plugin['run']>>>
+    } & Awaited<ReturnType<Required<Plugin>['run']>>
     const outputs: Output[] = []
     spinner.start('Running plugins')
     for (const plugin of plugins) {
@@ -143,7 +144,7 @@ export async function generate(options: Generate = {}) {
       result.imports && imports.push(result.imports)
       result.prepend && prepend.push(result.prepend)
     }
-    spinner.success()
+    spinner.succeed()
 
     // Write output to file
     spinner.start(`Writing to ${pc.gray(config.out)}`)
@@ -154,7 +155,7 @@ export async function generate(options: Generate = {}) {
       prepend,
       filename: config.out,
     })
-    spinner.success()
+    spinner.succeed()
 
     if (options.watch) {
       if (!watchConfigs.length) {
@@ -198,9 +199,7 @@ export async function generate(options: Generate = {}) {
             if (timeout) clearTimeout(timeout)
             timeout = setTimeout(async () => {
               timeout = null
-              // Sort contracts by name Ascending (low to high) as the key is `String`
-              const sortedAscContractMap = new Map([...contractMap].sort())
-              const contracts = [...sortedAscContractMap.values()]
+              const contracts = [...contractMap.values()]
               const imports = []
               const prepend = []
               const content = []
@@ -226,10 +225,8 @@ export async function generate(options: Generate = {}) {
                 result.prepend && prepend.push(result.prepend)
               }
 
-              const spinner = logger.spinner(
-                `Writing to ${pc.gray(config.out)}`,
-              )
-              spinner.start()
+              const spinner = logger.spinner()
+              spinner.start(`Writing to ${pc.gray(config.out)}`)
               await writeContracts({
                 content,
                 contracts,
@@ -237,7 +234,7 @@ export async function generate(options: Generate = {}) {
                 prepend,
                 filename: config.out,
               })
-              spinner.success()
+              spinner.succeed()
             }, watchWriteDelay)
             needsWrite = false
           }
@@ -289,9 +286,9 @@ async function getContract({
   isTypeScript,
 }: ContractConfig & { isTypeScript: boolean }): Promise<Contract> {
   const constAssertion = isTypeScript ? ' as const' : ''
-  const abiName = `${camelCase(name)}Abi`
+  const abiName = `${camelCase(name)}ABI`
   try {
-    abi = (await AbiSchema.parseAsync(abi)) as Abi
+    abi = await AbiSchema.parseAsync(abi)
   } catch (error) {
     if (error instanceof z.ZodError)
       throw fromZodError(error, {
@@ -316,7 +313,7 @@ async function getContract({
 
   let meta: Contract['meta'] = { abiName }
   if (address) {
-    let resolvedAddress: Address | Record<number, Address>
+    let resolvedAddress
     try {
       const Address = z
         .string()
@@ -375,6 +372,7 @@ async function writeContracts({
 }) {
   // Assemble code
   let code = dedent`
+    // Generated by @wagmi/cli@${packageVersion} on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}
     ${imports.join('\n\n') ?? ''}
 
     ${prepend.join('\n\n') ?? ''}
@@ -395,9 +393,9 @@ async function writeContracts({
   // Format and write output
   const cwd = process.cwd()
   const outPath = resolve(cwd, filename)
-  await mkdir(dirname(outPath), { recursive: true })
+  await ensureDir(dirname(outPath))
   const formatted = await format(code)
-  await writeFile(outPath, formatted)
+  await fse.writeFile(outPath, formatted)
 }
 
 function getBannerContent({ name }: { name: string }) {
