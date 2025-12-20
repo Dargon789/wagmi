@@ -56,9 +56,7 @@ export function sourcify<chainId extends ChainId>(
       if (!parsed.success)
         throw fromZodError(parsed.error, { prefix: 'Invalid response' })
 
-      if (parsed.data.abi)
-        return parsed.data.abi as ContractConfig['abi']
-      throw new Error('contract not found')
+      return parsed.data.abi as ContractConfig['abi']
     },
     request({ address }) {
       if (!address) throw new Error('address is required')
