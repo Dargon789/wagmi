@@ -55,7 +55,7 @@ jobs:
         uses: wevm/actions/.github/actions/pnpm@main
 
       - name: Build
-        run: pnpm build
+        run: pnpm clean && pnpm build
 
       - name: Publint
         run: pnpm test:build
