@@ -11,10 +11,10 @@
   "dependencies": {
     "@next/bundle-analyzer": "^14.2.3",
     "@tanstack/react-query": "catalog:",
-    "next": "^14.2.32",
+    "next": "^16.0.7",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "viem": "catalog:",
+    "viem": "2.*",
     "wagmi": "workspace:*"
   },
   "devDependencies": {
