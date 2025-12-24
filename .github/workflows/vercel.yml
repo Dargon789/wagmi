@@ -1,26 +1,21 @@
 # This workflow's name will appear on the GitHub Actions page.
-
 name: Deploy to Vercel
 permissions:
   contents: read
 
 # This specifies when the workflow should run.
-
 on:
-
   # The workflow will run on every 'push' to the 'main' branch.
-  
   push:
     branches:
-            - main
+      - master
+      - main
+      - dev
       
   # This allows you to manually trigger the workflow from the GitHub Actions page.
-  
   workflow_dispatch:
-
 # These are environment variables passed to the Vercel CLI.
 # They must be set as GitHub Secrets for security.
-
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -28,9 +23,7 @@ env:
   # Add any other environment variables your project needs here,
   # such as API keys for the Coinbase SDK.
   # Example: VITE_COINBASE_API_KEY: ${{ secrets.VITE_COINBASE_API_KEY }}
-
 # Defines a job named 'deploy'.
-
 jobs:
   deploy:
     # Specifies the runner environment for this job.
@@ -43,7 +36,6 @@ jobs:
       # This is the first essential step to get access to your code.
       - name: Checkout project code
         uses: actions/checkout@v3
-
       # 2. Set up Node.js.
       # The version should match the one in your project.
   steps:

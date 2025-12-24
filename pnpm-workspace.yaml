@@ -24,6 +24,7 @@ catalog:
   '@vitejs/plugin-react': ^4.3.3
   '@vitejs/plugin-vue': 6.0.1
   '@walletconnect/ethereum-provider': 2.21.1
+  buffer: 6.0.3
   nuxt: 4.2.1
   porto: 0.2.35
   react: 19.2.0
@@ -39,14 +40,19 @@ minimumReleaseAgeExclude:
   - '@wagmi/core'
   - '@wagmi/test'
   - '@wagmi/vue'
+  - abitype
+  - ox
   - porto
   - wagmi
+  - viem
 overrides:
   cookie@<0.7.0: 0.7.0
   elliptic@<=6.6.0: '>=6.6.1'
   esbuild@<=0.24.2: 0.25.0
   happy-dom@<20.0.2: '>=20.0.2'
+  mdast-util-to-hast@<13.2.1: '>=13.2.1'
   nanoid@<3.3.8: 3.3.8
+  node-forge@<1.3.2: '>=1.3.2'
   semver@<5.7.2: '>=5.7.2'
   serialize-javascript@>=6.0.0 <6.0.2: 6.0.2
   tar@=7.5.1: '>=7.5.2'

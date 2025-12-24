@@ -1,5 +1,59 @@
 # wagmi
 
+## 3.1.2
+
+### Patch Changes
+
+- Updated dependencies [[`9bbf13e`](https://github.com/wevm/wagmi/commit/9bbf13eac895669e70b233de767c8731d221f16e)]:
+  - @wagmi/connectors@7.0.4
+
+## 3.1.1
+
+### Patch Changes
+
+- Fixed `useReadContract` return type inference for ABI function overloads. ([`058c8c1`](https://github.com/wevm/wagmi/commit/058c8c18459a69a4aa2141e34640273a06a819f4))
+
+- Updated dependencies [[`058c8c1`](https://github.com/wevm/wagmi/commit/058c8c18459a69a4aa2141e34640273a06a819f4)]:
+  - @wagmi/core@3.0.1
+  - @wagmi/connectors@7.0.3
+
+## 3.1.0
+
+### Minor Changes
+
+- Deprecated custom mutate function names and renamed to `mutate`/`mutateAsync` to reduce destructure key renaming fatigue and align with TanStack Query terminology. ([#4878](https://github.com/wevm/wagmi/pull/4878))
+
+  **Before**
+
+  Had to destructure hook result and often rename keys when using multiple of the same hook. Could decide not to destructure, but syntax becomes awkward for mutate functions (e.g. `connect.connect` or `connect.connectAsync`).
+
+  ```ts
+  const { connect, isPending: connectIsPending } = useConnect();
+  const {
+    writeContract: transfer,
+    error: transferError,
+    isPending: transferIsPending,
+  } = useWriteContract();
+  const { writeContract: approve, error: approveError } = useWriteContract();
+  ```
+
+  **After**
+
+  Allows you to name the hook result whatever you want and not worry about also renaming properties.
+
+  ```ts
+  const connect = useConnect(); // connect.isPending
+  const transfer = useWriteContract(); // transfer.mutate, transfer.error, transfer.isPending
+  const approve = useWriteContract(); // approve.mutate, approve.error
+  ```
+
+## 3.0.2
+
+### Patch Changes
+
+- Updated dependencies [[`0a46561`](https://github.com/wevm/wagmi/commit/0a4656137e1f9ed101dd1f79545d516aba32a92e)]:
+  - @wagmi/connectors@7.0.2
+
 ## 3.0.1
 
 ### Patch Changes

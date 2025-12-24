@@ -14,7 +14,7 @@
     "idb-keyval": "^6.2.1",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "viem": "2.*",
+    "viem": "^2.15.1",
     "wagmi": "workspace:*"
   },
   "devDependencies": {
@@ -23,6 +23,7 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@wagmi/cli": "workspace:*",
+    "buffer": "catalog:",
     "vite": "catalog:"
   }
 }

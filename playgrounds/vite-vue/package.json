@@ -10,11 +10,12 @@
   "dependencies": {
     "@tanstack/vue-query": "catalog:",
     "@wagmi/vue": "workspace:*",
-    "viem": "2.*",
+    "viem": "2.15.1",
     "vue": "catalog:"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "catalog:",
+    "buffer": "catalog:",
     "vite": "catalog:",
     "vue-tsc": "3.1.3"
   }
