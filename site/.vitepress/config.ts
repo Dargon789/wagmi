@@ -1,10 +1,11 @@
-import {
-  defaultHoverInfoProcessor,
-  transformerTwoslash,
-} from '@shikijs/vitepress-twoslash'
-import { presetAttributify, presetIcons, presetUno } from 'unocss'
-import Unocss from 'unocss/vite'
+import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
+import unocss from 'unocss/vite'
 import { defineConfig } from 'vitepress'
+import {
+  groupIconMdPlugin,
+  groupIconVitePlugin,
+} from 'vitepress-plugin-group-icons'
+import llmstxt, { copyOrDownloadAsMarkdownButtons } from 'vitepress-plugin-llms'
 
 import { farcasterIcon } from './constants'
 import { getSidebar } from './sidebar'
@@ -46,17 +47,11 @@ export default defineConfig({
   lang: 'en-US',
   lastUpdated: true,
   markdown: {
-    codeTransformers: [
-      transformerTwoslash({
-        processHoverInfo(info) {
-          return (
-            defaultHoverInfoProcessor(info)
-              // Remove shiki_core namespace
-              .replace(/_shikijs_core[\w_]*\./g, '')
-          )
-        },
-      }),
-    ],
+    codeTransformers: [transformerTwoslash()],
+    config(md) {
+      md.use(copyOrDownloadAsMarkdownButtons).use(groupIconMdPlugin)
+    },
+    languages: ['js', 'jsx', 'ts', 'tsx'],
     theme: {
       light: 'vitesse-light',
       dark: 'vitesse-dark',
@@ -80,7 +75,6 @@ export default defineConfig({
     nav: [
       { text: 'React', link: '/react/getting-started' },
       { text: 'Vue', link: '/vue/getting-started' },
-      { text: 'Svelte', link: '/svelte/getting-started' },
       { text: 'Core', link: '/core/getting-started' },
       { text: 'CLI', link: '/cli/getting-started' },
       // { text: 'Examples', link: '/examples/connect-wallet' },
@@ -117,36 +111,19 @@ export default defineConfig({
     sidebar: getSidebar(),
     siteTitle: false,
     socialLinks: [
-      {
-        icon: 'github',
-        link: 'https://github.com/wevm/wagmi',
-      },
-      { icon: 'bluesky', link: 'https://bsky.app/profile/wevm.dev' },
+      { icon: 'github', link: 'https://github.com/wevm/wagmi' },
       { icon: 'x', link: 'https://twitter.com/wevm_dev' },
-      { icon: { svg: farcasterIcon }, link: 'https://warpcast.com/wevm' },
       { icon: 'discord', link: 'https://discord.gg/9zHPXuBpqy' },
+      { icon: 'bluesky', link: 'https://bsky.app/profile/wevm.dev' },
+      { icon: { svg: farcasterIcon }, link: 'https://farcaster.xyz/wevm' },
     ],
   },
   title: 'Wagmi',
   vite: {
     plugins: [
-      Unocss({
-        shortcuts: [
-          [
-            'btn',
-            'px-4 py-1 rounded inline-flex justify-center gap-2 text-white leading-30px children:mya !no-underline cursor-pointer disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50',
-          ],
-        ],
-        presets: [
-          presetUno({
-            dark: 'media',
-          }),
-          presetAttributify(),
-          presetIcons({
-            scale: 1.2,
-          }),
-        ],
-      }),
+      llmstxt({ ignoreFiles: ['shared/'] }),
+      groupIconVitePlugin(),
+      unocss(),
     ],
   },
 })

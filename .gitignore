@@ -1,4 +1,5 @@
 .DS_Store
+.attest
 .next
 .nuxt
 .pnpm-debug.log*
@@ -17,10 +18,6 @@ tsconfig.tsbuildinfo
 .env.production.local
 .envrc
 
-# Vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
-
 # proxy packages
 packages/cli/config
 packages/cli/plugins
@@ -35,12 +32,11 @@ packages/react/chains
 packages/react/codegen
 packages/react/connectors
 packages/react/experimental
+packages/react/internal
 packages/react/query
 packages/vue/actions
 packages/vue/chains
 packages/vue/connectors
+packages/vue/internal
 packages/vue/nuxt
 packages/vue/query
-packages/svelte/.svelte-kit
-packages/svelte/.output
-

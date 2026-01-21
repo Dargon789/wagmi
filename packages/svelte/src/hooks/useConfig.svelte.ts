@@ -1,7 +1,7 @@
 import type { Config, ResolvedRegister } from '@wagmi/core'
 
-import { getWagmiConfig } from '../context.js'
-import { WagmiProviderNotFoundError } from '../errors.js'
+import { getWagmiConfig } from '$lib/context.js'
+import { WagmiProviderNotFoundError } from '$lib/errors.js'
 import type {
   ConfigParameter,
   RuneParameters,
