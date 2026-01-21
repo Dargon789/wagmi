@@ -1,53 +1,57 @@
 import { setupServer } from 'msw/node'
-import { afterAll, afterEach, beforeAll, expect, test } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 
+import { blockExplorer } from './blockExplorer'
 import {
   address,
   apiKey,
   baseUrl,
   handlers,
   unverifiedContractAddress,
-} from '../../test/utils.js'
-import { blockExplorer } from './blockExplorer.js'
+} from './fetch.test'
 
 const server = setupServer(...handlers)
 
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
+describe('blockExplorer', () => {
+  beforeAll(() => server.listen())
+  afterEach(() => server.resetHandlers())
+  afterAll(() => server.close())
 
-test('fetches ABI', () => {
-  expect(
-    blockExplorer({
-      apiKey,
-      baseUrl,
-      contracts: [{ name: 'WagmiMintExample', address }],
-    }).contracts!(),
-  ).resolves.toMatchSnapshot()
-})
+  describe('contracts', () => {
+    it('fetches ABI', async () => {
+      await expect(
+        blockExplorer({
+          apiKey,
+          baseUrl,
+          contracts: [{ name: 'WagmiMintExample', address }],
+        }).contracts!(),
+      ).resolves.toMatchSnapshot()
+    })
 
-test('fetches ABI with multichain deployment', () => {
-  expect(
-    blockExplorer({
-      apiKey,
-      baseUrl,
-      contracts: [
-        { name: 'WagmiMintExample', address: { 1: address, 10: address } },
-      ],
-    }).contracts?.(),
-  ).resolves.toMatchSnapshot()
-})
+    it('fetches ABI with multichain deployment', async () => {
+      await expect(
+        blockExplorer({
+          apiKey,
+          baseUrl,
+          contracts: [
+            { name: 'WagmiMintExample', address: { 1: address, 10: address } },
+          ],
+        }).contracts(),
+      ).resolves.toMatchSnapshot()
+    })
 
-test('fails to fetch for unverified contract', () => {
-  expect(
-    blockExplorer({
-      apiKey,
-      baseUrl,
-      contracts: [
-        { name: 'WagmiMintExample', address: unverifiedContractAddress },
-      ],
-    }).contracts?.(),
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    '[Error: Contract source code not verified]',
-  )
+    it('fails to fetch for unverified contract', async () => {
+      await expect(
+        blockExplorer({
+          apiKey,
+          baseUrl,
+          contracts: [
+            { name: 'WagmiMintExample', address: unverifiedContractAddress },
+          ],
+        }).contracts(),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        '"Contract source code not verified"',
+      )
+    })
+  })
 })

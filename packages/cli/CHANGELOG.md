@@ -1,5 +1,19 @@
 # @wagmi/cli
 
+## 2.2.1
+
+### Patch Changes
+
+- [`7b0dbe3886c1a7c6dbbdab945d7436ec20ad8f93`](https://github.com/wevm/wagmi/commit/7b0dbe3886c1a7c6dbbdab945d7436ec20ad8f93) Thanks [@tmm](https://github.com/tmm)! - Updated block explorer chains.
+
+## 2.2.0
+
+### Minor Changes
+
+- [#4503](https://github.com/wevm/wagmi/pull/4503) [`8fce8a6f97aa2ee5fd1bda6a3ece422b10324b5a`](https://github.com/wevm/wagmi/commit/8fce8a6f97aa2ee5fd1bda6a3ece422b10324b5a) Thanks [@tmm](https://github.com/tmm)! - Updated Etherscan Plugin to use Etherscan API v2.
+
+- [#4507](https://github.com/wevm/wagmi/pull/4507) [`6f09cc57935891e1c67d6df3459f6998985c69dc`](https://github.com/wevm/wagmi/commit/6f09cc57935891e1c67d6df3459f6998985c69dc) Thanks [@tmm](https://github.com/tmm)! - Added `tryFetchProxyImplementation` flag to Etherscan Plugin to enable fetching the implementation ABI instead of the proxy ABI.
+
 ## 2.1.22
 
 ### Patch Changes

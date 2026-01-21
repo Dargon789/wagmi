@@ -117,7 +117,7 @@ By registering or using the hook `config` property, `useBlockNumber`'s `chainId`
 
 ### Add Plugin to App
 
-App the `WagmiPlugin` to your app instance and pass the `config` you created earlier to the plugin options.
+Add the `WagmiPlugin` to your app instance and pass the `config` you created earlier to the plugin options.
 
 ::: code-group
 ```tsx [main.ts]
@@ -165,7 +165,7 @@ createApp(App)
 <<< @/snippets/vue/config.ts[config.ts]
 :::
 
-Check out the [TanStack Query docs](https://tanstack.com/query/latest/docs/framework/vue) to learn about the library, APIs, and more.
+Check out the [TanStack Query docs](https://tanstack.com/query/latest/docs/framework/vue/overview) to learn about the library, APIs, and more.
 
 ### Use Wagmi
 
@@ -174,9 +174,9 @@ Now that everything is set up, every component inside your app can use Wagmi Vue
 ::: code-group
 ```vue [App.vue]
 <script setup lang="ts">
-import { useAccount, useEnsName } from '@wagmi/vue'
+import { useConnection, useEnsName } from '@wagmi/vue'
 
-const { address } = useAccount()
+const { address } = useConnection()
 const { data, error, status } = useEnsName({ address })
 </script>
 

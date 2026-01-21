@@ -52,19 +52,14 @@ export function useSponsors() {
           img: 'zksync-light.svg',
         },
         {
-          name: 'Brave',
-          url: 'https://brave.com',
-          img: 'brave-light.svg',
-        },
-        {
           name: 'Linea',
           url: 'https://linea.build',
           img: 'linea-light.svg',
         },
         {
-          name: 'Routescan',
-          url: 'https://routescan.io',
-          img: 'routescan-light.svg',
+          name: 'Gemini',
+          url: 'https://gemini.com',
+          img: 'gemini-light.svg',
         },
       ],
       silver: [
@@ -164,14 +159,19 @@ export function useSponsors() {
           img: 'thirdweb-light.svg',
         },
         {
-          name: 'Uxuy',
-          url: 'https://uxuy.com',
-          img: 'uxuy-light.svg',
-        },
-        {
           name: 'Polymarket',
           url: 'https://polymarket.com',
           img: 'polymarket-light.svg',
+        },
+        {
+          name: 'Sequence',
+          url: 'https://sequence.xyz',
+          img: 'sequence-light.svg',
+        },
+        {
+          name: 'Routescan',
+          url: 'https://routescan.io',
+          img: 'routescan-light.svg',
         },
       ],
     }

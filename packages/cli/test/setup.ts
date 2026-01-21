@@ -1,43 +1,39 @@
-import { mkdir } from 'node:fs/promises'
-import { homedir } from 'node:os'
-import type { createSpinner as nanospinner_createSpinner } from 'nanospinner'
-import { join } from 'pathe'
+import { resolve } from 'pathe'
 import { vi } from 'vitest'
 
-const cacheDir = join(homedir(), '.wagmi-cli/plugins/fetch/cache')
-await mkdir(cacheDir, { recursive: true })
+const cliPath = resolve(process.cwd(), 'packages/cli/src/')
+const cliPluginsPath = resolve(process.cwd(), 'packages/cli/src/plugins')
+const chainsPath = resolve(process.cwd(), 'references/packages/chains/src')
 
-vi.mock('nanospinner', async (importOriginal) => {
-  const mod = await importOriginal<{
-    createSpinner: typeof nanospinner_createSpinner
-  }>()
+vi.mock('@wagmi/cli', async () => vi.importActual(cliPath))
+vi.mock('@wagmi/cli/plugins', async () => vi.importActual(cliPluginsPath))
+vi.mock('@wagmi/chains', async () => vi.importActual(chainsPath))
 
-  function createSpinner(
-    initialText: string,
-    opts: Parameters<typeof nanospinner_createSpinner>[1],
-  ) {
-    let currentText = ''
-    const spinner = mod.createSpinner(initialText, opts)
-    return {
-      ...spinner,
-      start(text = initialText) {
-        // biome-ignore lint/suspicious/noConsoleLog: console.log is used for logging
+vi.mock('ora', async () => {
+  function ora() {
+    class Ora {
+      #text: string | undefined
+
+      start(text: string | undefined = 'start') {
         console.log(`- ${text}`)
-        spinner.start(text)
-        currentText = text
-      },
-      success(text = currentText) {
-        // biome-ignore lint/suspicious/noConsoleLog: console.log is used for logging
-        console.log(`√ ${text}`)
-        spinner.success(text)
-      },
-      error(text = currentText) {
-        console.error(`× ${text}`)
-        spinner.error(text)
-      },
+        this.#text = text
+      }
+
+      succeed(text: string | undefined = this.#text ?? 'succeed') {
+        console.log(`✔ ${text}`)
+        this.#text = undefined
+      }
+
+      fail(text: string | undefined = this.#text ?? 'fail') {
+        console.error(`✖ ${text}`)
+        this.#text = undefined
+      }
     }
+    return new Ora()
   }
-  return { createSpinner }
+  return {
+    default: ora,
+  }
 })
 
 vi.mock('picocolors', async () => {
@@ -53,5 +49,29 @@ vi.mock('picocolors', async () => {
       white: pass,
       yellow: pass,
     },
+  }
+})
+
+vi.mock('picocolors', async () => {
+  function pass(input: string | number | null | undefined) {
+    return input
+  }
+  return {
+    default: {
+      blue: pass,
+      gray: pass,
+      green: pass,
+      red: pass,
+      white: pass,
+      yellow: pass,
+    },
+  }
+})
+
+vi.mock('../package.json', async () => {
+  const packageJson = vi.importActual('../package.json')
+  return {
+    ...packageJson,
+    version: 'x.y.z',
   }
 })

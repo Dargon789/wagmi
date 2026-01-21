@@ -7,11 +7,10 @@ import type {
 import {
   ChainNotConfiguredError,
   type Connector,
-  ProviderNotFoundError,
   createConnector,
   extractRpcUrls,
+  ProviderNotFoundError,
 } from '@wagmi/core'
-import type { linea, lineaSepolia, mainnet, sepolia } from '@wagmi/core/chains'
 import type {
   Compute,
   ExactPartial,
@@ -22,15 +21,16 @@ import type {
 import {
   type AddEthereumChainParameter,
   type Address,
+  getAddress,
   type Hex,
+  hexToNumber,
+  numberToHex,
   type ProviderConnectInfo,
+  type ProviderRpcError,
   ResourceUnavailableRpcError,
   type RpcError,
   SwitchChainError,
   UserRejectedRequestError,
-  getAddress,
-  hexToNumber,
-  numberToHex,
   withRetry,
   withTimeout,
 } from 'viem'
@@ -61,16 +61,7 @@ type WagmiMetaMaskSDKOptions = Compute<
       | 'useDeeplink'
       | 'readonlyRPCMap'
     >
-  > & {
-    /** @deprecated */
-    forceDeleteProvider?: MetaMaskSDKOptions['forceDeleteProvider']
-    /** @deprecated */
-    forceInjectProvider?: MetaMaskSDKOptions['forceInjectProvider']
-    /** @deprecated */
-    injectProvider?: MetaMaskSDKOptions['injectProvider']
-    /** @deprecated */
-    useDeeplink?: MetaMaskSDKOptions['useDeeplink']
-  }
+  >
 >
 
 metaMask.type = 'metaMask' as const
@@ -113,7 +104,7 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
         }
       }
     },
-    async connect({ chainId, isReconnecting } = {}) {
+    async connect({ chainId, isReconnecting, withCapabilities } = {}) {
       const provider = await this.getProvider()
       if (!displayUri) {
         displayUri = this.onDisplayUri
@@ -191,7 +182,13 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
           provider.on('disconnect', disconnect as Listener)
         }
 
-        return { accounts, chainId: currentChainId }
+        return {
+          // TODO(v3): Make `withCapabilities: true` default behavior
+          accounts: (withCapabilities
+            ? accounts.map((address) => ({ address, capabilities: {} }))
+            : accounts) as never,
+          chainId: currentChainId,
+        }
       } catch (err) {
         const error = err as RpcError
         if (error.code === UserRejectedRequestError.code)
@@ -239,7 +236,14 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
         // Unwrapping import for Vite compatibility.
         // See: https://github.com/vitejs/vite/issues/9703
         const MetaMaskSDK = await (async () => {
-          const { default: SDK } = await import('@metamask/sdk')
+          const { default: SDK } = await (() => {
+            // safe webpack optional peer dependency dynamic import
+            try {
+              return import('@metamask/sdk')
+            } catch {
+              throw new Error('dependency "@metamask/sdk" not found')
+            }
+          })()
           if (typeof SDK !== 'function' && typeof SDK.default === 'function')
             return SDK.default
           return SDK as unknown as typeof SDK.default
@@ -253,12 +257,12 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
           })?.[0]
 
         sdk = new MetaMaskSDK({
+          // Workaround cast since MetaMask SDK does not support `'exactOptionalPropertyTypes'`
+          ...(parameters as RemoveUndefined<typeof parameters>),
           _source: 'wagmi',
           forceDeleteProvider: false,
           forceInjectProvider: false,
           injectProvider: false,
-          // Workaround cast since MetaMask SDK does not support `'exactOptionalPropertyTypes'`
-          ...(parameters as RemoveUndefined<typeof parameters>),
           readonlyRPCMap,
           dappMetadata: {
             ...parameters.dappMetadata,
@@ -272,7 +276,7 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
                 ? window.location.origin
                 : 'https://wagmi.sh',
           },
-          useDeeplink: parameters.useDeeplink ?? true,
+          useDeeplink: true,
         })
         const result = await sdk.init()
         // On initial load, sometimes `sdk.getProvider` does not return provider.
@@ -315,57 +319,11 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
       const chain = config.chains.find((x) => x.id === chainId)
       if (!chain) throw new SwitchChainError(new ChainNotConfiguredError())
 
-      // Default chains cannot be added or removed
-      const isDefaultChain = (() => {
-        const metaMaskDefaultChains = [
-          1, 11_155_111, 59_144, 59_141,
-        ] satisfies [
-          typeof mainnet.id,
-          typeof sepolia.id,
-          typeof linea.id,
-          typeof lineaSepolia.id,
-        ]
-        return metaMaskDefaultChains.find((x) => x === chainId)
-      })()
-
-      // Avoid back and forth on mobile by using `'wallet_addEthereumChain'` for non-default chains
       try {
-        if (!isDefaultChain)
-          await provider.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                blockExplorerUrls: (() => {
-                  const { default: blockExplorer, ...blockExplorers } =
-                    chain.blockExplorers ?? {}
-                  if (addEthereumChainParameter?.blockExplorerUrls)
-                    return addEthereumChainParameter.blockExplorerUrls
-                  if (blockExplorer)
-                    return [
-                      blockExplorer.url,
-                      ...Object.values(blockExplorers).map((x) => x.url),
-                    ]
-                  return
-                })(),
-                chainId: numberToHex(chainId),
-                chainName: addEthereumChainParameter?.chainName ?? chain.name,
-                iconUrls: addEthereumChainParameter?.iconUrls,
-                nativeCurrency:
-                  addEthereumChainParameter?.nativeCurrency ??
-                  chain.nativeCurrency,
-                rpcUrls: (() => {
-                  if (addEthereumChainParameter?.rpcUrls?.length)
-                    return addEthereumChainParameter.rpcUrls
-                  return [chain.rpcUrls.default?.http[0] ?? '']
-                })(),
-              } satisfies AddEthereumChainParameter,
-            ],
-          })
-        else
-          await provider.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: numberToHex(chainId) }],
-          })
+        await provider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: numberToHex(chainId) }],
+        })
 
         // During `'wallet_switchEthereumChain'`, MetaMask makes a `'net_version'` RPC call to the target chain.
         // If this request fails, MetaMask does not emit the `'chainChanged'` event, but will still switch the chain.
@@ -375,46 +333,100 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
         await waitForChainIdToSync()
         await sendAndWaitForChangeEvent(chainId)
 
-        async function waitForChainIdToSync() {
-          // On mobile, there is a race condition between the result of `'wallet_addEthereumChain'` and `'eth_chainId'`.
-          // To avoid this, we wait for `'eth_chainId'` to return the expected chain ID with a retry loop.
-          await withRetry(
-            async () => {
-              const value = hexToNumber(
-                // `'eth_chainId'` is cached by the MetaMask SDK side to avoid unnecessary deeplinks
-                (await provider.request({ method: 'eth_chainId' })) as Hex,
-              )
-              // `value` doesn't match expected `chainId`, throw to trigger retry
-              if (value !== chainId)
-                throw new Error('User rejected switch after adding network.')
-              return value
-            },
-            {
-              delay: 50,
-              retryCount: 20, // android device encryption is slower
-            },
-          )
-        }
-
-        async function sendAndWaitForChangeEvent(chainId: number) {
-          await new Promise<void>((resolve) => {
-            const listener = ((data) => {
-              if ('chainId' in data && data.chainId === chainId) {
-                config.emitter.off('change', listener)
-                resolve()
-              }
-            }) satisfies Parameters<typeof config.emitter.on>[1]
-            config.emitter.on('change', listener)
-            config.emitter.emit('change', { chainId })
-          })
-        }
-
         return chain
       } catch (err) {
         const error = err as RpcError
+
         if (error.code === UserRejectedRequestError.code)
           throw new UserRejectedRequestError(error)
+
+        // Indicates chain is not added to provider
+        if (
+          error.code === 4902 ||
+          // Unwrapping for MetaMask Mobile
+          // https://github.com/MetaMask/metamask-mobile/issues/2944#issuecomment-976988719
+          (error as ProviderRpcError<{ originalError?: { code: number } }>)
+            ?.data?.originalError?.code === 4902
+        ) {
+          try {
+            await provider.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  blockExplorerUrls: (() => {
+                    const { default: blockExplorer, ...blockExplorers } =
+                      chain.blockExplorers ?? {}
+                    if (addEthereumChainParameter?.blockExplorerUrls)
+                      return addEthereumChainParameter.blockExplorerUrls
+                    if (blockExplorer)
+                      return [
+                        blockExplorer.url,
+                        ...Object.values(blockExplorers).map((x) => x.url),
+                      ]
+                    return
+                  })(),
+                  chainId: numberToHex(chainId),
+                  chainName: addEthereumChainParameter?.chainName ?? chain.name,
+                  iconUrls: addEthereumChainParameter?.iconUrls,
+                  nativeCurrency:
+                    addEthereumChainParameter?.nativeCurrency ??
+                    chain.nativeCurrency,
+                  rpcUrls: (() => {
+                    if (addEthereumChainParameter?.rpcUrls?.length)
+                      return addEthereumChainParameter.rpcUrls
+                    return [chain.rpcUrls.default?.http[0] ?? '']
+                  })(),
+                } satisfies AddEthereumChainParameter,
+              ],
+            })
+
+            await waitForChainIdToSync()
+            await sendAndWaitForChangeEvent(chainId)
+
+            return chain
+          } catch (err) {
+            const error = err as RpcError
+            if (error.code === UserRejectedRequestError.code)
+              throw new UserRejectedRequestError(error)
+            throw new SwitchChainError(error)
+          }
+        }
+
         throw new SwitchChainError(error)
+      }
+
+      async function waitForChainIdToSync() {
+        // On mobile, there is a race condition between the result of `'wallet_addEthereumChain'` and `'eth_chainId'`.
+        // To avoid this, we wait for `'eth_chainId'` to return the expected chain ID with a retry loop.
+        await withRetry(
+          async () => {
+            const value = hexToNumber(
+              // `'eth_chainId'` is cached by the MetaMask SDK side to avoid unnecessary deeplinks
+              (await provider.request({ method: 'eth_chainId' })) as Hex,
+            )
+            // `value` doesn't match expected `chainId`, throw to trigger retry
+            if (value !== chainId)
+              throw new Error('User rejected switch after adding network.')
+            return value
+          },
+          {
+            delay: 50,
+            retryCount: 20, // android device encryption is slower
+          },
+        )
+      }
+
+      async function sendAndWaitForChangeEvent(chainId: number) {
+        await new Promise<void>((resolve) => {
+          const listener = ((data) => {
+            if ('chainId' in data && data.chainId === chainId) {
+              config.emitter.off('change', listener)
+              resolve()
+            }
+          }) satisfies Parameters<typeof config.emitter.on>[1]
+          config.emitter.on('change', listener)
+          config.emitter.emit('change', { chainId })
+        })
       }
     },
     async onAccountsChanged(accounts) {

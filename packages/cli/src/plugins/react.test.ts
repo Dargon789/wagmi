@@ -1,10 +1,161 @@
-import { erc20Abi } from 'viem'
-import { expect, test } from 'vitest'
+import dedent from 'dedent'
+import { default as fse } from 'fs-extra'
+import { describe, expect, it } from 'vitest'
 
-import { react } from './react.js'
+import { createFixture, typecheck, wagmiAbi } from '../../test'
+import { format } from '../utils'
+import { react } from './react'
 
-test('default', async () => {
-  const result = await react().run?.({
+describe('react', () => {
+  describe('run', () => {
+    it(
+      'with TypeScript',
+      async () => {
+        const { imports, content } = await react().run({
+          contracts: [
+            {
+              name: 'Wagmi',
+              abi: wagmiAbi,
+              content: '',
+              meta: {
+                abiName: 'wagmiAbi',
+                configName: 'wagmiConfig',
+              },
+            },
+          ],
+          isTypeScript: true,
+          outputs: [],
+        })
+        await expect(
+          format(`${imports}\n\n${content}`),
+        ).resolves.toMatchSnapshot()
+
+        const { paths } = await createFixture({
+          copyNodeModules: true,
+          files: {
+            tsconfig: true,
+            'generated.ts': dedent`
+              ${imports}
+
+              export const wagmiAbi = ${JSON.stringify(wagmiAbi)} as const
+
+              ${content}
+            `,
+            'index.ts': dedent`
+              import { BigNumber } from '@ethersproject/bignumber'
+              import { usePrepareWagmiWrite, useWagmiWrite } from './generated'
+    
+              const { config } = usePrepareWagmiWrite({
+                functionName: 'approve',
+                args: ['0xA0Cf798816D4b9b9866b5330EEa46a18382f251e', BigNumber.from('123')],
+              })
+              const { write: preparedWrite } = useWagmiWrite(config)
+              preparedWrite?.()
+              
+              const { write: unpreparedWrite } = useWagmiWrite({
+                mode: 'recklesslyUnprepared',
+                functionName: 'approve',
+              })
+              unpreparedWrite({
+                recklesslySetUnpreparedArgs: ['0xA0Cf798816D4b9b9866b5330EEa46a18382f251e', BigNumber.from('123')],
+              })
+            `,
+          },
+        })
+
+        const tsconfig = await fse.readJSON(paths.tsconfig)
+        await fse.writeJSON(paths.tsconfig, {
+          ...tsconfig,
+          include: [paths['generated.ts'], paths['index.ts']],
+        })
+
+        await expect(typecheck(paths.tsconfig)).resolves.toMatchInlineSnapshot(
+          '""',
+        )
+      },
+      {
+        timeout: 20_000,
+      },
+    )
+
+    it('without TypeScript', async () => {
+      const { imports, content } = await react().run({
+        contracts: [
+          {
+            name: 'Wagmi',
+            address: '0xaf0326d92b97df1221759476b072abfd8084f9be',
+            abi: wagmiAbi,
+            content: '',
+            meta: {
+              abiName: 'wagmiAbi',
+              addressName: 'wagmiAddress',
+              configName: 'wagmiConfig',
+            },
+          },
+        ],
+        isTypeScript: false,
+        outputs: [],
+      })
+      await expect(
+        format(`${imports}\n\n${content}`),
+      ).resolves.toMatchSnapshot()
+    })
+
+    it('throws for duplicate hook names', async () => {
+      await expect(
+        react().run({
+          contracts: [
+            {
+              name: 'Inventory',
+              address: '0xaf0326d92b97df1221759476b072abfd8084f9be',
+              abi: [
+                {
+                  name: 'cardsCollection',
+                  type: 'function',
+                  stateMutability: 'view',
+                  outputs: [{ type: 'string' }],
+                  inputs: [],
+                },
+              ],
+              content: '',
+              meta: {
+                abiName: 'inventoryAbi',
+                addressName: 'inventoryAddress',
+                configName: 'inventoryConfig',
+              },
+            },
+            {
+              name: 'InventoryCardsCollection',
+              address: '0xA0Cf798816D4b9b9866b5330EEa46a18382f251e',
+              abi: [
+                {
+                  name: 'foo',
+                  type: 'function',
+                  stateMutability: 'view',
+                  outputs: [{ type: 'address' }],
+                  inputs: [],
+                },
+              ],
+              content: '',
+              meta: {
+                abiName: 'inventoryCardsCollectionAbi',
+                addressName: 'inventoryCardsCollectionAddress',
+                configName: 'inventoryCardsCollectionConfig',
+              },
+            },
+          ],
+          isTypeScript: false,
+          outputs: [],
+        }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        '"Hook name \\"useInventoryCardsCollection\\" must be unique for contract \\"InventoryCardsCollection\\"."',
+      )
+    })
+  })
+})
+
+test('abi item hooks disabled', async () => {
+  const result = await react({ abiItemHooks: false }).run?.({
     contracts: [
       {
         name: 'erc20',
@@ -30,54 +181,9 @@ test('default', async () => {
     export const useReadErc20 = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi })
 
     /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"allowance"\`
-     */
-    export const useReadErc20Allowance = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, functionName: 'allowance' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"balanceOf"\`
-     */
-    export const useReadErc20BalanceOf = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, functionName: 'balanceOf' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"decimals"\`
-     */
-    export const useReadErc20Decimals = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, functionName: 'decimals' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"name"\`
-     */
-    export const useReadErc20Name = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, functionName: 'name' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"symbol"\`
-     */
-    export const useReadErc20Symbol = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, functionName: 'symbol' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"totalSupply"\`
-     */
-    export const useReadErc20TotalSupply = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, functionName: 'totalSupply' })
-
-    /**
      * Wraps __{@link useWriteContract}__ with \`abi\` set to __{@link erc20Abi}__
      */
     export const useWriteErc20 = /*#__PURE__*/ createUseWriteContract({ abi: erc20Abi })
-
-    /**
-     * Wraps __{@link useWriteContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"approve"\`
-     */
-    export const useWriteErc20Approve = /*#__PURE__*/ createUseWriteContract({ abi: erc20Abi, functionName: 'approve' })
-
-    /**
-     * Wraps __{@link useWriteContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"transfer"\`
-     */
-    export const useWriteErc20Transfer = /*#__PURE__*/ createUseWriteContract({ abi: erc20Abi, functionName: 'transfer' })
-
-    /**
-     * Wraps __{@link useWriteContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"transferFrom"\`
-     */
-    export const useWriteErc20TransferFrom = /*#__PURE__*/ createUseWriteContract({ abi: erc20Abi, functionName: 'transferFrom' })
 
     /**
      * Wraps __{@link useSimulateContract}__ with \`abi\` set to __{@link erc20Abi}__
@@ -85,253 +191,8 @@ test('default', async () => {
     export const useSimulateErc20 = /*#__PURE__*/ createUseSimulateContract({ abi: erc20Abi })
 
     /**
-     * Wraps __{@link useSimulateContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"approve"\`
-     */
-    export const useSimulateErc20Approve = /*#__PURE__*/ createUseSimulateContract({ abi: erc20Abi, functionName: 'approve' })
-
-    /**
-     * Wraps __{@link useSimulateContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"transfer"\`
-     */
-    export const useSimulateErc20Transfer = /*#__PURE__*/ createUseSimulateContract({ abi: erc20Abi, functionName: 'transfer' })
-
-    /**
-     * Wraps __{@link useSimulateContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"transferFrom"\`
-     */
-    export const useSimulateErc20TransferFrom = /*#__PURE__*/ createUseSimulateContract({ abi: erc20Abi, functionName: 'transferFrom' })
-
-    /**
      * Wraps __{@link useWatchContractEvent}__ with \`abi\` set to __{@link erc20Abi}__
      */
-    export const useWatchErc20Event = /*#__PURE__*/ createUseWatchContractEvent({ abi: erc20Abi })
-
-    /**
-     * Wraps __{@link useWatchContractEvent}__ with \`abi\` set to __{@link erc20Abi}__ and \`eventName\` set to \`"Approval"\`
-     */
-    export const useWatchErc20ApprovalEvent = /*#__PURE__*/ createUseWatchContractEvent({ abi: erc20Abi, eventName: 'Approval' })
-
-    /**
-     * Wraps __{@link useWatchContractEvent}__ with \`abi\` set to __{@link erc20Abi}__ and \`eventName\` set to \`"Transfer"\`
-     */
-    export const useWatchErc20TransferEvent = /*#__PURE__*/ createUseWatchContractEvent({ abi: erc20Abi, eventName: 'Transfer' })"
-  `)
-})
-
-test('address', async () => {
-  const result = await react().run?.({
-    contracts: [
-      {
-        name: 'erc20',
-        abi: erc20Abi,
-        content: '',
-        meta: {
-          abiName: 'erc20Abi',
-          addressName: 'erc20Address',
-        },
-      },
-    ],
-    isTypeScript: true,
-    outputs: [],
-  })
-
-  expect(result?.content).toMatchInlineSnapshot(`
-    "/**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__
-     */
-    export const useReadErc20 = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"allowance"\`
-     */
-    export const useReadErc20Allowance = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address, functionName: 'allowance' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"balanceOf"\`
-     */
-    export const useReadErc20BalanceOf = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address, functionName: 'balanceOf' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"decimals"\`
-     */
-    export const useReadErc20Decimals = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address, functionName: 'decimals' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"name"\`
-     */
-    export const useReadErc20Name = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address, functionName: 'name' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"symbol"\`
-     */
-    export const useReadErc20Symbol = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address, functionName: 'symbol' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"totalSupply"\`
-     */
-    export const useReadErc20TotalSupply = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address, functionName: 'totalSupply' })
-
-    /**
-     * Wraps __{@link useWriteContract}__ with \`abi\` set to __{@link erc20Abi}__
-     */
-    export const useWriteErc20 = /*#__PURE__*/ createUseWriteContract({ abi: erc20Abi, address: erc20Address })
-
-    /**
-     * Wraps __{@link useWriteContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"approve"\`
-     */
-    export const useWriteErc20Approve = /*#__PURE__*/ createUseWriteContract({ abi: erc20Abi, address: erc20Address, functionName: 'approve' })
-
-    /**
-     * Wraps __{@link useWriteContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"transfer"\`
-     */
-    export const useWriteErc20Transfer = /*#__PURE__*/ createUseWriteContract({ abi: erc20Abi, address: erc20Address, functionName: 'transfer' })
-
-    /**
-     * Wraps __{@link useWriteContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"transferFrom"\`
-     */
-    export const useWriteErc20TransferFrom = /*#__PURE__*/ createUseWriteContract({ abi: erc20Abi, address: erc20Address, functionName: 'transferFrom' })
-
-    /**
-     * Wraps __{@link useSimulateContract}__ with \`abi\` set to __{@link erc20Abi}__
-     */
-    export const useSimulateErc20 = /*#__PURE__*/ createUseSimulateContract({ abi: erc20Abi, address: erc20Address })
-
-    /**
-     * Wraps __{@link useSimulateContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"approve"\`
-     */
-    export const useSimulateErc20Approve = /*#__PURE__*/ createUseSimulateContract({ abi: erc20Abi, address: erc20Address, functionName: 'approve' })
-
-    /**
-     * Wraps __{@link useSimulateContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"transfer"\`
-     */
-    export const useSimulateErc20Transfer = /*#__PURE__*/ createUseSimulateContract({ abi: erc20Abi, address: erc20Address, functionName: 'transfer' })
-
-    /**
-     * Wraps __{@link useSimulateContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"transferFrom"\`
-     */
-    export const useSimulateErc20TransferFrom = /*#__PURE__*/ createUseSimulateContract({ abi: erc20Abi, address: erc20Address, functionName: 'transferFrom' })
-
-    /**
-     * Wraps __{@link useWatchContractEvent}__ with \`abi\` set to __{@link erc20Abi}__
-     */
-    export const useWatchErc20Event = /*#__PURE__*/ createUseWatchContractEvent({ abi: erc20Abi, address: erc20Address })
-
-    /**
-     * Wraps __{@link useWatchContractEvent}__ with \`abi\` set to __{@link erc20Abi}__ and \`eventName\` set to \`"Approval"\`
-     */
-    export const useWatchErc20ApprovalEvent = /*#__PURE__*/ createUseWatchContractEvent({ abi: erc20Abi, address: erc20Address, eventName: 'Approval' })
-
-    /**
-     * Wraps __{@link useWatchContractEvent}__ with \`abi\` set to __{@link erc20Abi}__ and \`eventName\` set to \`"Transfer"\`
-     */
-    export const useWatchErc20TransferEvent = /*#__PURE__*/ createUseWatchContractEvent({ abi: erc20Abi, address: erc20Address, eventName: 'Transfer' })"
-  `)
-})
-
-test('legacy hook names', async () => {
-  const result = await react({ getHookName: 'legacy' }).run?.({
-    contracts: [
-      {
-        name: 'erc20',
-        abi: erc20Abi,
-        content: '',
-        meta: {
-          abiName: 'erc20Abi',
-          addressName: 'erc20Address',
-        },
-      },
-    ],
-    isTypeScript: true,
-    outputs: [],
-  })
-
-  expect(result?.content).toMatchInlineSnapshot(`
-    "/**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__
-     */
-    export const useErc20Read = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"allowance"\`
-     */
-    export const useErc20Allowance = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address, functionName: 'allowance' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"balanceOf"\`
-     */
-    export const useErc20BalanceOf = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address, functionName: 'balanceOf' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"decimals"\`
-     */
-    export const useErc20Decimals = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address, functionName: 'decimals' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"name"\`
-     */
-    export const useErc20Name = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address, functionName: 'name' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"symbol"\`
-     */
-    export const useErc20Symbol = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address, functionName: 'symbol' })
-
-    /**
-     * Wraps __{@link useReadContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"totalSupply"\`
-     */
-    export const useErc20TotalSupply = /*#__PURE__*/ createUseReadContract({ abi: erc20Abi, address: erc20Address, functionName: 'totalSupply' })
-
-    /**
-     * Wraps __{@link useWriteContract}__ with \`abi\` set to __{@link erc20Abi}__
-     */
-    export const useErc20Write = /*#__PURE__*/ createUseWriteContract({ abi: erc20Abi, address: erc20Address })
-
-    /**
-     * Wraps __{@link useWriteContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"approve"\`
-     */
-    export const useErc20Approve = /*#__PURE__*/ createUseWriteContract({ abi: erc20Abi, address: erc20Address, functionName: 'approve' })
-
-    /**
-     * Wraps __{@link useWriteContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"transfer"\`
-     */
-    export const useErc20Transfer = /*#__PURE__*/ createUseWriteContract({ abi: erc20Abi, address: erc20Address, functionName: 'transfer' })
-
-    /**
-     * Wraps __{@link useWriteContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"transferFrom"\`
-     */
-    export const useErc20TransferFrom = /*#__PURE__*/ createUseWriteContract({ abi: erc20Abi, address: erc20Address, functionName: 'transferFrom' })
-
-    /**
-     * Wraps __{@link useSimulateContract}__ with \`abi\` set to __{@link erc20Abi}__
-     */
-    export const usePrepareErc20Write = /*#__PURE__*/ createUseSimulateContract({ abi: erc20Abi, address: erc20Address })
-
-    /**
-     * Wraps __{@link useSimulateContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"approve"\`
-     */
-    export const usePrepareErc20Approve = /*#__PURE__*/ createUseSimulateContract({ abi: erc20Abi, address: erc20Address, functionName: 'approve' })
-
-    /**
-     * Wraps __{@link useSimulateContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"transfer"\`
-     */
-    export const usePrepareErc20Transfer = /*#__PURE__*/ createUseSimulateContract({ abi: erc20Abi, address: erc20Address, functionName: 'transfer' })
-
-    /**
-     * Wraps __{@link useSimulateContract}__ with \`abi\` set to __{@link erc20Abi}__ and \`functionName\` set to \`"transferFrom"\`
-     */
-    export const usePrepareErc20TransferFrom = /*#__PURE__*/ createUseSimulateContract({ abi: erc20Abi, address: erc20Address, functionName: 'transferFrom' })
-
-    /**
-     * Wraps __{@link useWatchContractEvent}__ with \`abi\` set to __{@link erc20Abi}__
-     */
-    export const useErc20Event = /*#__PURE__*/ createUseWatchContractEvent({ abi: erc20Abi, address: erc20Address })
-
-    /**
-     * Wraps __{@link useWatchContractEvent}__ with \`abi\` set to __{@link erc20Abi}__ and \`eventName\` set to \`"Approval"\`
-     */
-    export const useErc20ApprovalEvent = /*#__PURE__*/ createUseWatchContractEvent({ abi: erc20Abi, address: erc20Address, eventName: 'Approval' })
-
-    /**
-     * Wraps __{@link useWatchContractEvent}__ with \`abi\` set to __{@link erc20Abi}__ and \`eventName\` set to \`"Transfer"\`
-     */
-    export const useErc20TransferEvent = /*#__PURE__*/ createUseWatchContractEvent({ abi: erc20Abi, address: erc20Address, eventName: 'Transfer' })"
+    export const useWatchErc20Event = /*#__PURE__*/ createUseWatchContractEvent({ abi: erc20Abi })"
   `)
 })

@@ -10,20 +10,27 @@ concurrency:
 jobs:
   verify:
     name: Verify
+    permissions:
+      contents: write
     uses: ./.github/workflows/verify.yml
     secrets: inherit
 
   size:
     name: Size
+    permissions:
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@main
+        with:
+          node-version: 24.5
 
       - name: Report build size
         uses: preactjs/compressed-size-action@v2

@@ -13,12 +13,14 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ secrets.GH_PTOKEN }}
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@main
+        with:
+          node-version: 24.5
 
       - name: Check repo
         run: pnpm check:repo
@@ -39,19 +41,21 @@ jobs:
 
   build:
     name: Build
+    permissions:
+      contents: read
     needs: check
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@main
 
       - name: Build
-        run: pnpm build
+        run: pnpm clean && pnpm build
 
       - name: Publint
         run: pnpm test:build
@@ -61,17 +65,19 @@ jobs:
 
   types:
     name: Types
+    permissions:
+      contents: read
     needs: check
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
       matrix:
-        typescript-version: ['5.2.2', '5.3.3', '5.4.5', '5.5.2']
-        viem-version: ['2.21.28', 'latest']
+        typescript-version: ['5.7.3', '5.8.3', '5.9.2', 'latest']
+        viem-version: ['2.31.7', 'latest']
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@main
@@ -84,6 +90,9 @@ jobs:
       - name: Check types
         run: pnpm check:types
 
+      - name: Bench types
+        run: pnpm bench:types
+
       # Redundant with `pnpm check:types`
       # If Vitest adds special features in the future, e.g. type coverage, can add this back!
       # - name: Test types
@@ -91,6 +100,8 @@ jobs:
 
   test:
     name: Test
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -101,13 +112,18 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@main
 
       - name: Set up foundry
         uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install Playwright
+        run: pnpx playwright@1.54.1 install --with-deps
 
       - name: Run tests
         uses: nick-fields/retry@v3
