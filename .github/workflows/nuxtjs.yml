@@ -65,7 +65,7 @@ jobs:
           path: |
             dist
             .nuxt
-          key: ${{ runner.os }}-nuxt-build-${{ hashFiles('dist') }}
+          key: ${{ runner.os }}-nuxt-build-${{ hashFiles('**/package-lock.json', '**/yarn.lock', '**/pnpm-lock.yaml', '**/bun.lockb', 'package.json', 'nuxt.config.*') }}
           restore-keys: |
             ${{ runner.os }}-nuxt-build-
       - name: Install dependencies
