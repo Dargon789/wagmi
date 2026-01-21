@@ -272,16 +272,8 @@ export function getSidebar() {
             link: '/react/api/hooks/useSendCalls',
           },
           {
-            text: 'useSendCallsSync',
-            link: '/react/api/hooks/useSendCallsSync',
-          },
-          {
             text: 'useSendTransaction',
             link: '/react/api/hooks/useSendTransaction',
-          },
-          {
-            text: 'useSendTransactionSync',
-            link: '/react/api/hooks/useSendTransactionSync',
           },
           {
             text: 'useShowCallsStatus',
@@ -923,16 +915,8 @@ export function getSidebar() {
             link: '/core/api/actions/sendCalls',
           },
           {
-            text: 'sendCallsSync',
-            link: '/core/api/actions/sendCallsSync',
-          },
-          {
             text: 'sendTransaction',
             link: '/core/api/actions/sendTransaction',
-          },
-          {
-            text: 'sendTransactionSync',
-            link: '/core/api/actions/sendTransactionSync',
           },
           {
             text: 'showCallsStatus',
