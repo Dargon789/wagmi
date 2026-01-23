@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
   // https://github.com/shuding/nextra/issues/384
   if (request.nextUrl.pathname in redirects) {
     const url = request.nextUrl.clone()
-    const pathname = redirects[request.nextUrl.pathname] ?? '/'
+    const pathname = redirects[request.nextUrl.pathname]
     url.pathname = pathname
     return NextResponse.redirect(url)
   }
