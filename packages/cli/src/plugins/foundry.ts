@@ -1,49 +1,37 @@
-import { execSync, spawn, spawnSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
-import { readFile } from 'node:fs/promises'
 import dedent from 'dedent'
-import { fdir } from 'fdir'
+import { execa, execaCommandSync } from 'execa'
+import { default as fse } from 'fs-extra'
+import { globby } from 'globby'
+
 import { basename, extname, join, resolve } from 'pathe'
 import pc from 'picocolors'
 import { z } from 'zod'
 
-import type { ContractConfig, Plugin } from '../config.js'
-import * as logger from '../logger.js'
-import type { Compute, RequiredBy } from '../types.js'
+import type { ContractConfig, Plugin } from '../config'
+import * as logger from '../logger'
+import type { RequiredBy } from '../types'
+import type { FoundryResolved } from './'
 
-export const foundryDefaultExcludes = [
-  'Base.sol/**',
+const defaultExcludes = [
   'Common.sol/**',
   'Components.sol/**',
-  'IERC165.sol/**',
-  'IERC20.sol/**',
-  'IERC721.sol/**',
-  'IMulticall2.sol/**',
-  'MockERC20.sol/**',
-  'MockERC721.sol/**',
   'Script.sol/**',
   'StdAssertions.sol/**',
-  'StdChains.sol/**',
-  'StdCheats.sol/**',
   'StdError.sol/**',
-  'StdInvariant.sol/**',
-  'StdJson.sol/**',
+  'StdCheats.sol/**',
   'StdMath.sol/**',
+  'StdJson.sol/**',
   'StdStorage.sol/**',
-  'StdStyle.sol/**',
-  'StdToml.sol/**',
   'StdUtils.sol/**',
-  'Test.sol/**',
   'Vm.sol/**',
-  'build-info/**',
   'console.sol/**',
   'console2.sol/**',
-  'safeconsole.sol/**',
+  'test.sol/**',
   '**.s.sol/*.json',
   '**.t.sol/*.json',
 ]
 
-export type FoundryConfig = {
+type FoundryConfig<TProject extends string> = {
   /**
    * Project's artifacts directory.
    *
@@ -51,73 +39,91 @@ export type FoundryConfig = {
    *
    * @default foundry.config#out | 'out'
    */
-  artifacts?: string | undefined
-  /** Mapping of addresses to attach to artifacts. */
-  deployments?: { [key: string]: ContractConfig['address'] } | undefined
+  artifacts?: string
+  /**
+   * Mapping of addresses to attach to artifacts.
+   *
+   * ---
+   *
+   * Adding the following declaration to your config file for strict deployment names:
+   *
+   * ```ts
+   * declare module '@wagmi/cli/plugins' {
+   *   export interface Foundry {
+   *     deployments: {
+   *       ['../hello_foundry']: 'Counter'
+   *       // ^? Path to project  ^? Contract names
+   *     }
+   *   }
+   * }
+   * ```
+   *
+   * TODO: `@wagmi/cli` should generate this file in the future
+   */
+  deployments?: {
+    [_ in FoundryResolved<TProject>['deployments']]: ContractConfig['address']
+  }
   /** Artifact files to exclude. */
-  exclude?: string[] | undefined
+  exclude?: string[]
   /** [Forge](https://book.getfoundry.sh/forge) configuration */
-  forge?:
-    | {
-        /**
-         * Remove build artifacts and cache directories on start up.
-         *
-         * @default false
-         */
-        clean?: boolean | undefined
-        /**
-         * Build Foundry project before fetching artifacts.
-         *
-         * @default true
-         */
-        build?: boolean | undefined
-        /**
-         * Path to `forge` executable command
-         *
-         * @default "forge"
-         */
-        path?: string | undefined
-        /**
-         * Rebuild every time a watched file or directory is changed.
-         *
-         * @default true
-         */
-        rebuild?: boolean | undefined
-      }
-    | undefined
+  forge?: {
+    /**
+     * Remove build artifacts and cache directories on start up.
+     *
+     * @default false
+     */
+    clean?: boolean
+    /**
+     * Build Foundry project before fetching artifacts.
+     *
+     * @default true
+     */
+    build?: boolean
+    /**
+     * Path to `forge` executable command
+     *
+     * @default "forge"
+     */
+    path?: string
+    /**
+     * Rebuild every time a watched file or directory is changed.
+     *
+     * @default true
+     */
+    rebuild?: boolean
+  }
   /** Artifact files to include. */
-  include?: string[] | undefined
+  include?: string[]
   /** Optional prefix to prepend to artifact names. */
-  namePrefix?: string | undefined
+  namePrefix?: string
   /** Path to foundry project. */
-  project?: string | undefined
+  project?: TProject
 }
 
-type FoundryResult = Compute<
-  RequiredBy<Plugin, 'contracts' | 'validate' | 'watch'>
->
+type FoundryResult = RequiredBy<Plugin, 'contracts' | 'validate' | 'watch'>
 
 const FoundryConfigSchema = z.object({
   out: z.string().default('out'),
   src: z.string().default('src'),
 })
 
-/** Resolves ABIs from [Foundry](https://github.com/foundry-rs/foundry) project. */
-export function foundry(config: FoundryConfig = {}): FoundryResult {
-  const {
-    artifacts,
-    deployments = {},
-    exclude = foundryDefaultExcludes,
-    forge: {
-      clean = false,
-      build = true,
-      path: forgeExecutable = 'forge',
-      rebuild = true,
-    } = {},
-    include = ['*.json'],
-    namePrefix = '',
-  } = config
-
+/**
+ * Resolves ABIs from [Foundry](https://github.com/foundry-rs/foundry) project.
+ */
+export function foundry<TProject extends string>({
+  artifacts,
+  deployments = {} as any,
+  exclude = defaultExcludes,
+  forge: {
+    clean = false,
+    build = true,
+    path: forgeExecutable = 'forge',
+    rebuild = true,
+  } = {},
+  include = ['*.json'],
+  namePrefix = '',
+  project: project_,
+}: FoundryConfig<TProject> = {}): FoundryResult {
   function getContractName(artifactPath: string, usePrefix = true) {
     const filename = basename(artifactPath)
     const extension = extname(artifactPath)
@@ -125,7 +131,7 @@ export function foundry(config: FoundryConfig = {}): FoundryResult {
   }
 
   async function getContract(artifactPath: string) {
-    const artifact = await JSON.parse(await readFile(artifactPath, 'utf8'))
+    const artifact = await fse.readJSON(artifactPath)
     return {
       abi: artifact.abi,
       address: (deployments as Record<string, ContractConfig['address']>)[
@@ -135,60 +141,42 @@ export function foundry(config: FoundryConfig = {}): FoundryResult {
     }
   }
 
-  function getArtifactPaths(artifactsDirectory: string) {
-    const crawler = new fdir().withBasePath().globWithOptions(
-      include.map((x) => `${artifactsDirectory}/**/${x}`),
-      {
-        dot: true,
-        ignore: exclude.map((x) => `${artifactsDirectory}/**/${x}`),
-      },
-    )
-    return crawler.crawl(artifactsDirectory).withPromise()
+  async function getArtifactPaths(artifactsDirectory: string) {
+    return await globby([
+      ...include.map((x) => `${artifactsDirectory}/**/${x}`),
+      ...exclude.map((x) => `!${artifactsDirectory}/**/${x}`),
+    ])
   }
 
-  const project = resolve(process.cwd(), config.project ?? '')
+  const project = resolve(process.cwd(), project_ ?? '')
 
-  let foundryConfig: z.infer<typeof FoundryConfigSchema> = {
+  let config: z.infer<typeof FoundryConfigSchema> = {
     out: 'out',
     src: 'src',
   }
   try {
-    const result = spawnSync(
-      forgeExecutable,
-      ['config', '--json', '--root', project],
-      {
-        encoding: 'utf-8',
-        shell: true,
-      },
+    config = FoundryConfigSchema.parse(
+      JSON.parse(
+        execaCommandSync(`${forgeExecutable} config --json --root ${project}`)
+          .stdout,
+      ),
     )
-    if (result.error) throw result.error
-    if (result.status !== 0)
-      throw new Error(`Failed with code ${result.status}`)
-    if (result.signal) throw new Error('Process terminated by signal')
-    foundryConfig = FoundryConfigSchema.parse(JSON.parse(result.stdout))
+    // eslint-disable-next-line no-empty
   } catch {
   } finally {
-    foundryConfig = {
-      ...foundryConfig,
-      out: artifacts ?? foundryConfig.out,
+    config = {
+      ...config,
+      out: artifacts ?? config.out,
     }
   }
 
-  const artifactsDirectory = join(project, foundryConfig.out)
+  const artifactsDirectory = join(project, config.out)
 
   return {
     async contracts() {
-      if (clean)
-        execSync(`${forgeExecutable} clean --root ${project}`, {
-          encoding: 'utf-8',
-          stdio: 'pipe',
-        })
-      if (build)
-        execSync(`${forgeExecutable} build --root ${project}`, {
-          encoding: 'utf-8',
-          stdio: 'pipe',
-        })
-      if (!existsSync(artifactsDirectory))
+      if (clean) await execa(forgeExecutable, ['clean', '--root', project])
+      if (build) await execa(forgeExecutable, ['build', '--root', project])
+      if (!fse.pathExistsSync(artifactsDirectory))
         throw new Error('Artifacts not found.')
 
       const artifactPaths = await getArtifactPaths(artifactsDirectory)
@@ -203,17 +191,14 @@ export function foundry(config: FoundryConfig = {}): FoundryResult {
     name: 'Foundry',
     async validate() {
       // Check that project directory exists
-      if (!existsSync(project))
-        throw new Error(`Foundry project ${pc.gray(config.project)} not found.`)
+      if (!(await fse.pathExists(project)))
+        throw new Error(`Foundry project ${pc.gray(project_)} not found.`)
 
       // Ensure forge is installed
       if (clean || build || rebuild)
         try {
-          execSync(`${forgeExecutable} --version`, {
-            encoding: 'utf-8',
-            stdio: 'pipe',
-          })
-        } catch (_error) {
+          await execa(forgeExecutable, ['--version'])
+        } catch (error) {
           throw new Error(dedent`
             forge must be installed to use Foundry plugin.
             To install, follow the instructions at https://book.getfoundry.sh/getting-started/installation
@@ -228,7 +213,7 @@ export function foundry(config: FoundryConfig = {}): FoundryResult {
                 project,
               )}`,
             )
-            const subprocess = spawn(forgeExecutable, [
+            const subprocess = execa(forgeExecutable, [
               'build',
               '--watch',
               '--root',
@@ -241,7 +226,7 @@ export function foundry(config: FoundryConfig = {}): FoundryResult {
             process.once('SIGINT', shutdown)
             process.once('SIGTERM', shutdown)
             function shutdown() {
-              subprocess?.kill()
+              subprocess?.cancel()
             }
           }
         : undefined,
