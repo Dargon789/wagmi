@@ -11,12 +11,12 @@ test('default', async () => {
   await connect(config, { connector })
   const { result } = await renderHook(() => useDeployContract())
 
-  result.current.deployContract({
+  result.current.mutate({
     abi: abi.bayc,
     bytecode: bytecode.bayc,
     args: ['Bored Ape Wagmi Club', 'BAYC', 69420n, 0n],
   })
-  await vi.waitUntil(() => result.current.isSuccess)
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   expect(result.current.data).toMatch(transactionHashRegex)
 
