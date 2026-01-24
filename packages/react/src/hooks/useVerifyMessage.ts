@@ -4,13 +4,12 @@ import type {
   ResolvedRegister,
   VerifyMessageErrorType,
 } from '@wagmi/core'
-import type { Compute } from '@wagmi/core/internal'
+import type { Compute, ConfigParameter } from '@wagmi/core/internal'
 import {
   type VerifyMessageData,
   type VerifyMessageOptions,
   verifyMessageQueryOptions,
 } from '@wagmi/core/query'
-import type { ConfigParameter } from '../types/properties.js'
 import { type UseQueryReturnType, useQuery } from '../utils/query.js'
 import { useChainId } from './useChainId.js'
 import { useConfig } from './useConfig.js'
@@ -35,7 +34,6 @@ export function useVerifyMessage<
   const options = verifyMessageQueryOptions(config, {
     ...parameters,
     chainId: parameters.chainId ?? chainId,
-    query: parameters.query,
   })
   return useQuery(options)
 }

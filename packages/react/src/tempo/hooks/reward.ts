@@ -1,18 +1,21 @@
 import type { UseMutationResult } from '@tanstack/react-query'
 import type { Config, ResolvedRegister } from '@wagmi/core'
-import type { ExactPartial, UnionCompute } from '@wagmi/core/internal'
+import type {
+  ConfigParameter,
+  ExactPartial,
+  UnionCompute,
+} from '@wagmi/core/internal'
 import { Actions } from '@wagmi/core/tempo'
 import { useEffect } from 'react'
-
 import { useChainId } from '../../hooks/useChainId.js'
 import { useConfig } from '../../hooks/useConfig.js'
-import type { ConfigParameter } from '../../types/properties.js'
 import {
   type UseMutationParameters,
   type UseQueryReturnType,
   useMutation,
   useQuery,
 } from '../../utils/query.js'
+import type { QueryParameter } from '../utils.js'
 
 /**
  * Hook for claiming accumulated rewards.
@@ -186,12 +189,13 @@ export declare namespace useGetGlobalRewardPerToken {
     config extends Config = ResolvedRegister['config'],
     selectData = Actions.reward.getGlobalRewardPerToken.ReturnValue,
   > = ConfigParameter<config> &
-    ExactPartial<
-      Actions.reward.getGlobalRewardPerToken.queryOptions.Parameters<
-        config,
-        selectData
-      >
-    >
+    QueryParameter<
+      Actions.reward.getGlobalRewardPerToken.ReturnValue,
+      Actions.reward.getGlobalRewardPerToken.ErrorType,
+      selectData,
+      Actions.reward.getGlobalRewardPerToken.QueryKey<config>
+    > &
+    ExactPartial<Actions.reward.getGlobalRewardPerToken.Parameters<config>>
 
   export type ReturnValue<
     selectData = Actions.reward.getGlobalRewardPerToken.ReturnValue,
@@ -245,12 +249,13 @@ export declare namespace useUserRewardInfo {
     config extends Config = ResolvedRegister['config'],
     selectData = Actions.reward.getUserRewardInfo.ReturnValue,
   > = ConfigParameter<config> &
-    ExactPartial<
-      Actions.reward.getUserRewardInfo.queryOptions.Parameters<
-        config,
-        selectData
-      >
-    >
+    QueryParameter<
+      Actions.reward.getUserRewardInfo.ReturnValue,
+      Actions.reward.getUserRewardInfo.ErrorType,
+      selectData,
+      Actions.reward.getUserRewardInfo.QueryKey<config>
+    > &
+    ExactPartial<Actions.reward.getUserRewardInfo.Parameters<config>>
 
   export type ReturnValue<
     selectData = Actions.reward.getUserRewardInfo.ReturnValue,

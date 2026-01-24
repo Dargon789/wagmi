@@ -1,18 +1,21 @@
 import type { UseMutationResult } from '@tanstack/react-query'
 import type { Config, ResolvedRegister } from '@wagmi/core'
-import type { ExactPartial, UnionCompute } from '@wagmi/core/internal'
+import type {
+  ConfigParameter,
+  ExactPartial,
+  UnionCompute,
+} from '@wagmi/core/internal'
 import { Actions } from '@wagmi/core/tempo'
 import { useEffect } from 'react'
-
 import { useChainId } from '../../hooks/useChainId.js'
 import { useConfig } from '../../hooks/useConfig.js'
-import type { ConfigParameter } from '../../types/properties.js'
 import {
   type UseMutationParameters,
   type UseQueryReturnType,
   useMutation,
   useQuery,
 } from '../../utils/query.js'
+import type { QueryParameter } from '../utils.js'
 
 /**
  * Hook for getting the reserves for a liquidity pool.
@@ -60,9 +63,13 @@ export declare namespace usePool {
     config extends Config = ResolvedRegister['config'],
     selectData = Actions.amm.getPool.ReturnValue,
   > = ConfigParameter<config> &
-    ExactPartial<
-      Actions.amm.getPool.queryOptions.Parameters<config, selectData>
-    >
+    QueryParameter<
+      Actions.amm.getPool.ReturnValue,
+      Actions.amm.getPool.ErrorType,
+      selectData,
+      Actions.amm.getPool.QueryKey<config>
+    > &
+    ExactPartial<Actions.amm.getPool.Parameters<config>>
 
   export type ReturnValue<selectData = Actions.amm.getPool.ReturnValue> =
     UseQueryReturnType<selectData, Error>
@@ -114,12 +121,13 @@ export declare namespace useLiquidityBalance {
     config extends Config = ResolvedRegister['config'],
     selectData = Actions.amm.getLiquidityBalance.ReturnValue,
   > = ConfigParameter<config> &
-    ExactPartial<
-      Actions.amm.getLiquidityBalance.queryOptions.Parameters<
-        config,
-        selectData
-      >
-    >
+    QueryParameter<
+      Actions.amm.getLiquidityBalance.ReturnValue,
+      Actions.amm.getLiquidityBalance.ErrorType,
+      selectData,
+      Actions.amm.getLiquidityBalance.QueryKey<config>
+    > &
+    ExactPartial<Actions.amm.getLiquidityBalance.Parameters<config>>
 
   export type ReturnValue<
     selectData = Actions.amm.getLiquidityBalance.ReturnValue,

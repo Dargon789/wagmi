@@ -4,13 +4,12 @@ import type {
   GetCallsStatusErrorType,
   ResolvedRegister,
 } from '@wagmi/core'
-import type { Compute } from '@wagmi/core/internal'
+import type { Compute, ConfigParameter } from '@wagmi/core/internal'
 import {
   type GetCallsStatusData,
   type GetCallsStatusOptions,
   getCallsStatusQueryOptions,
 } from '@wagmi/core/query'
-import type { ConfigParameter } from '../types/properties.js'
 import { type UseQueryReturnType, useQuery } from '../utils/query.js'
 import { useConfig } from './useConfig.js'
 import { useConnection } from './useConnection.js'
@@ -35,7 +34,6 @@ export function useCallsStatus<
   const options = getCallsStatusQueryOptions(config, {
     ...parameters,
     connector: parameters.connector ?? connector,
-    query: parameters.query,
   })
   return useQuery(options)
 }

@@ -4,12 +4,12 @@ import type {
   GetTransactionConfirmationsErrorType,
   ResolvedRegister,
 } from '@wagmi/core'
+import type { ConfigParameter } from '@wagmi/core/internal'
 import {
   type GetTransactionConfirmationsData,
   type GetTransactionConfirmationsOptions,
   getTransactionConfirmationsQueryOptions,
 } from '@wagmi/core/query'
-import type { ConfigParameter } from '../types/properties.js'
 import { type UseQueryReturnType, useQuery } from '../utils/query.js'
 import { useChainId } from './useChainId.js'
 import { useConfig } from './useConfig.js'
@@ -42,7 +42,6 @@ export function useTransactionConfirmations<
   const options = getTransactionConfirmationsQueryOptions(config, {
     ...parameters,
     chainId: parameters.chainId ?? chainId,
-    query: parameters.query,
   })
   return useQuery(options) as any
 }

@@ -4,13 +4,12 @@ import type {
   GetBlockTransactionCountErrorType,
   ResolvedRegister,
 } from '@wagmi/core'
-import type { UnionCompute } from '@wagmi/core/internal'
+import type { ConfigParameter, UnionCompute } from '@wagmi/core/internal'
 import {
   type GetBlockTransactionCountData,
   type GetBlockTransactionCountOptions,
   getBlockTransactionCountQueryOptions,
 } from '@wagmi/core/query'
-import type { ConfigParameter } from '../types/properties.js'
 import { type UseQueryReturnType, useQuery } from '../utils/query.js'
 import { useChainId } from './useChainId.js'
 import { useConfig } from './useConfig.js'
@@ -47,7 +46,6 @@ export function useBlockTransactionCount<
   const options = getBlockTransactionCountQueryOptions(config, {
     ...parameters,
     chainId: parameters.chainId ?? chainId,
-    query: parameters.query,
   })
   return useQuery(options)
 }

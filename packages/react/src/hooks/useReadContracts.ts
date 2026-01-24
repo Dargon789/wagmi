@@ -4,7 +4,7 @@ import type {
   ReadContractsErrorType,
   ResolvedRegister,
 } from '@wagmi/core'
-import type { Compute } from '@wagmi/core/internal'
+import type { Compute, ConfigParameter } from '@wagmi/core/internal'
 import {
   type ReadContractsData,
   type ReadContractsOptions,
@@ -12,7 +12,6 @@ import {
 } from '@wagmi/core/query'
 import { useMemo } from 'react'
 import type { ContractFunctionParameters } from 'viem'
-import type { ConfigParameter } from '../types/properties.js'
 import { type UseQueryReturnType, useQuery } from '../utils/query.js'
 import { useChainId } from './useChainId.js'
 import { useConfig } from './useConfig.js'
@@ -64,7 +63,6 @@ export function useReadContracts<
   const options = readContractsQueryOptions(config, {
     ...parameters,
     chainId: contractsChainId ?? chainId,
-    query: parameters.query,
   })
   return useQuery(options) as any
 }

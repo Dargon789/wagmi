@@ -7,6 +7,7 @@ import type {
 } from '@wagmi/core'
 import type {
   Compute,
+  ConfigParameter,
   UnionCompute,
   UnionStrictOmit,
 } from '@wagmi/core/internal'
@@ -15,7 +16,6 @@ import {
   type GetBlockNumberOptions,
   getBlockNumberQueryOptions,
 } from '@wagmi/core/query'
-import type { ConfigParameter } from '../types/properties.js'
 import { type UseQueryReturnType, useQuery } from '../utils/query.js'
 import { useChainId } from './useChainId.js'
 import { useConfig } from './useConfig.js'
@@ -61,7 +61,6 @@ export function useBlockNumber<
   const options = getBlockNumberQueryOptions(config, {
     ...parameters,
     chainId: parameters.chainId ?? chainId,
-    query: parameters.query,
   })
   const queryClient = useQueryClient()
   useWatchBlockNumber({

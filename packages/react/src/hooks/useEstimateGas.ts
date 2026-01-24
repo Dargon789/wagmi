@@ -4,12 +4,12 @@ import type {
   EstimateGasErrorType,
   ResolvedRegister,
 } from '@wagmi/core'
+import type { ConfigParameter } from '@wagmi/core/internal'
 import {
   type EstimateGasData,
   type EstimateGasOptions,
   estimateGasQueryOptions,
 } from '@wagmi/core/query'
-import type { ConfigParameter } from '../types/properties.js'
 import { type UseQueryReturnType, useQuery } from '../utils/query.js'
 import { useChainId } from './useChainId.js'
 import { useConfig } from './useConfig.js'
@@ -44,7 +44,6 @@ export function useEstimateGas(
     account: parameters.account ?? address,
     chainId: parameters.chainId ?? chainId,
     connector: parameters.connector ?? connector,
-    query: parameters.query,
   })
   return useQuery(options)
 }

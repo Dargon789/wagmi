@@ -1,18 +1,21 @@
 import type { UseMutationResult } from '@tanstack/react-query'
 import type { Config, ResolvedRegister } from '@wagmi/core'
-import type { ExactPartial, UnionCompute } from '@wagmi/core/internal'
+import type {
+  ConfigParameter,
+  ExactPartial,
+  UnionCompute,
+} from '@wagmi/core/internal'
 import { Actions } from '@wagmi/core/tempo'
 import { useEffect } from 'react'
-
 import { useChainId } from '../../hooks/useChainId.js'
 import { useConfig } from '../../hooks/useConfig.js'
-import type { ConfigParameter } from '../../types/properties.js'
 import {
   type UseMutationParameters,
   type UseQueryReturnType,
   useMutation,
   useQuery,
 } from '../../utils/query.js'
+import type { QueryParameter } from '../utils.js'
 
 /**
  * Hook for creating a new policy.
@@ -602,9 +605,13 @@ export declare namespace useData {
     config extends Config = ResolvedRegister['config'],
     selectData = Actions.policy.getData.ReturnValue,
   > = ConfigParameter<config> &
-    ExactPartial<
-      Actions.policy.getData.queryOptions.Parameters<config, selectData>
-    >
+    QueryParameter<
+      Actions.policy.getData.ReturnValue,
+      Actions.policy.getData.ErrorType,
+      selectData,
+      Actions.policy.getData.QueryKey<config>
+    > &
+    ExactPartial<Actions.policy.getData.Parameters<config>>
 
   export type ReturnValue<selectData = Actions.policy.getData.ReturnValue> =
     UseQueryReturnType<selectData, Error>
@@ -651,9 +658,13 @@ export declare namespace useIsAuthorized {
     config extends Config = ResolvedRegister['config'],
     selectData = Actions.policy.isAuthorized.ReturnValue,
   > = ConfigParameter<config> &
-    ExactPartial<
-      Actions.policy.isAuthorized.queryOptions.Parameters<config, selectData>
-    >
+    QueryParameter<
+      Actions.policy.isAuthorized.ReturnValue,
+      Actions.policy.isAuthorized.ErrorType,
+      selectData,
+      Actions.policy.isAuthorized.QueryKey<config>
+    > &
+    ExactPartial<Actions.policy.isAuthorized.Parameters<config>>
 
   export type ReturnValue<
     selectData = Actions.policy.isAuthorized.ReturnValue,

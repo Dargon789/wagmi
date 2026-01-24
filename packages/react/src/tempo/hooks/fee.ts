@@ -1,18 +1,21 @@
 import type { UseMutationResult } from '@tanstack/react-query'
 import type { Config, ResolvedRegister } from '@wagmi/core'
-import type { ExactPartial, UnionCompute } from '@wagmi/core/internal'
+import type {
+  ConfigParameter,
+  ExactPartial,
+  UnionCompute,
+} from '@wagmi/core/internal'
 import { Actions } from '@wagmi/core/tempo'
 import { useEffect } from 'react'
-
 import { useChainId } from '../../hooks/useChainId.js'
 import { useConfig } from '../../hooks/useConfig.js'
-import type { ConfigParameter } from '../../types/properties.js'
 import {
   type UseMutationParameters,
   type UseQueryReturnType,
   useMutation,
   useQuery,
 } from '../../utils/query.js'
+import type { QueryParameter } from '../utils.js'
 
 /**
  * Hook for getting the user's default fee token.
@@ -54,9 +57,13 @@ export declare namespace useUserToken {
     config extends Config = ResolvedRegister['config'],
     selectData = Actions.fee.getUserToken.ReturnValue,
   > = ConfigParameter<config> &
-    ExactPartial<
-      Actions.fee.getUserToken.queryOptions.Parameters<config, selectData>
-    >
+    QueryParameter<
+      Actions.fee.getUserToken.ReturnValue,
+      Actions.fee.getUserToken.ErrorType,
+      selectData,
+      Actions.fee.getUserToken.QueryKey<config>
+    > &
+    ExactPartial<Actions.fee.getUserToken.Parameters<config>>
 
   export type ReturnValue<selectData = Actions.fee.getUserToken.ReturnValue> =
     UseQueryReturnType<selectData, Error>
