@@ -12,7 +12,9 @@
     "!src/**/*.test.ts",
     "!src/**/*.test-d.ts",
     "react/**",
-    "vue/**"
+    "solid/**",
+    "vue/**",
+    "tempo/**"
   ],
   "sideEffects": false,
   "type": "module",
@@ -28,6 +30,14 @@
       "types": "./dist/types/exports/react.d.ts",
       "default": "./dist/esm/exports/react.js"
     },
+    "./solid": {
+      "types": "./dist/types/exports/solid.d.ts",
+      "default": "./dist/esm/exports/solid.js"
+    },
+    "./tempo": {
+      "types": "./dist/types/exports/tempo.d.ts",
+      "default": "./dist/esm/exports/tempo.js"
+    },
     "./vue": {
       "types": "./dist/types/exports/vue.d.ts",
       "default": "./dist/esm/exports/vue.js"
@@ -39,6 +49,12 @@
       "react": [
         "./dist/types/exports/react.d.ts"
       ],
+      "solid": [
+        "./dist/types/exports/solid.d.ts"
+      ],
+      "tempo": [
+        "./dist/types/exports/tempo.d.ts"
+      ],
       "vue": [
         "./dist/types/exports/vue.d.ts"
       ]
@@ -46,14 +62,18 @@
   },
   "peerDependencies": {
     "@tanstack/react-query": ">=5.0.0",
+    "@tanstack/solid-query": ">=5.0.0",
     "@tanstack/vue-query": ">=5.0.0",
     "@types/react": ">=18",
     "@types/react-dom": ">=18",
     "@wagmi/core": "workspace:*",
+    "@wagmi/solid": "workspace:*",
     "@wagmi/vue": "workspace:*",
+    "ox": "catalog:",
     "prool": "^0.0.24",
     "react": ">=18",
     "react-dom": ">=18",
+    "solid-js": "1.x",
     "typescript": ">=5.7.3",
     "viem": "2.x",
     "vue": ">=3",
@@ -61,6 +81,9 @@
   },
   "peerDependenciesMeta": {
     "@tanstack/react-query": {
+      "optional": true
+    },
+    "@tanstack/solid-query": {
       "optional": true
     },
     "@tanstack/vue-query": {
@@ -72,10 +95,16 @@
     "@types/react-dom": {
       "optional": true
     },
+    "@wagmi/vue": {
+      "optional": true
+    },
     "react": {
       "optional": true
     },
     "react-dom": {
+      "optional": true
+    },
+    "solid-js": {
       "optional": true
     },
     "typescript": {
@@ -89,14 +118,19 @@
     }
   },
   "devDependencies": {
+    "@solidjs/testing-library": "^0.8.10",
     "@tanstack/react-query": "catalog:",
+    "@tanstack/solid-query": "catalog:",
     "@tanstack/vue-query": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@wagmi/core": "workspace:*",
+    "@wagmi/solid": "workspace:*",
     "@wagmi/vue": "workspace:*",
+    "ox": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "solid-js": "catalog:",
     "vue": "catalog:",
     "wagmi": "workspace:*"
   },

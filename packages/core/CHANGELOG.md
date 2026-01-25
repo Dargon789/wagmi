@@ -1,5 +1,91 @@
 # @wagmi/core
 
+## 3.3.2
+
+### Patch Changes
+
+- Updated internal exports ([`68e17db`](https://github.com/wevm/wagmi/commit/68e17db7ff84982db8f52f54e6f047c5efab62ab))
+
+## 3.3.1
+
+### Patch Changes
+
+- Fixed "illegal invocation" error when signing up with passkeys while using password manager browser extensions ([#4968](https://github.com/wevm/wagmi/pull/4968))
+
+## 3.3.0
+
+### Minor Changes
+
+- Added `getBlobBaseFee` and `writeContractSync` actions. ([`dfe7904`](https://github.com/wevm/wagmi/commit/dfe790426d5ac24d55eacdf8d0193292de801911))
+
+- Added `getContractEvents` action. ([#4905](https://github.com/wevm/wagmi/pull/4905))
+
+### Patch Changes
+
+- Fixed `eth_accounts` to return `mock#accounts` parameter when provided. ([#4920](https://github.com/wevm/wagmi/pull/4920))
+
+- Added explicit return type to mutation options. ([#4964](https://github.com/wevm/wagmi/pull/4964))
+
+- Fixed `readContractsQueryKey` using passed `chainId` when all contracts specifiy `chainId` ([`5978cc5`](https://github.com/wevm/wagmi/commit/5978cc508ac837be88ed84c15ea5aa805f59005a))
+
+- **`wagmi/tempo`:** Propagated `rpId` to `Account.fromWebAuthnP256` in webAuthn connector. ([#4963](https://github.com/wevm/wagmi/pull/4963))
+
+## 3.2.3
+
+### Patch Changes
+
+- **wagmi/tempo:** Fixed access key lookup to use `account` address instead of `accessKey` address in `webAuthn` connector. ([#4953](https://github.com/wevm/wagmi/pull/4953))
+
+- Propagated `chain` to Viem's `sendTransactiion` to preserve chain-specific configuration. ([#4953](https://github.com/wevm/wagmi/pull/4953))
+
+- Fixed serialization of credentials in `KeyManager.http`. ([#4951](https://github.com/wevm/wagmi/pull/4951))
+
+## 3.2.2
+
+### Patch Changes
+
+- Updated query internals. ([`4fefa57`](https://github.com/wevm/wagmi/commit/4fefa576014820b454344b579282ddecde5c7994))
+
+## 3.2.1
+
+### Patch Changes
+
+- `wagmi/tempo`: Fixed issue where `webAuthn` connector was not adhering to chain-specific `prepareTransactionRequest` phases. ([#4939](https://github.com/wevm/wagmi/pull/4939))
+
+## 3.2.0
+
+### Minor Changes
+
+- Updated to `viem@2.44.0` with Tempo Moderato support. ([#4940](https://github.com/wevm/wagmi/pull/4940))
+
+  **Breaking Changes (Tempo)**
+
+  - Renamed `reward.start` → `reward.distribute` (no longer supports streaming)
+  - Renamed `reward.startSync` → `reward.distributeSync`
+  - Renamed `reward.getTotalPerSecond` → `reward.getGlobalRewardPerToken`
+  - Renamed `reward.watchRewardScheduled` → `reward.watchRewardDistributed`
+  - Removed `nonce.getNonceKeyCount`
+  - Removed `nonce.watchActiveKeyCountChanged`
+  - Removed `amm.watchFeeSwap` (FeeSwap event no longer emitted by protocol)
+
+  **New Features (Tempo)**
+
+  - Added `dex.cancelStale` action to cancel stale orders from restricted makers
+  - Added `dex.cancelStaleSync` action
+  - Added `salt` parameter to `token.create`
+
+## 3.1.0
+
+### Minor Changes
+
+- Added first-class support and extension for [Tempo](https://docs.tempo.xyz) via `/tempo` entrypoint. ([#4922](https://github.com/wevm/wagmi/pull/4922))
+
+## 3.0.2
+
+### Patch Changes
+
+- Fixed `config.connectors` type inference ([#4923](https://github.com/wevm/wagmi/pull/4923))
+
 ## 3.0.1
 
 ### Patch Changes

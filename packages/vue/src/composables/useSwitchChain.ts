@@ -1,42 +1,26 @@
-import { useMutation } from '@tanstack/vue-query'
 import type {
   Config,
   ResolvedRegister,
   SwitchChainErrorType,
 } from '@wagmi/core'
-import type { Compute } from '@wagmi/core/internal'
+import type { Compute, ConfigParameter } from '@wagmi/core/internal'
 import {
   type SwitchChainData,
   type SwitchChainMutate,
   type SwitchChainMutateAsync,
+  type SwitchChainOptions,
   type SwitchChainVariables,
   switchChainMutationOptions,
 } from '@wagmi/core/query'
 import type { Ref } from 'vue'
-
-import type { ConfigParameter } from '../types/properties.js'
-import type {
-  UseMutationParameters,
-  UseMutationReturnType,
-} from '../utils/query.js'
+import { type UseMutationReturnType, useMutation } from '../utils/query.js'
 import { useChains } from './useChains.js'
 import { useConfig } from './useConfig.js'
 
 export type UseSwitchChainParameters<
   config extends Config = Config,
   context = unknown,
-> = Compute<
-  ConfigParameter<config> & {
-    mutation?:
-      | UseMutationParameters<
-          SwitchChainData<config, config['chains'][number]['id']>,
-          SwitchChainErrorType,
-          SwitchChainVariables<config, config['chains'][number]['id']>,
-          context
-        >
-      | undefined
-  }
->
+> = Compute<ConfigParameter<config> & SwitchChainOptions<config, context>>
 
 export type UseSwitchChainReturnType<
   config extends Config = Config,
@@ -46,12 +30,12 @@ export type UseSwitchChainReturnType<
     SwitchChainData<config, config['chains'][number]['id']>,
     SwitchChainErrorType,
     SwitchChainVariables<config, config['chains'][number]['id']>,
-    context
+    context,
+    SwitchChainMutate<config, context>,
+    SwitchChainMutateAsync<config, context>
   > & {
     /** @deprecated use `useChains` instead */
     chains: Ref<config['chains']>
-    mutate: SwitchChainMutate<config, context>
-    mutateAsync: SwitchChainMutateAsync<config, context>
     /** @deprecated use `mutate` instead */
     switchChain: SwitchChainMutate<config, context>
     /** @deprecated use `mutateAsync` instead */
@@ -67,14 +51,12 @@ export function useSwitchChain<
   parameters: UseSwitchChainParameters<config, context> = {},
 ): UseSwitchChainReturnType<config, context> {
   const config = useConfig(parameters)
-  const mutationOptions = switchChainMutationOptions(config)
-  const mutation = useMutation({ ...parameters.mutation, ...mutationOptions })
+  const options = switchChainMutationOptions(config, parameters as any)
+  const mutation = useMutation(options)
   type Return = UseSwitchChainReturnType<config, context>
   return {
     ...(mutation as unknown as Return),
     chains: useChains({ config }) as unknown as Ref<config['chains']>,
-    mutate: mutation.mutate as Return['mutate'],
-    mutateAsync: mutation.mutateAsync as Return['mutateAsync'],
     switchChain: mutation.mutate as Return['mutate'],
     switchChainAsync: mutation.mutateAsync as Return['mutateAsync'],
   }
