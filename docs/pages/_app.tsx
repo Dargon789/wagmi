@@ -24,7 +24,7 @@ function App({ Component, pageProps }: AppProps) {
     ? savedTheme
     : 'dark'
 
-  const themeScriptSrc = `!function(){try{var d=document.documentElement;var e=localStorage.getItem(${themeKey});if(e){d.setAttribute('data-theme',e.trim())}else{d.setAttribute('data-theme','dark');}}catch(t){}}();`
+  const themeScriptSrc = `!function(){try{var d=document.documentElement;var e=localStorage.getItem(${themeKey});if(e){d.setAttribute('data-theme',e.trim())}else{d.setAttribute('data-theme','light');}}catch(t){}}();`
 
   // We MUST use next/script's `beforeInteractive` strategy to avoid flashing on load.
   // However, it only accepts the `src` prop, not `dangerouslySetInnerHTML` or `children`

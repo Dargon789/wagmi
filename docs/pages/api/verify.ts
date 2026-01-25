@@ -21,7 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         res.json({ ok: true })
       } catch (_error) {
-        res.status(500).json({ ok: false })
+        res.json({ ok: false })
       }
       break
     default:
