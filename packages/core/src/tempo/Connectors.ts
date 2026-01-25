@@ -91,7 +91,9 @@ export function webAuthn(options: webAuthn.Parameters) {
         'webAuthn.activeCredential',
       )
       if (!credential) return
-      account = Account.fromWebAuthnP256(credential)
+      account = Account.fromWebAuthnP256(credential, {
+        rpId: options.getOptions?.rpId ?? options.rpId,
+      })
     },
     async connect(parameters = {}) {
       const capabilities =
@@ -243,7 +245,9 @@ export function webAuthn(options: webAuthn.Parameters) {
         normalizeValue(credential),
       )
 
-      account = Account.fromWebAuthnP256(credential)
+      account = Account.fromWebAuthnP256(credential, {
+        rpId: options.getOptions?.rpId ?? options.rpId,
+      })
 
       if (keyPair) {
         accessKey = Account.fromWebCryptoP256(keyPair, {
@@ -360,17 +364,16 @@ export function webAuthn(options: webAuthn.Parameters) {
 
       const targetAccount = await (async () => {
         if (!accessKey) return account
+        if (!account) throw new Error('account not found.')
 
-        const item = await idb.get(
-          `accessKey:${accessKey.address.toLowerCase()}`,
-        )
+        const item = await idb.get(`accessKey:${account.address.toLowerCase()}`)
         if (
           item?.keyAuthorization.expiry &&
           item.keyAuthorization.expiry < Date.now() / 1000
         ) {
           // remove any pending key authorizations from storage.
           await config?.storage?.removeItem(
-            `pendingKeyAuthorization:${accessKey.address.toLowerCase()}`,
+            `pendingKeyAuthorization:${account.address.toLowerCase()}`,
           )
 
           const message = `Access key expired (on ${new Date(item.keyAuthorization.expiry * 1000).toLocaleString()}).`
@@ -392,48 +395,58 @@ export function webAuthn(options: webAuthn.Parameters) {
 
       const targetChain = defineChain({
         ...chain,
-        async prepareTransactionRequest(args, { phase }) {
-          const keyAuthorization = await (async () => {
-            {
-              const keyAuthorization = (
-                args as {
-                  keyAuthorization?:
-                    | KeyAuthorization.KeyAuthorization
-                    | undefined
-                }
-              ).keyAuthorization
-              if (keyAuthorization) return keyAuthorization
+        prepareTransactionRequest: [
+          async (args, { phase }) => {
+            const keyAuthorization = await (async () => {
+              {
+                const keyAuthorization = (
+                  args as {
+                    keyAuthorization?:
+                      | KeyAuthorization.KeyAuthorization
+                      | undefined
+                  }
+                ).keyAuthorization
+                if (keyAuthorization) return keyAuthorization
+              }
+
+              const keyAuthorization = await config.storage?.getItem(
+                `pendingKeyAuthorization:${targetAccount?.address.toLowerCase()}`,
+              )
+              await config.storage?.removeItem(
+                `pendingKeyAuthorization:${targetAccount?.address.toLowerCase()}`,
+              )
+              return keyAuthorization
+            })()
+
+            const [prepareTransactionRequestFn, options] = (() => {
+              if (!chain.prepareTransactionRequest)
+                return [undefined, undefined]
+              if (typeof chain.prepareTransactionRequest === 'function')
+                return [chain.prepareTransactionRequest, undefined]
+              return chain.prepareTransactionRequest
+            })()
+
+            const request = await (async () => {
+              if (!prepareTransactionRequestFn) return {}
+              if (!options || options?.runAt?.includes(phase))
+                return await prepareTransactionRequestFn(args, { phase })
+              return {}
+            })()
+
+            return {
+              ...args,
+              ...request,
+              keyAuthorization,
             }
-
-            const keyAuthorization = await config.storage?.getItem(
-              `pendingKeyAuthorization:${targetAccount?.address.toLowerCase()}`,
-            )
-            await config.storage?.removeItem(
-              `pendingKeyAuthorization:${targetAccount?.address.toLowerCase()}`,
-            )
-            return keyAuthorization
-          })()
-
-          const [prepareTransactionRequestFn, options] = (() => {
-            if (!chain.prepareTransactionRequest) return [undefined, undefined]
-            if (typeof chain.prepareTransactionRequest === 'function')
-              return [chain.prepareTransactionRequest, undefined]
-            return chain.prepareTransactionRequest
-          })()
-
-          const request = await (async () => {
-            if (!prepareTransactionRequestFn) return {}
-            if (!options || options?.runAt?.includes(phase))
-              return await prepareTransactionRequestFn(args, { phase })
-            return {}
-          })()
-
-          return {
-            ...args,
-            ...request,
-            keyAuthorization,
-          }
-        },
+          },
+          {
+            runAt: [
+              'afterFillParameters',
+              'beforeFillParameters',
+              'beforeFillTransaction',
+            ],
+          },
+        ],
       })
 
       return createClient({
