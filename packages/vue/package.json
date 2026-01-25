@@ -1,7 +1,7 @@
 {
   "name": "@wagmi/vue",
   "description": "Vue Composables for Ethereum",
-  "version": "0.4.15",
+  "version": "0.4.13",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "/actions",
     "/chains",
     "/connectors",
+    "/internal",
     "/nuxt",
     "/query"
   ],
@@ -49,6 +50,10 @@
       "types": "./dist/types/exports/connectors.d.ts",
       "default": "./dist/esm/exports/connectors.js"
     },
+    "./internal": {
+      "types": "./dist/types/exports/internal.d.ts",
+      "default": "./dist/esm/exports/internal.js"
+    },
     "./nuxt": {
       "types": "./dist/types/exports/nuxt.d.ts",
       "default": "./dist/esm/exports/nuxt.js"
@@ -69,6 +74,9 @@
       ],
       "connectors": [
         "./dist/types/exports/connectors.d.ts"
+      ],
+      "internal": [
+        "./dist/types/exports/internal.d.ts"
       ],
       "nuxt": [
         "./dist/types/exports/nuxt.d.ts"
