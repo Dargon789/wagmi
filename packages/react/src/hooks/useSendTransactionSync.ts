@@ -1,41 +1,27 @@
 'use client'
-
 import { useMutation } from '@tanstack/react-query'
 import type {
   Config,
   ResolvedRegister,
   SendTransactionSyncErrorType,
 } from '@wagmi/core'
-import type { Compute } from '@wagmi/core/internal'
+import type { Compute, ConfigParameter } from '@wagmi/core/internal'
 import {
   type SendTransactionSyncData,
   type SendTransactionSyncMutate,
   type SendTransactionSyncMutateAsync,
+  type SendTransactionSyncOptions,
   type SendTransactionSyncVariables,
   sendTransactionSyncMutationOptions,
 } from '@wagmi/core/query'
-
-import type { ConfigParameter } from '../types/properties.js'
-import type {
-  UseMutationParameters,
-  UseMutationReturnType,
-} from '../utils/query.js'
+import type { UseMutationReturnType } from '../utils/query.js'
 import { useConfig } from './useConfig.js'
 
 export type UseSendTransactionSyncParameters<
   config extends Config = Config,
   context = unknown,
 > = Compute<
-  ConfigParameter<config> & {
-    mutation?:
-      | UseMutationParameters<
-          SendTransactionSyncData,
-          SendTransactionSyncErrorType,
-          SendTransactionSyncVariables<config, config['chains'][number]['id']>,
-          context
-        >
-      | undefined
-  }
+  ConfigParameter<config> & SendTransactionSyncOptions<config, context>
 >
 
 export type UseSendTransactionSyncReturnType<
@@ -46,9 +32,13 @@ export type UseSendTransactionSyncReturnType<
     SendTransactionSyncData,
     SendTransactionSyncErrorType,
     SendTransactionSyncVariables<config, config['chains'][number]['id']>,
-    context
+    context,
+    SendTransactionSyncMutate<config, context>,
+    SendTransactionSyncMutateAsync<config, context>
   > & {
+    /** @deprecated use `mutate` instead */
     sendTransactionSync: SendTransactionSyncMutate<config, context>
+    /** @deprecated use `mutateAsync` instead */
     sendTransactionSyncAsync: SendTransactionSyncMutateAsync<config, context>
   }
 >
@@ -60,20 +50,13 @@ export function useSendTransactionSync<
 >(
   parameters: UseSendTransactionSyncParameters<config, context> = {},
 ): UseSendTransactionSyncReturnType<config, context> {
-  const { mutation } = parameters
-
   const config = useConfig(parameters)
-
-  const mutationOptions = sendTransactionSyncMutationOptions(config)
-  const { mutate, mutateAsync, ...result } = useMutation({
-    ...mutation,
-    ...mutationOptions,
-  })
-
+  const options = sendTransactionSyncMutationOptions(config, parameters)
+  const mutation = useMutation(options)
   type Return = UseSendTransactionSyncReturnType<config, context>
   return {
-    ...result,
-    sendTransactionSync: mutate as Return['sendTransactionSync'],
-    sendTransactionSyncAsync: mutateAsync as Return['sendTransactionSyncAsync'],
+    ...(mutation as Return),
+    sendTransactionSync: mutation.mutate as Return['mutate'],
+    sendTransactionSyncAsync: mutation.mutateAsync as Return['mutateAsync'],
   }
 }

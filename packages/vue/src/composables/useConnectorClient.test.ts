@@ -43,7 +43,6 @@ test('default', async () => {
         "connectorClient",
         {
           "chainId": 1,
-          "connectorUid": undefined,
         },
       ],
       "refetch": [Function],
@@ -107,13 +106,13 @@ test('behavior: connect and disconnect', async () => {
 
   expect(client.data.value).not.toBeDefined()
 
-  connect.connect({
+  connect.mutate({
     connector: connectors.value[0]!,
   })
 
   await waitFor(client.data, (data) => data !== undefined)
 
-  disconnect.disconnect()
+  disconnect.mutate()
 
   await waitFor(client.data, (data) => data === undefined)
 })
@@ -125,17 +124,14 @@ test('behavior: switch chains', async () => {
   const [switchChain] = renderComposable(() => useSwitchChain())
 
   expect(connectorClient.data.value).not.toBeDefined()
-
   await waitFor(connectorClient.data, (data) => data !== undefined)
 
-  switchChain.switchChain({ chainId: 456 })
+  switchChain.mutate({ chainId: 456 })
   await waitFor(switchChain.isSuccess, (isSuccess) => isSuccess === true)
   await waitFor(connectorClient.data, (data) => data !== undefined)
   expect(connectorClient.data?.value?.chain.id).toEqual(456)
 
-  switchChain.switchChain({ chainId: 1 })
-  await waitFor(switchChain.isSuccess, (isSuccess) => isSuccess === true)
-  await waitFor(connectorClient.data, (data) => data !== undefined)
+  await switchChain.mutateAsync({ chainId: 1 })
   expect(connectorClient.data?.value?.chain.id).toEqual(1)
 
   await disconnect(config, { connector })

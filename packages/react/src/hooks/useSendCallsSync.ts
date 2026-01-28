@@ -1,42 +1,26 @@
 'use client'
-
 import { useMutation } from '@tanstack/react-query'
 import type {
   Config,
   ResolvedRegister,
   SendCallsSyncErrorType,
 } from '@wagmi/core'
-import type { Compute } from '@wagmi/core/internal'
+import type { Compute, ConfigParameter } from '@wagmi/core/internal'
 import {
   type SendCallsSyncData,
   type SendCallsSyncMutate,
   type SendCallsSyncMutateAsync,
+  type SendCallsSyncOptions,
   type SendCallsSyncVariables,
   sendCallsSyncMutationOptions,
 } from '@wagmi/core/query'
-
-import type { ConfigParameter } from '../types/properties.js'
-import type {
-  UseMutationParameters,
-  UseMutationReturnType,
-} from '../utils/query.js'
+import type { UseMutationReturnType } from '../utils/query.js'
 import { useConfig } from './useConfig.js'
 
 export type UseSendCallsSyncParameters<
   config extends Config = Config,
   context = unknown,
-> = Compute<
-  ConfigParameter<config> & {
-    mutation?:
-      | UseMutationParameters<
-          SendCallsSyncData,
-          SendCallsSyncErrorType,
-          SendCallsSyncVariables<config, config['chains'][number]['id']>,
-          context
-        >
-      | undefined
-  }
->
+> = Compute<ConfigParameter<config> & SendCallsSyncOptions<config, context>>
 
 export type UseSendCallsSyncReturnType<
   config extends Config = Config,
@@ -46,9 +30,13 @@ export type UseSendCallsSyncReturnType<
     SendCallsSyncData,
     SendCallsSyncErrorType,
     SendCallsSyncVariables<config, config['chains'][number]['id']>,
-    context
+    context,
+    SendCallsSyncMutate<config, context>,
+    SendCallsSyncMutateAsync<config, context>
   > & {
+    /** @deprecated use `mutate` instead */
     sendCallsSync: SendCallsSyncMutate<config, context>
+    /** @deprecated use `mutateAsync` instead */
     sendCallsSyncAsync: SendCallsSyncMutateAsync<config, context>
   }
 >
@@ -60,20 +48,13 @@ export function useSendCallsSync<
 >(
   parameters: UseSendCallsSyncParameters<config, context> = {},
 ): UseSendCallsSyncReturnType<config, context> {
-  const { mutation } = parameters
-
   const config = useConfig(parameters)
-
-  const mutationOptions = sendCallsSyncMutationOptions(config)
-  const { mutate, mutateAsync, ...result } = useMutation({
-    ...mutation,
-    ...mutationOptions,
-  })
-
+  const options = sendCallsSyncMutationOptions(config, parameters)
+  const mutation = useMutation(options)
   type Return = UseSendCallsSyncReturnType<config, context>
   return {
-    ...result,
-    sendCallsSync: mutate as Return['sendCallsSync'],
-    sendCallsSyncAsync: mutateAsync as Return['sendCallsSyncAsync'],
+    ...(mutation as Return),
+    sendCallsSync: mutation.mutate as Return['mutate'],
+    sendCallsSyncAsync: mutation.mutateAsync as Return['mutateAsync'],
   }
 }
