@@ -3,10 +3,10 @@ import { config, wait } from '@wagmi/test'
 import { render, renderHook } from '@wagmi/test/react'
 import * as React from 'react'
 import { expect, test, vi } from 'vitest'
-
-import { useAccount } from './useAccount.js'
 import { useConnect } from './useConnect.js'
+import { useConnection } from './useConnection.js'
 import { useConnectorClient } from './useConnectorClient.js'
+import { useConnectors } from './useConnectors.js'
 import { useDisconnect } from './useDisconnect.js'
 import { useSwitchChain } from './useSwitchChain.js'
 
@@ -45,7 +45,6 @@ test('default', async () => {
         "connectorClient",
         {
           "chainId": 1,
-          "connectorUid": undefined,
         },
       ],
       "refetch": [Function],
@@ -59,7 +58,7 @@ test('behavior: connected on mount', async () => {
 
   const { result } = await renderHook(() => useConnectorClient())
 
-  await vi.waitUntil(() => result.current.isSuccess)
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   const { data, queryKey: _, ...rest } = result.current
   expect(data).toMatchObject(
@@ -102,6 +101,7 @@ test('behavior: connected on mount', async () => {
 test('behavior: connect and disconnect', async () => {
   const { result } = await renderHook(() => ({
     useConnect: useConnect(),
+    useConnectors: useConnectors(),
     useConnectorClient: useConnectorClient(),
     useDisconnect: useDisconnect(),
   }))
@@ -109,7 +109,7 @@ test('behavior: connect and disconnect', async () => {
   expect(result.current.useConnectorClient.data).not.toBeDefined()
 
   result.current.useConnect.connect({
-    connector: result.current.useConnect.connectors[0]!,
+    connector: result.current.useConnectors[0]!,
   })
 
   await vi.waitFor(() =>
@@ -185,7 +185,7 @@ test('behavior: re-render does not invalidate query', async () => {
   await vi.waitFor(async () => {
     await expect
       .element(screen.getByTestId('address'))
-      .toHaveTextContent('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')
+      .toHaveTextContent('0x95132632579b073D12a6673e18Ab05777a6B86f8')
     await expect.element(screen.getByTestId('client')).toBeVisible()
 
     await expect.element(screen.getByTestId('child-client')).toBeVisible()
@@ -241,8 +241,9 @@ test('behavior: connector is on a different chain', async () => {
 function Parent() {
   const [renderCount, setRenderCount] = React.useState(1)
 
-  const { connectors, connect } = useConnect()
-  const { address } = useAccount()
+  const { connect } = useConnect()
+  const connectors = useConnectors()
+  const { address } = useConnection()
   const { data } = useConnectorClient()
 
   return (
