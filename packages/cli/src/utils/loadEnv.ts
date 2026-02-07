@@ -1,8 +1,8 @@
 import { parse } from 'dotenv'
 import { expand } from 'dotenv-expand'
 
-import { existsSync, readFileSync, statSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import fs from 'node:fs'
+import path from 'node:path'
 
 // https://github.com/vitejs/vite/blob/main/packages/vite/src/node/env.ts#L7
 export function loadEnv(
@@ -14,13 +14,14 @@ export function loadEnv(
   const mode = config.mode
   if (mode === 'local') {
     throw new Error(
-      `"local" cannot be used as a mode name because it conflicts with the .local postfix for .env files.`,
+      `"local" cannot be used as a mode name because it conflicts with ` +
+        `the .local postfix for .env files.`,
     )
   }
 
   const envFiles = [
-    /** default file */ '.env',
-    /** local file */ '.env.local',
+    /** default file */ `.env`,
+    /** local file */ `.env.local`,
     ...(mode
       ? [
           /** mode file */ `.env.${mode}`,
@@ -37,7 +38,7 @@ export function loadEnv(
         rootDir: envDir,
       })
       if (!path) return []
-      return Object.entries(parse(readFileSync(path)))
+      return Object.entries(parse(fs.readFileSync(path)))
     }),
   )
 
@@ -58,7 +59,7 @@ export function loadEnv(
   return parsed
 }
 
-function lookupFile(
+export function lookupFile(
   dir: string,
   formats: string[],
   options?: {
@@ -68,23 +69,21 @@ function lookupFile(
   },
 ): string | undefined {
   for (const format of formats) {
-    const fullPath = join(dir, format)
-    if (existsSync(fullPath) && statSync(fullPath).isFile()) {
+    const fullPath = path.join(dir, format)
+    if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
       const result = options?.pathOnly
         ? fullPath
-        : readFileSync(fullPath, 'utf-8')
+        : fs.readFileSync(fullPath, 'utf-8')
       if (!options?.predicate || options.predicate(result)) {
         return result
       }
     }
   }
-
-  const parentDir = dirname(dir)
+  const parentDir = path.dirname(dir)
   if (
     parentDir !== dir &&
     (!options?.rootDir || parentDir.startsWith(options?.rootDir))
-  )
+  ) {
     return lookupFile(parentDir, formats, options)
-
-  return undefined
+  }
 }

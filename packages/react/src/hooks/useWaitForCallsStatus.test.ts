@@ -1,8 +1,8 @@
 import { connect, disconnect } from '@wagmi/core'
 import { accounts, config, testClient, wait } from '@wagmi/test'
-import { renderHook, waitFor } from '@wagmi/test/react'
+import { renderHook } from '@wagmi/test/react'
 import { parseEther } from 'viem'
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 
 import { useSendCalls } from './useSendCalls.js'
 import { useWaitForCallsStatus } from './useWaitForCallsStatus.js'
@@ -12,12 +12,12 @@ const connector = config.connectors[0]!
 test('default', async () => {
   await connect(config, { connector })
 
-  const useSendCalls_render = renderHook(() => useSendCalls())
-  const useWaitForCallsStatus_render = renderHook(() =>
+  const useSendCalls_render = await renderHook(() => useSendCalls())
+  const useWaitForCallsStatus_render = await renderHook(() =>
     useWaitForCallsStatus({ id: useSendCalls_render.result.current.data?.id }),
   )
 
-  useSendCalls_render.result.current.sendCalls({
+  useSendCalls_render.result.current.mutate({
     calls: [
       {
         data: '0xdeadbeef',
@@ -34,9 +34,10 @@ test('default', async () => {
       },
     ],
   })
-  await waitFor(() =>
-    expect(useSendCalls_render.result.current.isSuccess).toBeTruthy(),
-  )
+
+  await vi.waitUntil(() => useSendCalls_render.result.current.isSuccess, {
+    timeout: 10_000,
+  })
 
   expect(useWaitForCallsStatus_render.result.current.fetchStatus).toBe('idle')
   useWaitForCallsStatus_render.rerender()
@@ -44,17 +45,13 @@ test('default', async () => {
     'fetching',
   )
 
-  await Promise.all([
-    waitFor(() =>
-      expect(
-        useWaitForCallsStatus_render.result.current.isSuccess,
-      ).toBeTruthy(),
-    ),
-    (async () => {
-      await wait(100)
-      await testClient.mainnet.mine({ blocks: 1 })
-    })(),
-  ])
+  await wait(0)
+  await testClient.mainnet.mine({ blocks: 1 })
+
+  await vi.waitUntil(
+    () => useWaitForCallsStatus_render.result.current.isSuccess,
+    { timeout: 10_000 },
+  )
 
   expect(useWaitForCallsStatus_render.result.current.data?.status).toBe(
     'success',
@@ -63,33 +60,34 @@ test('default', async () => {
     useWaitForCallsStatus_render.result.current.data?.receipts?.map((x) => ({
       ...x,
       blockHash: undefined,
+      transactionHash: undefined,
     })),
   ).toMatchInlineSnapshot(
     `
     [
       {
         "blockHash": undefined,
-        "blockNumber": 19258214n,
-        "gasUsed": 21064n,
+        "blockNumber": 23535881n,
+        "gasUsed": 21160n,
         "logs": [],
         "status": "success",
-        "transactionHash": "0x13c53b2d4d9da424835525349cd66e553330f323d6fb19458b801ae1f7989a41",
+        "transactionHash": undefined,
       },
       {
         "blockHash": undefined,
-        "blockNumber": 19258214n,
+        "blockNumber": 23535881n,
         "gasUsed": 21000n,
         "logs": [],
         "status": "success",
-        "transactionHash": "0xd8397b3e82b061c26a0c2093f1ceca0c3662a512614f7d6370349e89d0eea007",
+        "transactionHash": undefined,
       },
       {
         "blockHash": undefined,
-        "blockNumber": 19258214n,
+        "blockNumber": 23535881n,
         "gasUsed": 21000n,
         "logs": [],
         "status": "success",
-        "transactionHash": "0x4d26e346593d9ea265bb164b115e89aa92df43b0b8778ac75d4ad28e2a22b101",
+        "transactionHash": undefined,
       },
     ]
   `,

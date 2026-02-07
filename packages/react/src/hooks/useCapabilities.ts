@@ -1,37 +1,25 @@
 'use client'
-
 import type {
   Config,
   GetCapabilitiesErrorType,
   ResolvedRegister,
 } from '@wagmi/core'
-import type { Compute } from '@wagmi/core/internal'
+import type { Compute, ConfigParameter } from '@wagmi/core/internal'
 import {
   type GetCapabilitiesData,
   type GetCapabilitiesOptions,
-  type GetCapabilitiesQueryFnData,
-  type GetCapabilitiesQueryKey,
   getCapabilitiesQueryOptions,
 } from '@wagmi/core/query'
-
-import type { ConfigParameter, QueryParameter } from '../types/properties.js'
 import { type UseQueryReturnType, useQuery } from '../utils/query.js'
-import { useAccount } from './useAccount.js'
 import { useConfig } from './useConfig.js'
+import { useConnection } from './useConnection.js'
 
 export type UseCapabilitiesParameters<
   config extends Config = Config,
   chainId extends config['chains'][number]['id'] | undefined = undefined,
   selectData = GetCapabilitiesData<config, chainId>,
 > = Compute<
-  GetCapabilitiesOptions<config, chainId> &
-    ConfigParameter<config> &
-    QueryParameter<
-      GetCapabilitiesQueryFnData<config, chainId>,
-      GetCapabilitiesErrorType,
-      selectData,
-      GetCapabilitiesQueryKey<config, chainId>
-    >
+  GetCapabilitiesOptions<config, chainId, selectData> & ConfigParameter<config>
 >
 
 export type UseCapabilitiesReturnType<
@@ -48,15 +36,12 @@ export function useCapabilities<
 >(
   parameters: UseCapabilitiesParameters<config, chainId, selectData> = {},
 ): UseCapabilitiesReturnType<config, chainId, selectData> {
-  const { account, query = {} } = parameters
-
-  const { address } = useAccount()
   const config = useConfig(parameters)
-
+  const { address, connector } = useConnection({ config })
   const options = getCapabilitiesQueryOptions(config, {
     ...parameters,
-    account: account ?? address,
+    account: parameters.account ?? address,
+    connector: parameters.connector ?? connector,
   })
-
-  return useQuery({ ...query, ...options })
+  return useQuery(options as never) as any
 }
