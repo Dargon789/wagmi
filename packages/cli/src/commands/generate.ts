@@ -101,7 +101,7 @@ export async function generate(options: Generate = {}) {
       const previouslySeenContract = contractMap.get(contractConfig.name)
       if (previouslySeenContract) {
         if (
-          hashAbi(previouslySeenContract.abi) === hashAbi(contractConfig.abi)
+JSON.stringify(previouslySeenContract.abi) === JSON.stringify(contractConfig.abi)
         ) {
           // If the contract name and ABI match, skip adding it again, but allow it since this can occur when generating
           // from sources that mutually import each other, such as peer Foundry projects.
