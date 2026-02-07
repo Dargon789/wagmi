@@ -109,14 +109,7 @@ export function gemini(parameters: GeminiParameters = {}) {
     },
     async getProvider() {
       if (!walletProvider) {
-        const { GeminiWalletProvider } = await (() => {
-          // safe webpack optional peer dependency dynamic import
-          try {
-            return import('@gemini-wallet/core')
-          } catch {
-            throw new Error('dependency "@gemini-wallet/core" not found')
-          }
-        })()
+        const { GeminiWalletProvider } = await import('@gemini-wallet/core')
         walletProvider = new GeminiWalletProvider({
           appMetadata: parameters.appMetadata ?? {},
           chain: {
