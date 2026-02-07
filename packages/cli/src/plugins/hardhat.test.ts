@@ -1,45 +1,49 @@
 import fixtures from 'fixturez'
 import { dirname, resolve } from 'pathe'
-import { afterEach, expect, test, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { hardhat } from './hardhat.js'
+import { hardhat } from './hardhat'
 
 const f = fixtures(__dirname)
 
-afterEach(() => {
-  vi.restoreAllMocks()
-})
+describe('hardhat', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
 
-test('validate', async () => {
-  const temp = f.temp()
-  await expect(
-    hardhat({ project: temp }).validate?.(),
-  ).rejects.toThrowErrorMatchingInlineSnapshot(
-    '[Error: hardhat must be installed to use Hardhat plugin.]',
-  )
-})
+  describe('validate', async () => {
+    it('validate', async () => {
+      const temp = f.temp()
+      await expect(hardhat({ project: temp }).validate()).rejects
+        .toThrowErrorMatchingInlineSnapshot(`
+        "hardhat must be installed to use Hardhat plugin.
+        To install, run: pnpm add hardhat"
+      `)
+    })
 
-test('project does not exist', async () => {
-  const dir = f.temp()
-  const spy = vi.spyOn(process, 'cwd')
-  spy.mockImplementation(() => dir)
+    it('project does not exist', async () => {
+      const dir = f.temp()
+      const spy = vi.spyOn(process, 'cwd')
+      spy.mockImplementation(() => dir)
 
-  try {
-    await hardhat({ project: '../path/to/project' }).validate?.()
-  } catch (error) {
-    expect(
-      (error as Error).message.replace(dirname(dir), '..'),
-    ).toMatchInlineSnapshot('"Hardhat project ../path/to/project not found."')
-  }
-})
+      try {
+        await hardhat({ project: '../path/to/project' }).validate()
+      } catch (error) {
+        expect(
+          (error as Error).message.replace(dirname(dir), '..'),
+        ).toMatchInlineSnapshot(
+          '"Hardhat project ../path/to/project not found."',
+        )
+      }
+    })
+  })
 
-test('contracts', async () => {
-  await expect(
-    hardhat({
-      project: resolve(__dirname, '__fixtures__/hardhat/'),
-      exclude: ['Foo.sol/**'],
-    }).contracts?.(),
-  ).resolves.toMatchInlineSnapshot(`
+  it('contracts', async () => {
+    await expect(
+      hardhat({
+        project: resolve(__dirname, '__fixtures__/hardhat/'),
+      }).contracts(),
+    ).resolves.toMatchInlineSnapshot(`
       [
         {
           "abi": [
@@ -82,4 +86,5 @@ test('contracts', async () => {
         },
       ]
     `)
-}, 10_000)
+  })
+})

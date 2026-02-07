@@ -5,11 +5,7 @@
 // biome-ignore lint/performance/noBarrelFile: entrypoint module
 export {
   WagmiContext,
-  /** @deprecated Use `WagmiContext` instead */
-  WagmiContext as Context,
   WagmiProvider,
-  /** @deprecated Use `WagmiProvider` instead */
-  WagmiProvider as WagmiConfig,
   type WagmiProviderProps,
 } from '../context.js'
 
@@ -29,21 +25,16 @@ export {
 ////////////////////////////////////////////////////////////////////////////////
 
 export {
-  type UseAccountParameters,
-  type UseAccountReturnType,
-  useAccount,
-} from '../hooks/useAccount.js'
-
-export {
-  type UseAccountEffectParameters,
-  useAccountEffect,
-} from '../hooks/useAccountEffect.js'
-
-export {
   type UseBalanceParameters,
   type UseBalanceReturnType,
   useBalance,
 } from '../hooks/useBalance.js'
+
+export {
+  type UseBlobBaseFeeParameters,
+  type UseBlobBaseFeeReturnType,
+  useBlobBaseFee,
+} from '../hooks/useBlobBaseFee.js'
 
 export {
   type UseBlockParameters,
@@ -68,16 +59,19 @@ export {
   type UseBytecodeReturnType,
   useBytecode,
 } from '../hooks/useBytecode.js'
+
 export {
   type UseCallParameters,
   type UseCallReturnType,
   useCall,
 } from '../hooks/useCall.js'
+
 export {
   type UseCallsStatusParameters,
   type UseCallsStatusReturnType,
   useCallsStatus,
 } from '../hooks/useCallsStatus.js'
+
 export {
   type UseCapabilitiesParameters,
   type UseCapabilitiesReturnType,
@@ -115,20 +109,49 @@ export {
 } from '../hooks/useConnect.js'
 
 export {
+  /** @deprecated use `UseConnectionParameters` instead */
+  type UseConnectionParameters as UseAccountParameters,
+  type UseConnectionParameters,
+  /** @deprecated use `UseConnectionsReturnType` instead */
+  type UseConnectionReturnType as UseAccountReturnType,
+  type UseConnectionReturnType,
+  /** @deprecated use `useConnection` instead */
+  useConnection as useAccount,
+  useConnection,
+} from '../hooks/useConnection.js'
+
+export {
+  /** @deprecated use `UseConnectionEffectParameters` instead */
+  type UseConnectionEffectParameters as UseAccountEffectParameters,
+  type UseConnectionEffectParameters,
+  /** @deprecated use `useConnectionEffect` instead */
+  useConnectionEffect as useAccountEffect,
+  useConnectionEffect,
+} from '../hooks/useConnectionEffect.js'
+
+export {
   type UseConnectionsParameters,
   type UseConnectionsReturnType,
   useConnections,
 } from '../hooks/useConnections.js'
+
 export {
   type UseConnectorClientParameters,
   type UseConnectorClientReturnType,
   useConnectorClient,
 } from '../hooks/useConnectorClient.js'
+
 export {
   type UseConnectorsParameters,
   type UseConnectorsReturnType,
   useConnectors,
 } from '../hooks/useConnectors.js'
+
+export {
+  type UseContractEventsParameters,
+  type UseContractEventsReturnType,
+  useContractEvents,
+} from '../hooks/useContractEvents.js'
 
 export {
   type UseDeployContractParameters,
@@ -176,8 +199,6 @@ export {
   type UseEstimateFeesPerGasParameters,
   type UseEstimateFeesPerGasReturnType,
   useEstimateFeesPerGas,
-  /** @deprecated Use `useEstimateFeesPerGas` instead */
-  useEstimateFeesPerGas as useFeeData,
 } from '../hooks/useEstimateFeesPerGas.js'
 
 export {
@@ -208,8 +229,6 @@ export {
   type UseInfiniteContractReadsParameters,
   type UseInfiniteContractReadsReturnType,
   useInfiniteReadContracts,
-  /** @deprecated Use `useInfiniteReadContracts` instead */
-  useInfiniteReadContracts as useContractInfiniteReads,
 } from '../hooks/useInfiniteReadContracts.js'
 
 export {
@@ -234,16 +253,12 @@ export {
   type UseReadContractParameters,
   type UseReadContractReturnType,
   useReadContract,
-  /** @deprecated Use `useWriteContract` instead */
-  useReadContract as useContractRead,
 } from '../hooks/useReadContract.js'
 
 export {
   type UseReadContractsParameters,
   type UseReadContractsReturnType,
   useReadContracts,
-  /** @deprecated Use `useWriteContract` instead */
-  useReadContracts as useContractReads,
 } from '../hooks/useReadContracts.js'
 
 export {
@@ -259,10 +274,22 @@ export {
 } from '../hooks/useSendCalls.js'
 
 export {
+  type UseSendCallsSyncParameters,
+  type UseSendCallsSyncReturnType,
+  useSendCallsSync,
+} from '../hooks/useSendCallsSync.js'
+
+export {
   type UseSendTransactionParameters,
   type UseSendTransactionReturnType,
   useSendTransaction,
 } from '../hooks/useSendTransaction.js'
+
+export {
+  type UseSendTransactionSyncParameters,
+  type UseSendTransactionSyncReturnType,
+  useSendTransactionSync,
+} from '../hooks/useSendTransactionSync.js'
 
 export {
   type UseShowCallsStatusParameters,
@@ -295,23 +322,22 @@ export {
 } from '../hooks/useStorageAt.js'
 
 export {
-  type UseSwitchAccountParameters,
-  type UseSwitchAccountReturnType,
-  useSwitchAccount,
-} from '../hooks/useSwitchAccount.js'
-
-export {
   type UseSwitchChainParameters,
   type UseSwitchChainReturnType,
   useSwitchChain,
 } from '../hooks/useSwitchChain.js'
 
 export {
-  type UseTokenParameters,
-  type UseTokenReturnType,
-  /** @deprecated Use `useReadContracts` instead */
-  useToken,
-} from '../hooks/useToken.js'
+  /** @deprecated use `UseSwitchConnectionParameters` instead */
+  type UseSwitchConnectionParameters as UseSwitchAccountParameters,
+  type UseSwitchConnectionParameters,
+  /** @deprecated use `UseSwitchConnectionReturnType` instead */
+  type UseSwitchConnectionReturnType as UseSwitchAccountReturnType,
+  type UseSwitchConnectionReturnType,
+  /** @deprecated use `useSwitchConnection` instead */
+  useSwitchConnection as useSwitchAccount,
+  useSwitchConnection,
+} from '../hooks/useSwitchConnection.js'
 
 export {
   type UseTransactionParameters,
@@ -396,9 +422,13 @@ export {
   type UseWriteContractParameters,
   type UseWriteContractReturnType,
   useWriteContract,
-  /** @deprecated Use `useWriteContract` instead */
-  useWriteContract as useContractWrite,
 } from '../hooks/useWriteContract.js'
+
+export {
+  type UseWriteContractSyncParameters,
+  type UseWriteContractSyncReturnType,
+  useWriteContractSync,
+} from '../hooks/useWriteContractSync.js'
 
 ////////////////////////////////////////////////////////////////////////////////
 // Hydrate
@@ -452,7 +482,6 @@ export {
   injected,
   mock,
   noopStorage,
-  normalizeChainId,
   type PartializedState,
   ProviderNotFoundError,
   type ProviderNotFoundErrorType,
