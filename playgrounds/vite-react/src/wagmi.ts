@@ -1,7 +1,7 @@
 import { del, get, set } from 'idb-keyval'
 import { createConfig, http } from 'wagmi'
 import { celo, mainnet, optimism, sepolia } from 'wagmi/chains'
-import { baseAccount, gemini, metaMask, walletConnect } from 'wagmi/connectors'
+import { baseAccount, metaMask, porto, walletConnect } from 'wagmi/connectors'
 
 // biome-ignore lint/correctness/noUnusedVariables: allowed
 const indexedDBStorage = {
@@ -22,9 +22,9 @@ export const config = createConfig({
     walletConnect({
       projectId: import.meta.env.VITE_WC_PROJECT_ID,
     }),
+    porto(),
     baseAccount(),
     metaMask(),
-    gemini(),
   ],
   transports: {
     [mainnet.id]: http(),
