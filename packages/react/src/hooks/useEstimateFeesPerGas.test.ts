@@ -6,11 +6,10 @@ import { useEstimateFeesPerGas } from './useEstimateFeesPerGas.js'
 test('default', async () => {
   const { result } = await renderHook(() => useEstimateFeesPerGas())
 
-  await vi.waitUntil(() => result.current.isSuccess)
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(Object.keys(result.current.data!)).toMatchInlineSnapshot(`
     [
-      "formatted",
       "gasPrice",
       "maxFeePerGas",
       "maxPriorityFeePerGas",
