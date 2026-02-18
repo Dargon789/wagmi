@@ -72,15 +72,22 @@ export async function deployContract<
   else
     client = await getConnectorClient(config, {
       account: account ?? undefined,
+      assertChainId: false,
       chainId,
       connector,
     })
+
+  const chain = (() => {
+    if (!chainId || client.chain?.id === chainId) return client.chain
+    return { id: chainId }
+  })()
 
   const action = getAction(client, viem_deployContract, 'deployContract')
   const hash = await action({
     ...(rest as any),
     ...(account ? { account } : {}),
-    chain: chainId ? { id: chainId } : null,
+    assertChainId: !!chainId,
+    chain,
   })
 
   return hash

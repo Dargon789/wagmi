@@ -6,14 +6,14 @@ import { afterAll, afterEach, beforeAll, expect, test } from 'vitest'
 import {
   address,
   apiKey,
-  baseUrl,
-  handlers,
+  getHandlers,
   timeoutAddress,
   unverifiedContractAddress,
 } from '../../test/utils.js'
-import { fetch } from './fetch.js'
+import { fetch, getCacheDir } from './fetch.js'
 
-const server = setupServer(...handlers)
+const baseUrl = 'https://api.etherscan.io/v2/api'
+const server = setupServer(...getHandlers(baseUrl))
 
 beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
@@ -33,8 +33,8 @@ const parse: Fetch['parse'] = async ({ response }) => {
   return JSON.parse(data.result)
 }
 
-test('fetches ABI', () => {
-  expect(
+test('fetches ABI', async () => {
+  await expect(
     fetch({
       contracts: [{ name: 'WagmiMintExample', address }],
       request,
@@ -43,8 +43,8 @@ test('fetches ABI', () => {
   ).resolves.toMatchSnapshot()
 })
 
-test('fails to fetch for unverified contract', () => {
-  expect(
+test('fails to fetch for unverified contract', async () => {
+  await expect(
     fetch({
       contracts: [
         { name: 'WagmiMintExample', address: unverifiedContractAddress },
@@ -57,8 +57,8 @@ test('fails to fetch for unverified contract', () => {
   )
 })
 
-test('aborts request', () => {
-  expect(
+test('aborts request', async () => {
+  await expect(
     fetch({
       contracts: [{ name: 'WagmiMintExample', address: timeoutAddress }],
       request,
@@ -128,7 +128,7 @@ test('reads from cache', async () => {
 })
 
 test('fails and reads from cache', async () => {
-  const cacheDir = `${homedir}/.wagmi-cli/plugins/fetch/cache`
+  const cacheDir = getCacheDir()
   await mkdir(cacheDir, { recursive: true })
 
   const contract = {
