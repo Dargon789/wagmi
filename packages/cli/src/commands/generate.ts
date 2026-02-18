@@ -1,26 +1,22 @@
-import type { Address } from 'abitype'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { Abi as AbiSchema } from 'abitype/zod'
 import { camelCase } from 'change-case'
-import type { FSWatcher, WatchOptions } from 'chokidar'
+import type { ChokidarOptions, FSWatcher } from 'chokidar'
 import { watch } from 'chokidar'
 import { default as dedent } from 'dedent'
-import { ensureDir, default as fse } from 'fs-extra'
 import { basename, dirname, resolve } from 'pathe'
 import pc from 'picocolors'
-import { getAddress } from 'viem'
+import { type Abi, type Address, getAddress, keccak256 } from 'viem'
 import { z } from 'zod'
 
-import { version as packageVersion } from '../../package.json'
-import type { Contract, ContractConfig, Plugin, Watch } from '../config'
-import { fromZodError } from '../errors'
-import * as logger from '../logger'
-import {
-  findConfig,
-  format,
-  getAddressDocString,
-  getIsUsingTypeScript,
-  resolveConfig,
-} from '../utils'
+import type { Contract, ContractConfig, Plugin, Watch } from '../config.js'
+import { fromZodError } from '../errors.js'
+import * as logger from '../logger.js'
+import { findConfig } from '../utils/findConfig.js'
+import { format } from '../utils/format.js'
+import { getAddressDocString } from '../utils/getAddressDocString.js'
+import { getIsUsingTypeScript } from '../utils/getIsUsingTypeScript.js'
+import { resolveConfig } from '../utils/resolveConfig.js'
 
 const Generate = z.object({
   /** Path to config file */
@@ -56,12 +52,12 @@ export async function generate(options: Generate = {}) {
   type Watcher = FSWatcher & { config?: Watch }
   const watchers: Watcher[] = []
   const watchWriteDelay = 100
-  const watchOptions: WatchOptions = {
+  const watchOptions = {
     atomic: true,
     // awaitWriteFinish: true,
     ignoreInitial: true,
     persistent: true,
-  }
+  } satisfies ChokidarOptions
 
   const outNames = new Set<string>()
   const isArrayConfig = Array.isArray(resolvedConfigs)
@@ -79,12 +75,12 @@ export async function generate(options: Generate = {}) {
       ...x,
       id: `${x.name}-${i}`,
     }))
-    const spinner = logger.spinner()
-    spinner.start('Validating plugins')
+    const spinner = logger.spinner('Validating plugins')
+    spinner.start()
     for (const plugin of plugins) {
       await plugin.validate?.()
     }
-    spinner.succeed()
+    spinner.success()
 
     // Add plugin contracts to config contracts
     const contractConfigs = config.contracts ?? []
@@ -102,22 +98,34 @@ export async function generate(options: Generate = {}) {
     const contractNames = new Set<string>()
     const contractMap = new Map<string, Contract>()
     for (const contractConfig of contractConfigs) {
-      if (contractNames.has(contractConfig.name))
+      const previouslySeenContract = contractMap.get(contractConfig.name)
+      if (previouslySeenContract) {
+        if (
+JSON.stringify(previouslySeenContract.abi) === JSON.stringify(contractConfig.abi)
+        ) {
+          // If the contract name and ABI match, skip adding it again, but allow it since this can occur when generating
+          // from sources that mutually import each other, such as peer Foundry projects.
+          continue
+        }
         throw new Error(
-          `Contract name "${contractConfig.name}" must be unique.`,
+          `Duplicate contract name "${contractConfig.name}" found with different ABI. Contract names must be unique up to ABI.`,
         )
+      }
       const contract = await getContract({ ...contractConfig, isTypeScript })
       contractMap.set(contract.name, contract)
+
       contractNames.add(contractConfig.name)
     }
 
-    const contracts = [...contractMap.values()]
+    // Sort contracts by name Ascending (low to high) as the key is `String`
+    const sortedAscContractMap = new Map([...contractMap].sort())
+    const contracts = [...sortedAscContractMap.values()]
     if (!contracts.length && !options.watch) {
-      spinner.fail()
+      spinner.error()
       logger.warn('No contracts found.')
       return
     }
-    spinner.succeed()
+    spinner.success()
 
     // Run plugins
     const imports = []
@@ -125,7 +133,7 @@ export async function generate(options: Generate = {}) {
     const content = []
     type Output = {
       plugin: Pick<Plugin, 'name'>
-    } & Awaited<ReturnType<Required<Plugin>['run']>>
+    } & Awaited<ReturnType<NonNullable<Plugin['run']>>>
     const outputs: Output[] = []
     spinner.start('Running plugins')
     for (const plugin of plugins) {
@@ -144,7 +152,7 @@ export async function generate(options: Generate = {}) {
       result.imports && imports.push(result.imports)
       result.prepend && prepend.push(result.prepend)
     }
-    spinner.succeed()
+    spinner.success()
 
     // Write output to file
     spinner.start(`Writing to ${pc.gray(config.out)}`)
@@ -155,7 +163,7 @@ export async function generate(options: Generate = {}) {
       prepend,
       filename: config.out,
     })
-    spinner.succeed()
+    spinner.success()
 
     if (options.watch) {
       if (!watchConfigs.length) {
@@ -199,7 +207,9 @@ export async function generate(options: Generate = {}) {
             if (timeout) clearTimeout(timeout)
             timeout = setTimeout(async () => {
               timeout = null
-              const contracts = [...contractMap.values()]
+              // Sort contracts by name Ascending (low to high) as the key is `String`
+              const sortedAscContractMap = new Map([...contractMap].sort())
+              const contracts = [...sortedAscContractMap.values()]
               const imports = []
               const prepend = []
               const content = []
@@ -225,8 +235,10 @@ export async function generate(options: Generate = {}) {
                 result.prepend && prepend.push(result.prepend)
               }
 
-              const spinner = logger.spinner()
-              spinner.start(`Writing to ${pc.gray(config.out)}`)
+              const spinner = logger.spinner(
+                `Writing to ${pc.gray(config.out)}`,
+              )
+              spinner.start()
               await writeContracts({
                 content,
                 contracts,
@@ -234,7 +246,7 @@ export async function generate(options: Generate = {}) {
                 prepend,
                 filename: config.out,
               })
-              spinner.succeed()
+              spinner.success()
             }, watchWriteDelay)
             needsWrite = false
           }
@@ -286,9 +298,9 @@ async function getContract({
   isTypeScript,
 }: ContractConfig & { isTypeScript: boolean }): Promise<Contract> {
   const constAssertion = isTypeScript ? ' as const' : ''
-  const abiName = `${camelCase(name)}ABI`
+  const abiName = `${camelCase(name)}Abi`
   try {
-    abi = await AbiSchema.parseAsync(abi)
+    abi = (await AbiSchema.parseAsync(abi)) as Abi
   } catch (error) {
     if (error instanceof z.ZodError)
       throw fromZodError(error, {
@@ -313,7 +325,7 @@ async function getContract({
 
   let meta: Contract['meta'] = { abiName }
   if (address) {
-    let resolvedAddress
+    let resolvedAddress: Address | Record<number, Address>
     try {
       const Address = z
         .string()
@@ -372,7 +384,6 @@ async function writeContracts({
 }) {
   // Assemble code
   let code = dedent`
-    // Generated by @wagmi/cli@${packageVersion} on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}
     ${imports.join('\n\n') ?? ''}
 
     ${prepend.join('\n\n') ?? ''}
@@ -393,9 +404,9 @@ async function writeContracts({
   // Format and write output
   const cwd = process.cwd()
   const outPath = resolve(cwd, filename)
-  await ensureDir(dirname(outPath))
+  await mkdir(dirname(outPath), { recursive: true })
   const formatted = await format(code)
-  await fse.writeFile(outPath, formatted)
+  await writeFile(outPath, formatted)
 }
 
 function getBannerContent({ name }: { name: string }) {
@@ -404,4 +415,10 @@ function getBannerContent({ name }: { name: string }) {
   // ${name}
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   `
+}
+
+function hashAbi(abi: Abi): string {
+  // Could use something faster, e.g. non-cryptographic hash or CRC32, but only called in the case
+  // we hit duplicate contract names, so probably not worth it.
+  return keccak256(Buffer.from(JSON.stringify(abi)))
 }
