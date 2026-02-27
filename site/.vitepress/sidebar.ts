@@ -89,10 +89,6 @@ export function getSidebar() {
                 text: 'baseAccount',
                 link: '/react/api/connectors/baseAccount',
               },
-              {
-                text: 'gemini',
-                link: '/react/api/connectors/gemini',
-              },
               { text: 'injected', link: '/react/api/connectors/injected' },
               {
                 text: 'metaMask',
@@ -284,6 +280,10 @@ export function getSidebar() {
             link: '/react/api/hooks/useSignMessage',
           },
           {
+            text: 'useSignTransaction',
+            link: '/react/api/hooks/useSignTransaction',
+          },
+          {
             text: 'useSignTypedData',
             link: '/react/api/hooks/useSignTypedData',
           },
@@ -455,10 +455,6 @@ export function getSidebar() {
                 text: 'baseAccount',
                 link: '/vue/api/connectors/baseAccount',
               },
-              {
-                text: 'gemini',
-                link: '/vue/api/connectors/gemini',
-              },
               { text: 'injected', link: '/vue/api/connectors/injected' },
               {
                 text: 'metaMask',
@@ -582,6 +578,10 @@ export function getSidebar() {
           {
             text: 'useSignMessage',
             link: '/vue/api/composables/useSignMessage',
+          },
+          {
+            text: 'useSignTransaction',
+            link: '/vue/api/composables/useSignTransaction',
           },
           {
             text: 'useSignTypedData',
@@ -710,10 +710,6 @@ export function getSidebar() {
               {
                 text: 'baseAccount',
                 link: '/core/api/connectors/baseAccount',
-              },
-              {
-                text: 'gemini',
-                link: '/core/api/connectors/gemini',
               },
               { text: 'injected', link: '/core/api/connectors/injected' },
               {
@@ -1133,10 +1129,6 @@ export function getSidebar() {
               {
                 text: 'baseAccount',
                 link: '/solid/api/connectors/baseAccount',
-              },
-              {
-                text: 'gemini',
-                link: '/solid/api/connectors/gemini',
               },
               { text: 'injected', link: '/solid/api/connectors/injected' },
               {
