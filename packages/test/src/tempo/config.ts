@@ -96,7 +96,7 @@ export function renderHook<result, props>(
   })
 }
 
-export function waitFor(callback: () => void, options?: { timeout?: number }) {
+export function waitFor(callback: () => void | Promise<void>, options?: { timeout?: number; interval?: number }) {
   return vi.waitFor(callback, { timeout: 10_000, ...options })
 }
 
