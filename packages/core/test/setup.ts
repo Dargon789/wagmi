@@ -1,5 +1,10 @@
 import { vi } from 'vitest'
 
-vi.mock('../src/version.ts', () => {
-  return { version: 'x.y.z' }
+Object.defineProperty(window, 'localStorage', {
+  value: {
+    getItem: vi.fn(() => null),
+    removeItem: vi.fn(() => null),
+    setItem: vi.fn(() => null),
+  },
+  writable: true,
 })
