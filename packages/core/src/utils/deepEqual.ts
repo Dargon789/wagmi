@@ -11,7 +11,7 @@ export function deepEqual(a: any, b: any) {
 
     if (Array.isArray(a) && Array.isArray(b)) {
       length = a.length
-      if (length !== b.length) return false
+      if (length != b.length) return false
       for (i = length; i-- !== 0; ) if (!deepEqual(a[i], b[i])) return false
       return true
     }
@@ -31,7 +31,8 @@ export function deepEqual(a: any, b: any) {
     length = keys.length
     if (length !== Object.keys(b).length) return false
 
-    for (i = length; i-- !== 0; ) if (!Object.hasOwn(b, keys[i]!)) return false
+    for (i = length; i-- !== 0; )
+      if (!Object.prototype.hasOwnProperty.call(b, keys[i]!)) return false
 
     for (i = length; i-- !== 0; ) {
       const key = keys[i]
@@ -43,6 +44,5 @@ export function deepEqual(a: any, b: any) {
   }
 
   // true if both NaN, false otherwise
-  // biome-ignore lint/suspicious/noSelfCompare: using
   return a !== a && b !== b
 }

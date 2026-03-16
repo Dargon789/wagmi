@@ -1,0 +1,4 @@
+{
+  "usePrepareContractWrite": "usePrepareContractWrite",
+  "usePrepareSendTransaction": "usePrepareSendTransaction"
+}
