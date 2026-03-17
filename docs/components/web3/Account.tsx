@@ -29,7 +29,7 @@ export function Account() {
     >
       <Stack align="center" direction={{ xs: 'vertical', sm: 'horizontal' }}>
         <Avatar
-          src={ensAvatarData as any}
+          src={ensAvatarData ?? undefined}
           label="ENS Avatar"
           placeholder={!ensAvatarData}
         />
