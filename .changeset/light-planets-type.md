@@ -1,5 +1,5 @@
 ---
-"@fake-scope/fake-pkg": patch
+"@wagmi/svelte": patch
 ---
 
 @wagmi/svelte
