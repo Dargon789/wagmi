@@ -138,7 +138,7 @@ If you find Wagmi useful or use it for work, please consider [sponsoring Wagmi](
       <img alt="Privy logo" src="https://raw.githubusercontent.com/wevm/.github/main/content/sponsors/privy-light.svg" width="auto" height="50">
     </picture>
   </a>
-  <a href="https://pancakeswap.finance/">
+  <a href="https://pancakeswap.finance">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/wevm/.github/main/content/sponsors/pancake-dark.svg">
       <img alt="pancake logo" src="https://raw.githubusercontent.com/wevm/.github/main/content/sponsors/pancake-light.svg" width="auto" height="50">
@@ -196,8 +196,5 @@ If you find Wagmi useful or use it for work, please consider [sponsoring Wagmi](
 <a href="https://vercel.com/?utm_source=wevm&utm_campaign=oss">
   <img src="https://www.datocms-assets.com/31049/1618983297-powered-by-vercel.svg" alt="Powered by Vercel" height="35">
 </a>
-<br />
-<a href="https://quicknode.com/?utm_source=wevm&utm_campaign=oss">
-  <img src="https://raw.githubusercontent.com/wevm/.github/refs/heads/main/content/quicknode-badge.svg" alt="Powered by QuickNode" height="35">
-</a>
+
 
