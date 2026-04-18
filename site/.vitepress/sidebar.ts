@@ -89,10 +89,6 @@ export function getSidebar() {
                 text: 'baseAccount',
                 link: '/react/api/connectors/baseAccount',
               },
-              {
-                text: 'gemini',
-                link: '/react/api/connectors/gemini',
-              },
               { text: 'injected', link: '/react/api/connectors/injected' },
               {
                 text: 'metaMask',
@@ -109,6 +105,10 @@ export function getSidebar() {
               {
                 text: 'safe',
                 link: '/react/api/connectors/safe',
+              },
+              {
+                text: 'tempoWallet',
+                link: '/react/api/connectors/tempoWallet',
               },
               {
                 text: 'walletConnect',
@@ -284,6 +284,10 @@ export function getSidebar() {
             link: '/react/api/hooks/useSignMessage',
           },
           {
+            text: 'useSignTransaction',
+            link: '/react/api/hooks/useSignTransaction',
+          },
+          {
             text: 'useSignTypedData',
             link: '/react/api/hooks/useSignTypedData',
           },
@@ -455,10 +459,6 @@ export function getSidebar() {
                 text: 'baseAccount',
                 link: '/vue/api/connectors/baseAccount',
               },
-              {
-                text: 'gemini',
-                link: '/vue/api/connectors/gemini',
-              },
               { text: 'injected', link: '/vue/api/connectors/injected' },
               {
                 text: 'metaMask',
@@ -475,6 +475,10 @@ export function getSidebar() {
               {
                 text: 'safe',
                 link: '/vue/api/connectors/safe',
+              },
+              {
+                text: 'tempoWallet',
+                link: '/vue/api/connectors/tempoWallet',
               },
               {
                 text: 'walletConnect',
@@ -582,6 +586,10 @@ export function getSidebar() {
           {
             text: 'useSignMessage',
             link: '/vue/api/composables/useSignMessage',
+          },
+          {
+            text: 'useSignTransaction',
+            link: '/vue/api/composables/useSignTransaction',
           },
           {
             text: 'useSignTypedData',
@@ -711,10 +719,6 @@ export function getSidebar() {
                 text: 'baseAccount',
                 link: '/core/api/connectors/baseAccount',
               },
-              {
-                text: 'gemini',
-                link: '/core/api/connectors/gemini',
-              },
               { text: 'injected', link: '/core/api/connectors/injected' },
               {
                 text: 'metaMask',
@@ -731,6 +735,10 @@ export function getSidebar() {
               {
                 text: 'safe',
                 link: '/core/api/connectors/safe',
+              },
+              {
+                text: 'tempoWallet',
+                link: '/core/api/connectors/tempoWallet',
               },
               {
                 text: 'walletConnect',
@@ -1134,10 +1142,6 @@ export function getSidebar() {
                 text: 'baseAccount',
                 link: '/solid/api/connectors/baseAccount',
               },
-              {
-                text: 'gemini',
-                link: '/solid/api/connectors/gemini',
-              },
               { text: 'injected', link: '/solid/api/connectors/injected' },
               {
                 text: 'metaMask',
@@ -1154,6 +1158,10 @@ export function getSidebar() {
               {
                 text: 'safe',
                 link: '/solid/api/connectors/safe',
+              },
+              {
+                text: 'tempoWallet',
+                link: '/solid/api/connectors/tempoWallet',
               },
               {
                 text: 'walletConnect',
@@ -1282,12 +1290,13 @@ export function getSidebar() {
         items: [
           { text: 'Getting Started', link: '/tempo/getting-started' },
           { text: 'Chains', link: '/tempo/chains' },
+          { text: 'Connectors', link: '/tempo/connectors' },
           { text: 'Tempo Docs & Guides', link: 'https://docs.tempo.xyz' },
         ],
       },
       {
         text: 'Hooks',
-        link: '/tempo/hooks/',
+        link: '/tempo/hooks',
         items: [
           {
             text: 'AMM',
@@ -1523,11 +1532,50 @@ export function getSidebar() {
               },
             ],
           },
+          {
+            text: 'Zone',
+            collapsed: true,
+            items: [
+              {
+                text: 'useAuthorizationTokenInfo',
+                link: '/tempo/hooks/zone.useAuthorizationTokenInfo',
+              },
+              {
+                text: 'useDeposit',
+                link: '/tempo/hooks/zone.useDeposit',
+              },
+              {
+                text: 'useDepositStatus',
+                link: '/tempo/hooks/zone.useDepositStatus',
+              },
+              {
+                text: 'useEncryptedDeposit',
+                link: '/tempo/hooks/zone.useEncryptedDeposit',
+              },
+              {
+                text: 'useRequestVerifiableWithdrawal',
+                link: '/tempo/hooks/zone.useRequestVerifiableWithdrawal',
+              },
+              {
+                text: 'useRequestWithdrawal',
+                link: '/tempo/hooks/zone.useRequestWithdrawal',
+              },
+              {
+                text: 'useSignAuthorizationToken',
+                link: '/tempo/hooks/zone.useSignAuthorizationToken',
+              },
+              {
+                text: 'useWithdrawalFee',
+                link: '/tempo/hooks/zone.useWithdrawalFee',
+              },
+              { text: 'useZoneInfo', link: '/tempo/hooks/zone.useZoneInfo' },
+            ],
+          },
         ],
       },
       {
         text: 'Actions',
-        link: '/tempo/actions/',
+        link: '/tempo/actions',
         items: [
           {
             text: 'AMM',
@@ -1739,25 +1787,60 @@ export function getSidebar() {
               },
             ],
           },
+          {
+            text: 'Zone',
+            collapsed: true,
+            items: [
+              {
+                text: 'deposit',
+                link: '/tempo/actions/zone.deposit',
+              },
+              {
+                text: 'getAuthorizationTokenInfo',
+                link: '/tempo/actions/zone.getAuthorizationTokenInfo',
+              },
+              {
+                text: 'getDepositStatus',
+                link: '/tempo/actions/zone.getDepositStatus',
+              },
+              {
+                text: 'encryptedDeposit',
+                link: '/tempo/actions/zone.encryptedDeposit',
+              },
+              {
+                text: 'getWithdrawalFee',
+                link: '/tempo/actions/zone.getWithdrawalFee',
+              },
+              {
+                text: 'getZoneInfo',
+                link: '/tempo/actions/zone.getZoneInfo',
+              },
+              {
+                text: 'requestVerifiableWithdrawal',
+                link: '/tempo/actions/zone.requestVerifiableWithdrawal',
+              },
+              {
+                text: 'requestWithdrawal',
+                link: '/tempo/actions/zone.requestWithdrawal',
+              },
+              {
+                text: 'signAuthorizationToken',
+                link: '/tempo/actions/zone.signAuthorizationToken',
+              },
+            ],
+          },
         ],
       },
       {
         text: 'Connectors',
-        link: '/tempo/connectors/',
+        link: '/tempo/connectors',
         items: [
+          { text: 'tempoWallet', link: '/tempo/connectors/tempoWallet' },
           {
             text: 'dangerous_secp256k1',
             link: '/tempo/connectors/dangerous_secp256k1',
           },
           { text: 'webAuthn', link: '/tempo/connectors/webAuthn' },
-        ],
-      },
-      {
-        text: 'Key Managers',
-        link: '/tempo/keyManagers/',
-        items: [
-          { text: 'http', link: '/tempo/keyManagers/http' },
-          { text: 'localStorage', link: '/tempo/keyManagers/localStorage' },
         ],
       },
     ],
