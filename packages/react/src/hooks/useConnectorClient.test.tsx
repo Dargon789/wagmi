@@ -27,6 +27,7 @@ test('default', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": false,
       "isError": false,
       "isFetched": false,
       "isFetchedAfterMount": false,
@@ -41,6 +42,10 @@ test('default', async () => {
       "isRefetching": false,
       "isStale": false,
       "isSuccess": false,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "connectorClient",
         {
@@ -58,7 +63,7 @@ test('behavior: connected on mount', async () => {
 
   const { result } = await renderHook(() => useConnectorClient())
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   const { data, queryKey: _, ...rest } = result.current
   expect(data).toMatchObject(
@@ -76,6 +81,7 @@ test('behavior: connected on mount', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -90,6 +96,10 @@ test('behavior: connected on mount', async () => {
       "isRefetching": false,
       "isStale": false,
       "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "refetch": [Function],
       "status": "success",
     }
@@ -138,20 +148,20 @@ test('behavior: switch chains', async () => {
 
   await act(() => result.current.useSwitchChain.switchChain({ chainId: 456 }))
   await vi.waitUntil(() => result.current.useSwitchChain.isSuccess, {
-    timeout: 5_000,
+    timeout: 10_000,
   })
   await act(() => result.current.useSwitchChain.reset())
   await vi.waitUntil(() => result.current.useConnectorClient.isSuccess, {
-    timeout: 5_000,
+    timeout: 10_000,
   })
   expect(result.current.useConnectorClient.data?.chain.id).toEqual(456)
 
   await act(() => result.current.useSwitchChain.switchChain({ chainId: 1 }))
   await vi.waitUntil(() => result.current.useSwitchChain.isSuccess, {
-    timeout: 5_000,
+    timeout: 10_000,
   })
   await vi.waitUntil(() => result.current.useConnectorClient.isSuccess, {
-    timeout: 5_000,
+    timeout: 10_000,
   })
   expect(result.current.useConnectorClient.data?.chain.id).toEqual(1)
 

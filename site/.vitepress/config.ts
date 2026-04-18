@@ -80,7 +80,8 @@ export default withTwoslashInlineCache(
         { text: 'Tempo', link: '/tempo/getting-started' },
         { text: 'CLI', link: '/cli/getting-started' },
         {
-          text: 'Frameworks',
+          text: '<span class="frameworks-nav-label">Frameworks</span>',
+          activeMatch: '$^',
           items: [
             { text: 'React', link: '/react/getting-started' },
             { text: 'Solid', link: '/solid/getting-started' },
@@ -123,8 +124,8 @@ export default withTwoslashInlineCache(
       socialLinks: [
         { icon: 'github', link: 'https://github.com/wevm/wagmi' },
         { icon: 'x', link: 'https://twitter.com/wevm_dev' },
-        { icon: 'discord', link: 'https://discord.gg/9zHPXuBpqy' },
         { icon: 'bluesky', link: 'https://bsky.app/profile/wevm.dev' },
+        { icon: 'discord', link: 'https://discord.gg/9zHPXuBpqy' },
       ],
     },
     title: 'Wagmi',

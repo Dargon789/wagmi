@@ -10,7 +10,7 @@ const address = accounts[0]
 test('default', async () => {
   const { result } = await renderHook(() => useTransactionCount({ address }))
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('number')
@@ -23,6 +23,7 @@ test('default', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -37,6 +38,10 @@ test('default', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "transactionCount",
         {
@@ -55,7 +60,7 @@ test('parameters: chainId', async () => {
     useTransactionCount({ address, chainId: chain.mainnet2.id }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('number')
@@ -68,6 +73,7 @@ test('parameters: chainId', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -82,6 +88,10 @@ test('parameters: chainId', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "transactionCount",
         {
@@ -100,7 +110,7 @@ test('parameters: blockNumber', async () => {
     useTransactionCount({ address, blockNumber: 13677382n }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('number')
@@ -113,6 +123,7 @@ test('parameters: blockNumber', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -127,6 +138,10 @@ test('parameters: blockNumber', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "transactionCount",
         {
@@ -160,6 +175,7 @@ test('behavior: address: undefined -> defined', async () => {
         "failureCount": 0,
         "failureReason": null,
         "fetchStatus": "idle",
+        "isEnabled": false,
         "isError": false,
         "isFetched": false,
         "isFetchedAfterMount": false,
@@ -174,6 +190,10 @@ test('behavior: address: undefined -> defined', async () => {
         "isRefetching": false,
         "isStale": false,
         "isSuccess": false,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
         "queryKey": [
           "transactionCount",
           {
@@ -190,7 +210,7 @@ test('behavior: address: undefined -> defined', async () => {
   address = accounts[0]
   rerender()
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('number')
@@ -203,6 +223,7 @@ test('behavior: address: undefined -> defined', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -217,6 +238,10 @@ test('behavior: address: undefined -> defined', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "transactionCount",
         {

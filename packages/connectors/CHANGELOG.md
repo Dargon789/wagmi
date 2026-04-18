@@ -1,5 +1,156 @@
 # @wagmi/connectors
 
+## 8.0.3
+
+### Patch Changes
+
+- Updated internals. ([#5062](https://github.com/wevm/wagmi/pull/5062))
+
+- Updated dependencies [[`10b37ee`](https://github.com/wevm/wagmi/commit/10b37ee5407849d79a95302b2d60edbfb8f6b0c4)]:
+  - @wagmi/core@3.4.4
+
+## 8.0.2
+
+### Patch Changes
+
+- Added `tempoWallet` connector ([#5058](https://github.com/wevm/wagmi/pull/5058))
+
+- Updated dependencies [[`c29bdfd`](https://github.com/wevm/wagmi/commit/c29bdfd510d00b57795c1a2e26feeddbca7b2509)]:
+  - @wagmi/core@3.4.3
+
+## 8.0.1
+
+### Patch Changes
+
+- Fixed listener leak in WalletConnect connector `switchChain` when chain switch fails. ([#5033](https://github.com/wevm/wagmi/pull/5033))
+
+- Updated dependencies [[`2a4660e`](https://github.com/wevm/wagmi/commit/2a4660e96e3c28bd9c2424a298beb57bce8902d2)]:
+  - @wagmi/core@3.4.2
+
+## 8.0.0
+
+### Major Changes
+
+- Migrated MetaMask connector from `@metamask/sdk` to the new `@metamask/connect-evm` package. ([#4960](https://github.com/wevm/wagmi/pull/4960))
+
+  ## Breaking Changes
+
+  ### New Peer Dependency
+
+  You must install `@metamask/connect-evm` as a peer dependency:
+
+  ```bash
+  npm install @metamask/connect-evm
+  # or
+  pnpm add @metamask/connect-evm
+  ```
+
+  ### Parameter Changes
+
+  The connector parameters have been simplified and changed to align with the new SDK.
+
+  **Removed options:**
+
+  - `dappMetadata` - Use `dapp` instead
+  - `logging` - Use `debug` instead
+  - `headless` - Use `ui.headless` instead
+  - `checkInstallationImmediately`
+  - `checkInstallationOnAllCalls`
+  - `preferDesktop` - Use `ui.preferExtension` instead
+  - `openDeeplink` - Use `mobile.preferredOpenLink` instead
+  - `extensionOnly`
+  - `infuraAPIKey`
+  - `communicationLayerPreference`
+  - `communicationServerUrl`
+  - `enableAnalytics`
+  - `shouldShimWeb3`
+  - `storage`
+  - `timer`
+  - `i18nOptions`
+  - `modals`
+  - All communication layer options
+
+  **New options:**
+
+  - `dapp` - Dapp identification (`{ name: string, url?: string, iconUrl?: string }`)
+  - `debug` - Enable debug logging (boolean)
+  - `mobile` - Mobile-specific options:
+    - `preferredOpenLink` - Custom function to open deeplinks (required for React Native)
+    - `useDeeplink` - Use `metamask://` deeplink vs `https://metamask.app.link` universal link
+  - `ui` - UI configuration options:
+    - `headless` - Disable built-in UI
+    - `preferExtension` - Prefer browser extension over mobile
+    - `showInstallModal` - Show install modal when MetaMask is not installed
+  - `transport` - Transport configuration:
+    - `extensionId` - Extension ID for browser extension transport
+
+  **Preserved options:**
+
+  - `connectAndSign` - Shortcut to connect and sign a message
+  - `connectWith` - Connect with any RPC method
+
+  ### Migration Example
+
+  **Before:**
+
+  ```ts
+  import { metaMask } from "wagmi/connectors";
+
+  metaMask({
+    dappMetadata: {
+      name: "My DApp",
+      url: "https://mydapp.com",
+      iconUrl: "https://mydapp.com/icon.png",
+    },
+    logging: { sdk: true },
+  });
+  ```
+
+  **After:**
+
+  ```ts
+  import { metaMask } from "wagmi/connectors";
+
+  metaMask({
+    dapp: {
+      name: "My DApp",
+      url: "https://mydapp.com",
+      iconUrl: "https://mydapp.com/icon.png",
+    },
+    debug: true,
+  });
+  ```
+
+### Patch Changes
+
+- Updated dependencies [[`2f4316c`](https://github.com/wevm/wagmi/commit/2f4316ced40944b3af01534e4b6e9c1a4455c7a6)]:
+  - @wagmi/core@3.4.1
+
+## 7.2.1
+
+### Patch Changes
+
+- Updated dependencies [[`8b96e2f`](https://github.com/wevm/wagmi/commit/8b96e2f46d9b3441d3b499b03924700ac0629be6)]:
+  - @wagmi/core@3.4.0
+
+## 7.2.0
+
+### Minor Changes
+
+- **Breaking:** Removed `gemini` connector (former sponsor). If you still need this connector, vendor the [source code](https://github.com/wevm/wagmi/blob/9bbf13eac895669e70b233de767c8731d221f16e/packages/connectors/src/gemini.ts) into your project directly. ([`9dbdd82`](https://github.com/wevm/wagmi/commit/9dbdd8277808eb361fe7fe01ea34e4c6bb85c7a5))
+
+### Patch Changes
+
+- Updated dependencies [[`c1dedd9`](https://github.com/wevm/wagmi/commit/c1dedd99c0a1878d7cd48476946868636ac81dd8)]:
+  - @wagmi/core@3.3.4
+
+## 7.1.7
+
+### Patch Changes
+
+- Updated dependencies [[`4b3f5a3`](https://github.com/wevm/wagmi/commit/4b3f5a3f7b3f242e8fbc1f08ae2f81ae13c5e09f)]:
+  - @wagmi/core@3.3.3
+
 ## 7.1.6
 
 ### Patch Changes

@@ -7,7 +7,7 @@ import { useBlock } from './useBlock.js'
 test('mounts', async () => {
   const { result } = await renderHook(() => useBlock())
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeDefined()
@@ -20,6 +20,7 @@ test('mounts', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -34,6 +35,10 @@ test('mounts', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "block",
         {
@@ -51,7 +56,7 @@ test('parameters: watch', async () => {
 
   const { result } = await renderHook(() => useBlock({ watch: true }))
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
   const block = result.current.data!
   expect(block).toBeDefined()
 

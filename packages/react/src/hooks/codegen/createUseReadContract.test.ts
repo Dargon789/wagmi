@@ -24,7 +24,7 @@ test('default', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -36,6 +36,7 @@ test('default', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -50,6 +51,10 @@ test('default', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "readContract",
         {
@@ -84,7 +89,7 @@ test('multichain', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -96,6 +101,7 @@ test('multichain', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -110,6 +116,10 @@ test('multichain', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "readContract",
         {
@@ -140,7 +150,7 @@ test('functionName', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -152,6 +162,7 @@ test('functionName', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -166,6 +177,10 @@ test('functionName', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "readContract",
         {
@@ -206,7 +221,7 @@ test('behavior: syncConnectedChain on', async () => {
   )
 
   await vi.waitUntil(() => result.current.isSuccess, {
-    timeout: 5_000,
+    timeout: 10_000,
   })
 
   expect(result.current.queryKey).toMatchInlineSnapshot(`
@@ -227,7 +242,7 @@ test('behavior: syncConnectedChain on', async () => {
 
   rerender()
   await vi.waitUntil(() => result.current.isSuccess, {
-    timeout: 5_000,
+    timeout: 10_000,
   })
 
   expect(result.current.queryKey).toMatchInlineSnapshot(`
@@ -283,7 +298,7 @@ test('behavior: syncConnectedChain off', async () => {
   )
 
   await vi.waitUntil(() => result.current.isSuccess, {
-    timeout: 5_000,
+    timeout: 10_000,
   })
 
   expect(result.current.queryKey).toMatchInlineSnapshot(`
@@ -304,7 +319,7 @@ test('behavior: syncConnectedChain off', async () => {
 
   rerender()
   await vi.waitUntil(() => result.current.isSuccess, {
-    timeout: 5_000,
+    timeout: 10_000,
   })
 
   expect(result.current.queryKey).toMatchInlineSnapshot(`

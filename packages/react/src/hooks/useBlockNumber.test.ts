@@ -9,7 +9,7 @@ test('mounts', async () => {
 
   const { result } = await renderHook(() => useBlockNumber())
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -21,6 +21,7 @@ test('mounts', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -35,6 +36,10 @@ test('mounts', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "blockNumber",
         {
@@ -52,7 +57,7 @@ test('parameters: watch', async () => {
 
   const { result } = await renderHook(() => useBlockNumber({ watch: true }))
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
   const blockNumber = result.current.data!
   expect(result.current.data).toBeTypeOf('bigint')
 

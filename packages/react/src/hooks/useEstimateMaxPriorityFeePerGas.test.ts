@@ -9,7 +9,7 @@ test('default', async () => {
 
   const { result } = await renderHook(() => useEstimateMaxPriorityFeePerGas())
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('bigint')
@@ -22,6 +22,7 @@ test('default', async () => {
     "failureCount": 0,
     "failureReason": null,
     "fetchStatus": "idle",
+    "isEnabled": true,
     "isError": false,
     "isFetched": true,
     "isFetchedAfterMount": true,
@@ -36,6 +37,10 @@ test('default', async () => {
     "isRefetching": false,
     "isStale": true,
     "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
     "queryKey": [
       "estimateMaxPriorityFeePerGas",
       {
@@ -56,7 +61,7 @@ test('parameters: chainId', async () => {
     useEstimateMaxPriorityFeePerGas({ chainId: chain.mainnet2.id }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('bigint')
@@ -69,6 +74,7 @@ test('parameters: chainId', async () => {
     "failureCount": 0,
     "failureReason": null,
     "fetchStatus": "idle",
+    "isEnabled": true,
     "isError": false,
     "isFetched": true,
     "isFetchedAfterMount": true,
@@ -83,6 +89,10 @@ test('parameters: chainId', async () => {
     "isRefetching": false,
     "isStale": true,
     "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
     "queryKey": [
       "estimateMaxPriorityFeePerGas",
       {

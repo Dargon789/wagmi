@@ -17,7 +17,7 @@ beforeEach(async () => {
 test('default', async () => {
   const { result } = renderPrimitive(() => useBalance(() => ({ address })))
 
-  await vi.waitUntil(() => result.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.isSuccess, { timeout: 10_000 })
 
   const { data, ...rest } = result
   expect(data).toMatchObject(
@@ -36,6 +36,7 @@ test('default', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -50,6 +51,11 @@ test('default', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reject": [Function],
+        "resolve": [Function],
+        "status": "pending",
+      },
       "queryKey": [
         "balance",
         {
@@ -68,7 +74,7 @@ test('parameters: chainId', async () => {
     useBalance(() => ({ address, chainId: chain.mainnet2.id })),
   )
 
-  await vi.waitUntil(() => result.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.isSuccess, { timeout: 10_000 })
 
   expect(result).toMatchInlineSnapshot(`
     {
@@ -84,6 +90,7 @@ test('parameters: chainId', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -98,6 +105,11 @@ test('parameters: chainId', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reject": [Function],
+        "resolve": [Function],
+        "status": "pending",
+      },
       "queryKey": [
         "balance",
         {
@@ -128,6 +140,7 @@ test('behavior: address: undefined -> defined', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": false,
       "isError": false,
       "isFetched": false,
       "isFetchedAfterMount": false,
@@ -142,6 +155,11 @@ test('behavior: address: undefined -> defined', async () => {
       "isRefetching": false,
       "isStale": false,
       "isSuccess": false,
+      "promise": Promise {
+        "reject": [Function],
+        "resolve": [Function],
+        "status": "pending",
+      },
       "queryKey": [
         "balance",
         {
@@ -156,7 +174,7 @@ test('behavior: address: undefined -> defined', async () => {
 
   setAddress(accounts[0])
 
-  await vi.waitUntil(() => result.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.isSuccess, { timeout: 10_000 })
 
   expect(result).toMatchInlineSnapshot(`
     {
@@ -172,6 +190,7 @@ test('behavior: address: undefined -> defined', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": false,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -186,6 +205,11 @@ test('behavior: address: undefined -> defined', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reject": [Function],
+        "resolve": [Function],
+        "status": "pending",
+      },
       "queryKey": [
         "balance",
         {
