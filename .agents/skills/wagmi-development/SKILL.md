@@ -146,7 +146,7 @@ export function myActionQueryOptions<
   config extends Config,
   selectData = MyActionData,
 >(
-      export const fooAbi = [] as const
+  config: config,
   options: MyActionOptions<config, selectData> = {},
 ): MyActionQueryOptions<config, selectData> {
   return {
