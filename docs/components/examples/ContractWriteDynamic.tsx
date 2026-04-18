@@ -36,7 +36,7 @@ export function ContractWriteDynamic() {
       },
     ],
     args: [parseInt(debouncedTokenId, 10)],
-    enabled: Boolean(debouncedTokenId),
+    enabled: Boolean(debouncedTokenId) && !isNaN(parseInt(debouncedTokenId, 10)),
   })
   const {
     data,
