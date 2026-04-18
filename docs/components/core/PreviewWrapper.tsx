@@ -13,7 +13,7 @@ export function PreviewWrapper({ children }: Props) {
   React.useEffect(() => {
     if (!resolvedTheme) return
     if (resolvedTheme === 'system') return
-    setMode(resolvedTheme as any)
+    setMode(resolvedTheme as 'light' | 'dark')
   }, [resolvedTheme, setMode])
 
   return (
