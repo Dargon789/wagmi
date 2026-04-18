@@ -29,7 +29,7 @@ test('context', () => {
 
   const { writeContract } = useWriteErc20({
     mutation: {
-      onMutate(_mutationContext) {
+      onMutate(_variables, _mutationContext) {
         return contextValue
       },
       onSuccess(data, variables, context, mutationContext) {
