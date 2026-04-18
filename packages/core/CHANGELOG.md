@@ -1,5 +1,17 @@
 # @wagmi/core
 
+## 3.4.4
+
+### Patch Changes
+
+- Added Tempo Zones support. ([#5062](https://github.com/wevm/wagmi/pull/5062))
+
+## 3.4.3
+
+### Patch Changes
+
+- Added `tempoWallet` connector ([#5058](https://github.com/wevm/wagmi/pull/5058))
+
 ## 3.4.2
 
 ### Patch Changes
