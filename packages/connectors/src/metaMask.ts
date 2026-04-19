@@ -167,7 +167,7 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
       try {
         // MetaMask mobile provider sometimes fails to immediately resolve
         // JSON-RPC requests on page load
-        const timeout = 10
+        const timeout = 200
         const accounts = await withRetry(
           async () =>
             withTimeout(
