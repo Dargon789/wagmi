@@ -1407,7 +1407,7 @@ async function encryptDepositPayload(
 
   return {
     ciphertext: bytesToHex(ciphertext),
-    ephemeralPubkeyX: `0x${compressedEphemeral.x.toString(16).padStart(64, '0')}`,
+    ephemeralPubkeyX: numberToHex(compressedEphemeral.x, { size: 32 }),
     ephemeralPubkeyYParity: compressedEphemeral.prefix,
     nonce: bytesToHex(nonce),
     tag: bytesToHex(tag),
