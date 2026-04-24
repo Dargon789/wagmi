@@ -23,7 +23,7 @@ test('default', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -191,7 +191,6 @@ test('multichain', async () => {
       "queryKey": [
         "readContracts",
         {
-          "chainId": 1,
           "contracts": [
             {
               "address": "0xecb504d39723b0be0e3a9aa33d646642d1051ee1",
@@ -313,7 +312,6 @@ test('behavior: all same chainId', async () => {
       "queryKey": [
         "readContracts",
         {
-          "chainId": 1,
           "contracts": [
             {
               "address": "0xecb504d39723b0be0e3a9aa33d646642d1051ee1",

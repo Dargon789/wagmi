@@ -1,7 +1,7 @@
 {
   "name": "@wagmi/connectors",
   "description": "Collection of connectors for Wagmi",
-  "version": "7.1.4",
+  "version": "8.0.4",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
   "scripts": {
     "build": "pnpm run build:esm+types",
     "build:esm+types": "tsc --project tsconfig.build.json --outDir ./dist/esm --declaration --declarationMap --declarationDir ./dist/types",
-    "check:types": "tsc --noEmit",
+    "check:types": "tsgo --noEmit",
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "test:build": "publint --strict && attw --pack --ignore-rules cjs-resolves-to-esm"
   },
@@ -37,12 +37,12 @@
   "peerDependencies": {
     "@base-org/account": "^2.5.1",
     "@coinbase/wallet-sdk": "^4.3.6",
-    "@gemini-wallet/core": "~0.3.1",
-    "@metamask/sdk": "~0.33.1",
+    "@metamask/connect-evm": "~0.9.0",
     "@safe-global/safe-apps-provider": "~0.18.6",
     "@safe-global/safe-apps-sdk": "^9.1.0",
     "@wagmi/core": "workspace:*",
     "@walletconnect/ethereum-provider": "^2.21.1",
+    "accounts": "~0.6.7",
     "porto": "~0.2.35",
     "typescript": ">=5.7.3",
     "viem": "2.x"
@@ -54,10 +54,7 @@
     "@coinbase/wallet-sdk": {
       "optional": true
     },
-    "@gemini-wallet/core": {
-      "optional": true
-    },
-    "@metamask/sdk": {
+    "@metamask/connect-evm": {
       "optional": true
     },
     "@safe-global/safe-apps-provider": {
@@ -67,6 +64,9 @@
       "optional": true
     },
     "@walletconnect/ethereum-provider": {
+      "optional": true
+    },
+    "accounts": {
       "optional": true
     },
     "porto": {
@@ -79,12 +79,12 @@
   "devDependencies": {
     "@base-org/account": "catalog:",
     "@coinbase/wallet-sdk": "catalog:",
-    "@gemini-wallet/core": "catalog:",
-    "@metamask/sdk": "catalog:",
+    "@metamask/connect-evm": "catalog:",
     "@safe-global/safe-apps-provider": "catalog:",
     "@safe-global/safe-apps-sdk": "catalog:",
     "@wagmi/core": "workspace:*",
     "@walletconnect/ethereum-provider": "catalog:",
+    "accounts": "catalog:",
     "msw": "^2.4.9",
     "porto": "catalog:"
   },

@@ -1,10 +1,84 @@
 # @wagmi/core
 
-## 3.2.4
+## 3.4.5
 
 ### Patch Changes
 
-- Added explicit return type to mutation options. ([#4959](https://github.com/wevm/wagmi/pull/4959))
+- Fixed tempo entrypoint dependency wiring ([#5069](https://github.com/wevm/wagmi/pull/5069))
+
+- Updated `accounts` peer dep range ([`23d6e27`](https://github.com/wevm/wagmi/commit/23d6e2768a8e73f4ed5cc5196cdd1bf600af7c18))
+
+## 3.4.4
+
+### Patch Changes
+
+- Added Tempo Zones support. ([#5062](https://github.com/wevm/wagmi/pull/5062))
+
+## 3.4.3
+
+### Patch Changes
+
+- Added `tempoWallet` connector ([#5058](https://github.com/wevm/wagmi/pull/5058))
+
+## 3.4.2
+
+### Patch Changes
+
+- Fixed `feePayer` types for Tempo chains on `sendTransaction`, `sendTransactionSync`, and `deployContract`. ([#5022](https://github.com/wevm/wagmi/pull/5022))
+
+## 3.4.1
+
+### Patch Changes
+
+- Fixed chainId not being passed to Tempo webAuthn key authorization ([#5024](https://github.com/wevm/wagmi/pull/5024))
+
+## 3.4.0
+
+### Minor Changes
+
+- Added `signTransaction` action ([#4995](https://github.com/wevm/wagmi/pull/4995))
+
+## 3.3.4
+
+### Patch Changes
+
+- Added credential fast path to `webAuthn` connector — pass `capabilities.credential` directly to skip the WebAuthn ceremony when the credential is already known. ([#5005](https://github.com/wevm/wagmi/pull/5005))
+
+## 3.3.3
+
+### Patch Changes
+
+- Added ability to sign arbitrary `hash` on `webAuthn#connect`. ([#4994](https://github.com/wevm/wagmi/pull/4994))
+
+## 3.3.2
+
+### Patch Changes
+
+- Updated internal exports ([`68e17db`](https://github.com/wevm/wagmi/commit/68e17db7ff84982db8f52f54e6f047c5efab62ab))
+
+## 3.3.1
+
+### Patch Changes
+
+- Fixed "illegal invocation" error when signing up with passkeys while using password manager browser extensions ([#4968](https://github.com/wevm/wagmi/pull/4968))
+
+## 3.3.0
+
+### Minor Changes
+
+- Added `getBlobBaseFee` and `writeContractSync` actions. ([`dfe7904`](https://github.com/wevm/wagmi/commit/dfe790426d5ac24d55eacdf8d0193292de801911))
+
+- Added `getContractEvents` action. ([#4905](https://github.com/wevm/wagmi/pull/4905))
+
+### Patch Changes
+
+- Fixed `eth_accounts` to return `mock#accounts` parameter when provided. ([#4920](https://github.com/wevm/wagmi/pull/4920))
+
+- Added explicit return type to mutation options. ([#4964](https://github.com/wevm/wagmi/pull/4964))
+
+- Fixed `readContractsQueryKey` using passed `chainId` when all contracts specifiy `chainId` ([`5978cc5`](https://github.com/wevm/wagmi/commit/5978cc508ac837be88ed84c15ea5aa805f59005a))
+
+- **`wagmi/tempo`:** Propagated `rpId` to `Account.fromWebAuthnP256` in webAuthn connector. ([#4963](https://github.com/wevm/wagmi/pull/4963))
 
 ## 3.2.3
 

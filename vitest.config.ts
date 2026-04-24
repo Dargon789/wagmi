@@ -1,6 +1,8 @@
 import path from 'node:path'
+import react from '@vitejs/plugin-react'
 import { playwright } from '@vitest/browser-playwright'
 import reactFallbackThrottlePlugin from 'vite-plugin-react-fallback-throttle'
+import solid from 'vite-plugin-solid'
 import { defaultExclude, defineConfig } from 'vitest/config'
 
 const alias = {
@@ -11,6 +13,7 @@ const alias = {
   '@wagmi/core': path.resolve(__dirname, './packages/core/src/exports'),
   '@wagmi/test': path.resolve(__dirname, './packages/test/src/exports'),
   '@wagmi/vue': path.resolve(__dirname, './packages/vue/src/exports'),
+  '@wagmi/solid': path.resolve(__dirname, './packages/solid/src/exports'),
   wagmi: path.resolve(__dirname, './packages/react/src/exports'),
 }
 
@@ -45,7 +48,7 @@ export default defineConfig({
           name: 'cli',
           environment: 'node',
           include: ['./packages/cli/src/**/*.test.ts'],
-          testTimeout: 10_000,
+          testTimeout: 20_000,
           setupFiles: ['./packages/cli/test/setup.ts'],
         },
       },
@@ -69,7 +72,7 @@ export default defineConfig({
             ...defaultExclude,
           ],
           environment: 'happy-dom',
-          testTimeout: 10_000,
+          testTimeout: 20_000,
           setupFiles: ['./packages/core/test/setup.ts'],
         },
         resolve: { alias },
@@ -79,11 +82,11 @@ export default defineConfig({
           name: 'create-wagmi',
           include: ['./packages/create-wagmi/src/**/*.test.ts'],
           environment: 'node',
-          testTimeout: 10_000,
+          testTimeout: 20_000,
         },
       },
       {
-        plugins: [reactFallbackThrottlePlugin()],
+        plugins: [react(), reactFallbackThrottlePlugin()],
         resolve: { alias },
         test: {
           name: 'tempo',
@@ -98,8 +101,9 @@ export default defineConfig({
             './packages/core/src/tempo/**/*.test.ts',
             './packages/react/src/tempo/**/*.test.ts',
           ],
+          fileParallelism: false,
           hookTimeout: 20_000,
-          testTimeout: 15_000,
+          testTimeout: 30_000,
           globalSetup: process.env.TYPES
             ? ['./packages/test/src/setup.global.types.ts']
             : ['./packages/test/src/tempo/setup.global.ts'],
@@ -107,7 +111,7 @@ export default defineConfig({
         },
       },
       {
-        plugins: [reactFallbackThrottlePlugin()],
+        plugins: [react(), reactFallbackThrottlePlugin()],
         resolve: { alias },
         test: {
           name: 'react',
@@ -123,7 +127,7 @@ export default defineConfig({
             './packages/react/src/tempo/**/*.test.ts',
             ...defaultExclude,
           ],
-          testTimeout: 10_000,
+          testTimeout: 20_000,
           setupFiles: ['./packages/react/test/setup.ts'],
         },
       },
@@ -132,10 +136,27 @@ export default defineConfig({
           name: 'vue',
           include: ['./packages/vue/src/**/*.test.ts?(x)'],
           environment: 'happy-dom',
-          testTimeout: 10_000,
+          testTimeout: 20_000,
           setupFiles: ['./packages/vue/test/setup.ts'],
         },
         resolve: { alias },
+      },
+      {
+        plugins: [solid()],
+        resolve: { alias },
+        test: {
+          name: 'solid',
+          browser: {
+            enabled: true,
+            headless: true,
+            instances: [{ browser: 'chromium' }],
+            provider: playwright(),
+            screenshotFailures: false,
+          },
+          include: ['./packages/solid/src/**/*.test.ts?(x)'],
+          testTimeout: 20_000,
+          setupFiles: ['./packages/solid/test/setup.ts'],
+        },
       },
       {
         test: {

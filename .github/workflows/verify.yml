@@ -24,8 +24,10 @@ jobs:
         with:
           node-version: 24.5
 
+      # TODO: Remove `--ignore-registry-errors` when issue fixed
+      # https://github.com/pnpm/pnpm/issues/11265
       - name: Audit dependencies
-        run: pnpm audit
+        run: pnpm audit --ignore-registry-errors
 
       - name: Check repo
         run: pnpm check:repo
@@ -76,11 +78,11 @@ jobs:
       contents: read
     needs: check
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     strategy:
       matrix:
         typescript-version: ['5.7.3', '5.8.3', '5.9.3', 'latest']
-        viem-version: ['2.44.0', 'latest']
+        viem-version: ['2.48.3', 'latest']
 
     steps:
       - name: Clone repository
@@ -97,7 +99,7 @@ jobs:
         run: pnpm preconstruct
 
       - name: Check types
-        run: pnpm check:types
+        run: pnpm check:types:typescript
 
       - name: Bench types
         run: pnpm bench:types
@@ -112,12 +114,12 @@ jobs:
     permissions:
       contents: read
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     strategy:
-      max-parallel: 3
+      max-parallel: 4
       matrix:
-        shard: [1, 2, 3]
-        total-shards: [3]
+        shard: [1, 2, 3, 4]
+        total-shards: [4]
 
     steps:
       - name: Clone repository
@@ -146,6 +148,9 @@ jobs:
       - name: Install Playwright
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install chromium --with-deps
+
+      - name: Pull Tempo Docker image
+        run: docker pull ghcr.io/tempoxyz/tempo:latest
 
       - name: Run tests
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08
