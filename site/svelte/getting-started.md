@@ -93,7 +93,7 @@ Check out the [TanStack Query docs](https://tanstack.com/query/latest/docs/frame
 
 ### Use Wagmi
 
-Now that everything is set up, every component inside the Wagmi and TanStack Query Providers can use Wagmi React Hooks.
+Now that everything is set up, every component inside the Wagmi and TanStack Query Providers can use Wagmi Hooks.
 
 ::: code-group
 ```svelte [+page.svelte]
