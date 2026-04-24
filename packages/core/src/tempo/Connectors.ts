@@ -66,7 +66,6 @@ export function tempoWallet(parameters: tempoWallet.Parameters = {}) {
     icon = tempoWalletIcon,
     name,
     rdns,
-    theme,
     ...providerParameters
   } = parameters
 
@@ -78,7 +77,6 @@ export function tempoWallet(parameters: tempoWallet.Parameters = {}) {
         icon,
         name,
         rdns,
-        theme,
       })
     },
     icon,
