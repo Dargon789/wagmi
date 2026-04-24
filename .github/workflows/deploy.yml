@@ -1,20 +1,15 @@
 # This workflow's name will appear on the GitHub Actions page.
-
 name: Deploy to Vercel
 permissions:
   contents: read
-
 # This specifies when the workflow should run.
-
 on:
-
-  # The workflow will run on every 'push' to the 'main' branch.
-  
+    -main
+# The workflow will run on every 'push' to the 'main' branch.
   push:
     branches:
-            - main
-      
-  # This allows you to manually trigger the workflow from the GitHub Actions page.
+      - main    
+# This allows you to manually trigger the workflow from the GitHub Actions page.
   
   workflow_dispatch:
 
@@ -84,10 +79,10 @@ jobs:
 
       # 6. Deploy the project to Vercel.
       # This step deploys the pre-built code to Vercel.
-strategy:
-  matrix:
+    strategy:
+    matrix:
     node-version: [18.x, 20.x, 22.x]
     name: Deploy to Vercel
     run: vercel deploy --prebuilt
-     env:
+    env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
