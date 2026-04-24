@@ -40,7 +40,7 @@ catalog:
   '@vitejs/plugin-react': ^6.0.1
   '@vitejs/plugin-vue': 6.0.5
   '@walletconnect/ethereum-provider': 2.21.1
-  accounts: 0.6.7
+  accounts: 0.8.1
   buffer: 6.0.3
   nuxt: 4.2.1
   ox: 0.11.1
@@ -125,9 +125,6 @@ overrides:
   srvx@<0.11.13: '>=0.11.13'
   yaml@>=2.0.0 <2.8.3: '>=2.8.3'
   ws@>=8.0.0 <8.17.1: 8.17.1
-
-patchedDependencies:
-  vitepress-plugin-llms@1.12.1: patches/vitepress-plugin-llms@1.12.1.patch
 
 peerDependencyRules:
   ignoreMissing:
