@@ -1,7 +1,7 @@
 import { connect, disconnect } from '@wagmi/core'
 import { accounts, config, testClient, wait } from '@wagmi/test'
 import { renderHook } from '@wagmi/test/react'
-import { parseEther } from 'viem'
+import { type Hex, parseEther } from 'viem'
 import { expect, test, vi } from 'vitest'
 
 import { useSendCalls } from './useSendCalls.js'
@@ -10,14 +10,16 @@ import { useWaitForCallsStatus } from './useWaitForCallsStatus.js'
 const connector = config.connectors[0]!
 
 test('default', async () => {
+  await disconnect(config, { connector }).catch(() => {})
   await connect(config, { connector })
 
   const useSendCalls_render = await renderHook(() => useSendCalls())
-  const useWaitForCallsStatus_render = await renderHook(() =>
-    useWaitForCallsStatus({ id: useSendCalls_render.result.current.data?.id }),
+  const useWaitForCallsStatus_render = await renderHook(
+    (props) => useWaitForCallsStatus({ id: props?.id }),
+    { initialProps: { id: undefined as Hex | undefined } },
   )
 
-  useSendCalls_render.result.current.sendCalls({
+  const data = await useSendCalls_render.result.current.mutateAsync({
     calls: [
       {
         data: '0xdeadbeef',
@@ -35,22 +37,18 @@ test('default', async () => {
     ],
   })
 
-  await vi.waitUntil(() => useSendCalls_render.result.current.isSuccess, {
-    timeout: 5_000,
-  })
-
   expect(useWaitForCallsStatus_render.result.current.fetchStatus).toBe('idle')
-  useWaitForCallsStatus_render.rerender()
+  useWaitForCallsStatus_render.rerender({ id: data.id as Hex })
   expect(useWaitForCallsStatus_render.result.current.fetchStatus).toBe(
     'fetching',
   )
 
-  await wait(0)
+  await wait(1_000)
   await testClient.mainnet.mine({ blocks: 1 })
 
   await vi.waitUntil(
     () => useWaitForCallsStatus_render.result.current.isSuccess,
-    { timeout: 5_000 },
+    { timeout: 10_000 },
   )
 
   expect(useWaitForCallsStatus_render.result.current.data?.status).toBe(
@@ -60,33 +58,34 @@ test('default', async () => {
     useWaitForCallsStatus_render.result.current.data?.receipts?.map((x) => ({
       ...x,
       blockHash: undefined,
+      transactionHash: undefined,
     })),
   ).toMatchInlineSnapshot(
     `
     [
       {
         "blockHash": undefined,
-        "blockNumber": 19258214n,
-        "gasUsed": 21064n,
+        "blockNumber": 23535881n,
+        "gasUsed": 21160n,
         "logs": [],
         "status": "success",
-        "transactionHash": "0x13c53b2d4d9da424835525349cd66e553330f323d6fb19458b801ae1f7989a41",
+        "transactionHash": undefined,
       },
       {
         "blockHash": undefined,
-        "blockNumber": 19258214n,
+        "blockNumber": 23535881n,
         "gasUsed": 21000n,
         "logs": [],
         "status": "success",
-        "transactionHash": "0xd8397b3e82b061c26a0c2093f1ceca0c3662a512614f7d6370349e89d0eea007",
+        "transactionHash": undefined,
       },
       {
         "blockHash": undefined,
-        "blockNumber": 19258214n,
+        "blockNumber": 23535881n,
         "gasUsed": 21000n,
         "logs": [],
         "status": "success",
-        "transactionHash": "0x4d26e346593d9ea265bb164b115e89aa92df43b0b8778ac75d4ad28e2a22b101",
+        "transactionHash": undefined,
       },
     ]
   `,

@@ -1,7 +1,7 @@
 <script setup>
 import { getSidebar } from '../../.vitepress/sidebar'
 
-const connectors = getSidebar()['/react']
+const connectors = getSidebar()['/vue']
   .find(x => x.text.includes('Configuration')).items
   .find(x => x.text.includes('Connectors')).items
   .sort((a, b) => a.text.localeCompare(b.text))
@@ -20,6 +20,10 @@ import { injected } from '@wagmi/vue/connectors'
 ```
 
 ## Available Connectors
+
+::: tip
+Some connectors require third-party packages. See the "Install" section on each connector's page for more info on license, version, and more.
+:::
 
 <ul>
   <li v-for="connector of connectors">

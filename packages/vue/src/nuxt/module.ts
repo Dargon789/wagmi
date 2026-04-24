@@ -1,5 +1,10 @@
 import type { NuxtModule } from '@nuxt/schema'
-import { addImports, createResolver, defineNuxtModule } from 'nuxt/kit'
+import {
+  addImports,
+  createResolver,
+  defineNuxtModule,
+  extendViteConfig,
+} from 'nuxt/kit'
 
 // biome-ignore lint/complexity/noBannedTypes: allowed
 export type WagmiModuleOptions = {}
@@ -21,11 +26,18 @@ export const wagmiModule: NuxtModule<WagmiModuleOptions> =
         references.push({ types: '@wagmi/vue/nuxt' })
       })
 
+      // Ensure CJS dependencies are pre-bundled for ESM compatibility
+      extendViteConfig((config) => {
+        config.optimizeDeps ??= {}
+        config.optimizeDeps.include ??= []
+        config.optimizeDeps.include.push('eventemitter3')
+      })
+
       // Add auto imports
       const composables = resolve('./runtime/composables')
       const names = [
-        'useAccount',
-        'useAccountEffect',
+        'useAccount' /** @deprecated */,
+        'useAccountEffect' /** @deprecated */,
         'useBalance',
         'useBlockNumber',
         'useChainId',
@@ -33,6 +45,8 @@ export const wagmiModule: NuxtModule<WagmiModuleOptions> =
         'useClient',
         'useConfig',
         'useConnect',
+        'useConnection',
+        'useConnectionEffect',
         'useConnections',
         'useConnectorClient',
         'useConnectors',
@@ -47,8 +61,9 @@ export const wagmiModule: NuxtModule<WagmiModuleOptions> =
         'useSignMessage',
         'useSignTypedData',
         'useSimulateContract',
-        'useSwitchAccount',
+        'useSwitchAccount' /** @deprecated */,
         'useSwitchChain',
+        'useSwitchConnection',
         'useTransaction',
         'useTransactionReceipt',
         'useWaitForTransactionReceipt',

@@ -1,6 +1,8 @@
-import type { WriteContractErrorType } from '@wagmi/core'
+import { createConfig, http, type WriteContractErrorType } from '@wagmi/core'
 import { abi } from '@wagmi/test'
 import type { Abi, Address, Hash } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+import { mainnet, tempoLocalnet } from 'viem/chains'
 import { expectTypeOf, test } from 'vitest'
 
 import { useSimulateContract } from './useSimulateContract.js'
@@ -9,13 +11,7 @@ import { useWriteContract } from './useWriteContract.js'
 const contextValue = { foo: 'bar' } as const
 
 test('context', () => {
-  const {
-    context,
-    data,
-    error,
-    writeContract: write,
-    variables,
-  } = useWriteContract({
+  const writeContract = useWriteContract({
     mutation: {
       onMutate(variables) {
         expectTypeOf(variables).toMatchTypeOf<{
@@ -63,14 +59,18 @@ test('context', () => {
     },
   })
 
-  expectTypeOf(data.value).toEqualTypeOf<Hash | undefined>()
-  expectTypeOf(error.value).toEqualTypeOf<WriteContractErrorType | null>()
-  expectTypeOf(variables.value).toMatchTypeOf<
+  expectTypeOf(writeContract.data.value).toEqualTypeOf<Hash | undefined>()
+  expectTypeOf(
+    writeContract.error.value,
+  ).toEqualTypeOf<WriteContractErrorType | null>()
+  expectTypeOf(writeContract.variables.value).toMatchTypeOf<
     { chainId?: number | undefined } | undefined
   >()
-  expectTypeOf(context.value).toEqualTypeOf<typeof contextValue | undefined>()
+  expectTypeOf(writeContract.context.value).toEqualTypeOf<
+    typeof contextValue | undefined
+  >()
 
-  write(
+  writeContract.mutate(
     {
       address: '0x',
       abi: abi.erc20,
@@ -129,8 +129,48 @@ test('useSimulateContract', () => {
     args: ['0x', '0x', 123n],
     chainId: 1,
   })
-  const { writeContract } = useWriteContract()
+  const writeContract = useWriteContract()
 
   const request = data?.value?.request
-  if (request) writeContract(request)
+  if (request) writeContract.mutate(request)
+})
+
+test('tempo feePayer', () => {
+  const feePayer = privateKeyToAccount(
+    '0x0123456789012345678901234567890123456789012345678901234567890123',
+  )
+  const config = createConfig({
+    chains: [mainnet, tempoLocalnet],
+    transports: { [mainnet.id]: http(), [tempoLocalnet.id]: http() },
+  })
+
+  const writeContract = useWriteContract({ config })
+
+  writeContract.mutate({
+    chainId: tempoLocalnet.id,
+    address: '0x',
+    abi: abi.erc20,
+    functionName: 'transferFrom',
+    args: ['0x', '0x', 123n],
+    feePayer: true,
+  })
+
+  writeContract.mutate({
+    chainId: tempoLocalnet.id,
+    address: '0x',
+    abi: abi.erc20,
+    functionName: 'transferFrom',
+    args: ['0x', '0x', 123n],
+    feePayer,
+  })
+
+  writeContract.mutate({
+    chainId: mainnet.id,
+    address: '0x',
+    abi: abi.erc20,
+    functionName: 'transferFrom',
+    args: ['0x', '0x', 123n],
+    // @ts-expect-error
+    feePayer: true,
+  })
 })

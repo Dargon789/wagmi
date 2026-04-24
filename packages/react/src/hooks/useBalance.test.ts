@@ -17,13 +17,12 @@ beforeEach(async () => {
 test('default', async () => {
   const { result } = await renderHook(() => useBalance({ address }))
 
-  await vi.waitUntil(() => result.current.isSuccess)
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   const { data, ...rest } = result.current
   expect(data).toMatchObject(
     expect.objectContaining({
       decimals: expect.any(Number),
-      formatted: expect.any(String),
       symbol: expect.any(String),
       value: expect.any(BigInt),
     }),
@@ -54,7 +53,7 @@ test('default', async () => {
       "queryKey": [
         "balance",
         {
-          "address": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
           "chainId": 1,
         },
       ],
@@ -69,13 +68,12 @@ test('parameters: chainId', async () => {
     useBalance({ address, chainId: chain.mainnet2.id }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess)
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
       "data": {
         "decimals": 18,
-        "formatted": "69",
         "symbol": "WAG",
         "value": 69000000000000000000n,
       },
@@ -103,111 +101,8 @@ test('parameters: chainId', async () => {
       "queryKey": [
         "balance",
         {
-          "address": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
           "chainId": 456,
-        },
-      ],
-      "refetch": [Function],
-      "status": "success",
-    }
-  `)
-})
-
-test('parameters: token', async () => {
-  const { result } = await renderHook(() =>
-    useBalance({
-      address: '0x4557B18E779944BFE9d78A672452331C186a9f48',
-      token: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-    }),
-  )
-
-  await vi.waitUntil(() => result.current.isSuccess)
-
-  expect(result.current).toMatchInlineSnapshot(`
-    {
-      "data": {
-        "decimals": 18,
-        "formatted": "0.559062564299199392",
-        "symbol": "DAI",
-        "value": 559062564299199392n,
-      },
-      "dataUpdatedAt": 1675209600000,
-      "error": null,
-      "errorUpdateCount": 0,
-      "errorUpdatedAt": 0,
-      "failureCount": 0,
-      "failureReason": null,
-      "fetchStatus": "idle",
-      "isError": false,
-      "isFetched": true,
-      "isFetchedAfterMount": true,
-      "isFetching": false,
-      "isInitialLoading": false,
-      "isLoading": false,
-      "isLoadingError": false,
-      "isPaused": false,
-      "isPending": false,
-      "isPlaceholderData": false,
-      "isRefetchError": false,
-      "isRefetching": false,
-      "isStale": true,
-      "isSuccess": true,
-      "queryKey": [
-        "balance",
-        {
-          "address": "0x4557B18E779944BFE9d78A672452331C186a9f48",
-          "chainId": 1,
-          "token": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-        },
-      ],
-      "refetch": [Function],
-      "status": "success",
-    }
-  `)
-})
-
-test('parameters: unit', async () => {
-  const { result } = await renderHook(() =>
-    useBalance({ address, chainId: chain.mainnet2.id, unit: 'wei' }),
-  )
-
-  await vi.waitUntil(() => result.current.isSuccess)
-
-  expect(result.current).toMatchInlineSnapshot(`
-    {
-      "data": {
-        "decimals": 18,
-        "formatted": "69000000000000000000",
-        "symbol": "WAG",
-        "value": 69000000000000000000n,
-      },
-      "dataUpdatedAt": 1675209600000,
-      "error": null,
-      "errorUpdateCount": 0,
-      "errorUpdatedAt": 0,
-      "failureCount": 0,
-      "failureReason": null,
-      "fetchStatus": "idle",
-      "isError": false,
-      "isFetched": true,
-      "isFetchedAfterMount": true,
-      "isFetching": false,
-      "isInitialLoading": false,
-      "isLoading": false,
-      "isLoadingError": false,
-      "isPaused": false,
-      "isPending": false,
-      "isPlaceholderData": false,
-      "isRefetchError": false,
-      "isRefetching": false,
-      "isStale": true,
-      "isSuccess": true,
-      "queryKey": [
-        "balance",
-        {
-          "address": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-          "chainId": 456,
-          "unit": "wei",
         },
       ],
       "refetch": [Function],
@@ -260,13 +155,12 @@ test('behavior: address: undefined -> defined', async () => {
   address = accounts[0]
   rerender()
 
-  await vi.waitUntil(() => result.current.isSuccess)
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
       "data": {
         "decimals": 18,
-        "formatted": "10000",
         "symbol": "ETH",
         "value": 10000000000000000000000n,
       },
@@ -294,7 +188,7 @@ test('behavior: address: undefined -> defined', async () => {
       "queryKey": [
         "balance",
         {
-          "address": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
           "chainId": 1,
         },
       ],
