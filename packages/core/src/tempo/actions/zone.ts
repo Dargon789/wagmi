@@ -1371,7 +1371,7 @@ async function encryptDepositPayload(
 
   const hkdfKey = await globalThis.crypto.subtle.importKey(
     'raw',
-    sharedSecret.buffer as ArrayBuffer,
+    sharedSecret,
     'HKDF',
     false,
     ['deriveKey'],
