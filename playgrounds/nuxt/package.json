@@ -12,7 +12,7 @@
   "dependencies": {
     "@tanstack/vue-query": "catalog:",
     "@wagmi/vue": "workspace:*",
-    "nuxt": "catalog:",
+    "nuxt": "4.2.2",
     "viem": "2.*",
     "vue": "catalog:",
     "vue-router": "^4.3.2"
