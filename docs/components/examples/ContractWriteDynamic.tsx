@@ -35,7 +35,8 @@ export function ContractWriteDynamic() {
         outputs: [],
       },
     ],
-    args: [parseInt(debouncedTokenId, 10)],
+    functionName: 'mint',
+    args: [parseInt(debouncedTokenId)],
     enabled: Boolean(debouncedTokenId),
   })
   const {

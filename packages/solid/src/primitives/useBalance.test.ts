@@ -17,7 +17,7 @@ beforeEach(async () => {
 test('default', async () => {
   const { result } = renderPrimitive(() => useBalance(() => ({ address })))
 
-  await vi.waitUntil(() => result.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.isSuccess, { timeout: 5_000 })
 
   const { data, ...rest } = result
   expect(data).toMatchObject(
@@ -74,7 +74,7 @@ test('parameters: chainId', async () => {
     useBalance(() => ({ address, chainId: chain.mainnet2.id })),
   )
 
-  await vi.waitUntil(() => result.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.isSuccess, { timeout: 5_000 })
 
   expect(result).toMatchInlineSnapshot(`
     {
@@ -174,7 +174,7 @@ test('behavior: address: undefined -> defined', async () => {
 
   setAddress(accounts[0])
 
-  await vi.waitUntil(() => result.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.isSuccess, { timeout: 5_000 })
 
   expect(result).toMatchInlineSnapshot(`
     {

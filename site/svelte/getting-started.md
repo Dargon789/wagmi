@@ -16,7 +16,7 @@ Wagmi is a Svelte library for Ethereum.
 To manually add Wagmi to your project, install the required packages.
 
 ::: code-group
-```bash [pnpm]
+```bash-vue [pnpm]
 pnpm add @wagmi/svelte viem@{{viemVersion}} {{tanstackQuery}}
 ```
 
@@ -86,14 +86,14 @@ Inside the `WagmiProvider`, wrap your app in a TanStack Query Context Provider, 
   </QueryClientProvider> // [!code focus]
 </WagmiProvider>
 ```
-<<< @/snippets/svelte/config.ts[config.ts]
+<<< @/snippets/react/config.ts[config.ts]
 :::
 
 Check out the [TanStack Query docs](https://tanstack.com/query/latest/docs/framework/svelte) to learn about the library, APIs, and more.
 
 ### Use Wagmi
 
-Now that everything is set up, every component inside the Wagmi and TanStack Query Providers can use Wagmi Hooks.
+Now that everything is set up, every component inside the Wagmi and TanStack Query Providers can use Wagmi React Hooks.
 
 ::: code-group
 ```svelte [+page.svelte]
