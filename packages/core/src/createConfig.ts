@@ -198,9 +198,9 @@ export function createConfig<
   let currentVersion: number
   const prefix = '0.0.0-canary-'
   if (version.startsWith(prefix))
-    currentVersion = Number.parseInt(version.replace(prefix, ''))
+    currentVersion = Number.parseInt(version.replace(prefix, ''), 10)
   // use package major version to version store
-  else currentVersion = Number.parseInt(version.split('.')[0] ?? '0')
+  else currentVersion = Number.parseInt(version.split('.')[0] ?? '0', 10)
 
   const store = createStore(
     subscribeWithSelector(
@@ -414,7 +414,9 @@ export function createConfig<
       return chains.getState() as chains
     },
     get connectors() {
-      return connectors.getState() as Connector<connectorFns[number]>[]
+      return connectors.getState() as Readonly<{
+        [key in keyof connectorFns]: Connector<connectorFns[key]>
+      }>
     },
     storage,
 
@@ -451,6 +453,26 @@ export function createConfig<
 
     _internal: {
       mipd,
+      async revalidate() {
+        // Check connections to see if they are still active
+        const state = store.getState()
+        const connections = state.connections
+        let current = state.current
+        for (const [, connection] of connections) {
+          const connector = connection.connector
+          // check if `connect.isAuthorized` exists
+          // partial connectors in storage do not have it
+          const isAuthorized = connector.isAuthorized
+            ? await connector.isAuthorized()
+            : false
+          if (isAuthorized) continue
+          // Remove stale connection
+          connections.delete(connector.uid)
+          if (current === connector.uid) current = null
+        }
+        // set connections
+        store.setState((x) => ({ ...x, connections, current }))
+      },
       store,
       ssr: Boolean(ssr),
       syncConnectedChain,
@@ -532,7 +554,9 @@ export type Config<
     readonly CreateConnectorFn[] = readonly CreateConnectorFn[],
 > = {
   readonly chains: chains
-  readonly connectors: readonly Connector<connectorFns[number]>[]
+  readonly connectors: Readonly<{
+    [key in keyof connectorFns]: Connector<connectorFns[key]>
+  }>
   readonly storage: Storage | null
 
   readonly state: State<chains>
@@ -569,6 +593,7 @@ type Internal<
   >,
 > = {
   readonly mipd: MipdStore | undefined
+  revalidate: () => Promise<void>
   readonly store: Mutate<StoreApi<any>, [['zustand/persist', any]]>
   readonly ssr: boolean
   readonly syncConnectedChain: boolean

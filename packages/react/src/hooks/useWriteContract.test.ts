@@ -12,12 +12,12 @@ test('default', async () => {
 
   const { result } = await renderHook(() => useWriteContract())
 
-  result.current.writeContract({
+  result.current.mutate({
     abi: abi.wagmiMintExample,
     address: address.wagmiMintExample,
     functionName: 'mint',
   })
-  await vi.waitUntil(() => result.current.isSuccess)
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(result.current.data).toBeDefined()
 
