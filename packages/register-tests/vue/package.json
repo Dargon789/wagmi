@@ -1,0 +1,13 @@
+{
+  "name": "vue-register",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check:types": "tsgo --noEmit"
+  },
+  "dependencies": {
+    "@tanstack/vue-query": "catalog:",
+    "@wagmi/vue": "workspace:*",
+    "vue": "catalog:"
+  }
+}
