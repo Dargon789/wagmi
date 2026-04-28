@@ -14,21 +14,14 @@ beforeEach(async () => {
 
 describe('useNonce', () => {
   test('default', async () => {
-    const { result, rerender } = await renderHook(
-      (props) =>
-        nonce.useNonce({
-          account: props?.account,
-          nonceKey: props?.nonceKey,
-        }),
-      {
-        initialProps: {
-          account: undefined as Address | undefined,
-          nonceKey: undefined as bigint | undefined,
-        },
-      },
+    let testAccount: Address | undefined
+    let testNonceKey: bigint | undefined
+
+    const { result, rerender } = await renderHook(() =>
+      nonce.useNonce({ account: testAccount, nonceKey: testNonceKey }),
     )
 
-    await vi.waitFor(() => expect(result.current.fetchStatus).toBe('idle'))
+    await vi.waitFor(() => result.current.fetchStatus === 'fetching')
 
     // Should be disabled when account is undefined
     expect(result.current.data).toBeUndefined()
@@ -36,10 +29,13 @@ describe('useNonce', () => {
     // expect(result.current.isEnabled).toBe(false)
 
     // Set account and nonceKey
-    rerender({ account: account.address, nonceKey: 1n })
+    // TODO: pass these to `rerender`
+    testAccount = account.address
+    testNonceKey = 1n
+    rerender()
 
     await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy(), {
-      timeout: 10_000,
+      timeout: 5_000,
     })
 
     // Should now be enabled and have data
@@ -48,21 +44,23 @@ describe('useNonce', () => {
   })
 
   test('reactivity: account parameter', async () => {
-    const { result, rerender } = await renderHook(
-      (props) => nonce.useNonce({ account: props?.account, nonceKey: 1n }),
-      { initialProps: { account: undefined as Address | undefined } },
+    let testAccount: Address | undefined
+
+    const { result, rerender } = await renderHook(() =>
+      nonce.useNonce({ account: testAccount, nonceKey: 1n }),
     )
 
-    await vi.waitFor(() => expect(result.current.fetchStatus).toBe('idle'))
+    await vi.waitFor(() => result.current.fetchStatus === 'fetching')
 
     // Should be disabled when account is undefined
     // expect(result.current.isEnabled).toBe(false)
 
     // Set account
-    rerender({ account: account.address })
+    testAccount = account.address
+    rerender()
 
     await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy(), {
-      timeout: 10_000,
+      timeout: 5_000,
     })
 
     // expect(result.current.isEnabled).toBe(true)
@@ -70,25 +68,23 @@ describe('useNonce', () => {
   })
 
   test('reactivity: nonceKey parameter', async () => {
-    const { result, rerender } = await renderHook(
-      (props) =>
-        nonce.useNonce({
-          account: account.address,
-          nonceKey: props?.nonceKey,
-        }),
-      { initialProps: { nonceKey: undefined as bigint | undefined } },
+    let testNonceKey: bigint | undefined
+
+    const { result, rerender } = await renderHook(() =>
+      nonce.useNonce({ account: account.address, nonceKey: testNonceKey }),
     )
 
-    await vi.waitFor(() => expect(result.current.fetchStatus).toBe('idle'))
+    await vi.waitFor(() => result.current.fetchStatus === 'fetching')
 
     // Should be disabled when nonceKey is undefined
     // expect(result.current.isEnabled).toBe(false)
 
     // Set nonceKey
-    rerender({ nonceKey: 1n })
+    testNonceKey = 1n
+    rerender()
 
     await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy(), {
-      timeout: 10_000,
+      timeout: 5_000,
     })
 
     // expect(result.current.isEnabled).toBe(true)

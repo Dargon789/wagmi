@@ -18,7 +18,7 @@ test('default', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   const {
     data: {
@@ -34,10 +34,7 @@ test('default', async () => {
 
   expect(data).toMatchInlineSnapshot(`
     {
-      "account": {
-        "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
-        "type": "json-rpc",
-      },
+      "account": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
       "chainId": 1,
       "from": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
       "to": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
@@ -54,6 +51,7 @@ test('default', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -68,6 +66,10 @@ test('default', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "prepareTransactionRequest",
         {
