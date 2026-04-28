@@ -22,7 +22,6 @@ async function clearZoneStorage() {
 }
 
 beforeAll(async () => {
-  await disconnect(config).catch(() => {})
   await clearZoneStorage()
   await connect(config, {
     connector: config.connectors[0]!,
