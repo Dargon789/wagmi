@@ -95,7 +95,6 @@ export async function generate(options: Generate = {}) {
     }
 
     // Get contracts from config
-    const contractNames = new Set<string>()
     const contractMap = new Map<string, Contract>()
     for (const contractConfig of contractConfigs) {
       const previouslySeenContract = contractMap.get(contractConfig.name)
