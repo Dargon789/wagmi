@@ -1,5 +1,24 @@
 # @wagmi/connectors
 
+## 8.0.8
+
+### Patch Changes
+
+- Bumped accounts package version ([`c9c0e2b`](https://github.com/wevm/wagmi/commit/c9c0e2b027985edc1e5c1fcd25fd69d9811472f3))
+
+## 8.0.7
+
+### Patch Changes
+
+- Updated dependencies [[`2a9795d`](https://github.com/wevm/wagmi/commit/2a9795dd31f63c92dc0be1898e792fb3be8ec481)]:
+  - @wagmi/core@3.4.7
+
+## 8.0.6
+
+### Patch Changes
+
+- Updated `@metamask/connect-evm` to `1.0.0` and aligned return types. The `connectAndSign` and `connectWith` provider event payloads continue to expose `signResponse` and `connectWithResponse` for backwards compatibility. ([#5070](https://github.com/wevm/wagmi/pull/5070))
+
 ## 8.0.5
 
 ### Patch Changes
