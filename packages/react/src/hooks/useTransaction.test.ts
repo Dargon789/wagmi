@@ -1,16 +1,16 @@
-import { renderHook, waitFor } from '@wagmi/test/react'
-import { expect, test } from 'vitest'
+import { renderHook } from '@wagmi/test/react'
+import { expect, test, vi } from 'vitest'
 
 import { useTransaction } from './useTransaction.js'
 
 test('default', async () => {
-  const { result } = renderHook(() =>
+  const { result } = await renderHook(() =>
     useTransaction({
       hash: '0x60668ed8c2dc110d61d945a936fcd45b8f13654e5c78481c8c825d1148c7ef30',
     }),
   )
 
-  await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -18,6 +18,7 @@ test('default', async () => {
         "accessList": [],
         "blockHash": "0xd725a38b51e5ceec8c5f6c9ccfdb2cc423af993bb650af5eedca5e4be7156ba7",
         "blockNumber": 15189204n,
+        "blockTimestamp": "0x62d9ee50",
         "chainId": 1,
         "from": "0xa0cf798816d4b9b9866b5330eea46a18382f251e",
         "gas": 21000n,

@@ -3,13 +3,12 @@
 import {
   type Config,
   type GetConnectorsReturnType,
-  type ResolvedRegister,
   getConnectors,
+  type ResolvedRegister,
   watchConnectors,
 } from '@wagmi/core'
+import type { ConfigParameter } from '@wagmi/core/internal'
 import { useSyncExternalStore } from 'react'
-
-import type { ConfigParameter } from '../types/properties.js'
 import { useConfig } from './useConfig.js'
 
 export type UseConnectorsParameters<config extends Config = Config> =

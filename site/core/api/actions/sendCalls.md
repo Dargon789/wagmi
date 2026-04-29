@@ -42,6 +42,32 @@ const id = await sendCalls(config, {
 <<< @/snippets/core/config.ts[config.ts]
 :::
 
+### Synchronous Usage
+
+If you want to wait for the calls to be included in a block before returning, you can use `sendCallsSync`:
+
+::: code-group
+```ts [index.ts]
+import { parseEther } from 'viem'
+import { sendCallsSync } from '@wagmi/core'
+import { config } from './config'
+
+const receipt = await sendCallsSync(config, {
+  calls: [
+    {
+      to: '0x70997970c51812dc3a010c7d01b50e0d17dc79c8',
+      value: parseEther('1')
+    },
+    {
+      data: '0xdeadbeef',
+      to: '0xa5cc3c03994DB5b0d9A5eEdD10CabaB0813678AC',
+    },
+  ]
+})
+```
+<<< @/snippets/core/config.ts[config.ts]
+:::
+
 ## Parameters
 
 ```ts
@@ -206,9 +232,9 @@ const id = await sendCalls(config, {
 import { type SendCallsReturnType } from '@wagmi/core'
 ```
 
-`bigint`
+`{ id: string; capabilities?: WalletCapabilities | undefined }`
 
-Most recent block number seen.
+Identifier of the call batch.
 
 ## Error
 
@@ -220,4 +246,4 @@ import { type SendCallsErrorType } from '@wagmi/core'
 
 ## Viem
 
-- [`sendCalls`](https://viem.sh/experimental/eip5792/sendCalls)
+- [`sendCalls`](https://viem.sh/docs/actions/wallet/sendCalls)
