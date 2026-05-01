@@ -1,52 +1,44 @@
 name: Release
 
-permissions:
-  contents: write
-  pull-requests: write
-
 on:
   push:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [19]
-        pnpm-version: [8]
     steps:
-      - uses: actions/checkout@v3
-        with:
-          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
-          fetch-depth: 0
-          submodules: true
+      - name: Checkout Repo
+        uses: actions/checkout@v3
 
-      - uses: pnpm/action-setup@v2.2.4
-        with:
-          version: ${{ matrix.pnpm-version }}
-      - name: Set up Node ${{ matrix.node-version }}
+      - name: Setup Node.js 20.x
         uses: actions/setup-node@v3
         with:
-          cache: 'pnpm'
-          node-version: ${{ matrix.node-version }}
+          node-version: 20.x
+
       - name: Install Dependencies
-        run: pnpm i
+        run: pnpm
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v1.4.1
+        uses: changesets/action@v1
         with:
-          title: 'chore: version packages'
-          commit: 'chore: version packages'
-          version: pnpm changeset:version
-          publish: pnpm changeset:release
+          # This expects you to have a script called release which does a build for your packages and calls changeset publish
+          publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish CJS bundle to npm
+      - name: Send a Slack notification if a publish happens
         if: steps.changesets.outputs.published == 'true'
-        run: pnpm cjs:release '${{ steps.changesets.outputs.publishedPackages }}'
+        # You can do something when a publish happens.
+        run: my-slack-bot send-notification --message "A new version of ${GITHUB_REPOSITORY} was published!"
