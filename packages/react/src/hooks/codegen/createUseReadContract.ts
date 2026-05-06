@@ -5,10 +5,10 @@ import type {
   ResolvedRegister,
 } from '@wagmi/core'
 import type {
+  ConfigParameter,
+  QueryParameter,
   ScopeKeyParameter,
   UnionCompute,
-  UnionExactPartial,
-  UnionStrictOmit,
 } from '@wagmi/core/internal'
 import type {
   ReadContractData,
@@ -21,8 +21,6 @@ import type {
   ContractFunctionArgs,
   ContractFunctionName,
 } from 'viem'
-
-import type { ConfigParameter, QueryParameter } from '../../types/properties.js'
 import { useChainId } from '../useChainId.js'
 import { useConfig } from '../useConfig.js'
 import {
@@ -47,31 +45,31 @@ export type CreateUseReadContractParameters<
     | undefined
 }
 
+/** Call-level options from ReadContractParameters (excludes abi, address, functionName, args). */
+type ReadContractCallOptions<config extends Config> = Omit<
+  ReadContractParameters<Abi, string, readonly unknown[], config>,
+  'abi' | 'address' | 'functionName' | 'args'
+>
+
 export type CreateUseReadContractReturnType<
   abi extends Abi | readonly unknown[],
   address extends Address | Record<number, Address> | undefined,
   functionName extends ContractFunctionName<abi, stateMutability> | undefined,
-  ///
-  omittedProperties extends 'abi' | 'address' | 'chainId' | 'functionName' =
-    | 'abi'
-    | (address extends undefined ? never : 'address')
-    | (address extends Record<number, Address> ? 'chainId' : never)
-    | (functionName extends undefined ? never : 'functionName'),
 > = <
   name extends functionName extends ContractFunctionName<abi, stateMutability>
     ? functionName
     : ContractFunctionName<abi, stateMutability>,
-  args extends ContractFunctionArgs<abi, stateMutability, name>,
+  const args extends ContractFunctionArgs<abi, stateMutability, name>,
   config extends Config = ResolvedRegister['config'],
   selectData = ReadContractData<abi, name, args>,
 >(
   parameters?: UnionCompute<
-    UnionExactPartial<
-      UnionStrictOmit<
-        ReadContractParameters<abi, name, args, config>,
-        omittedProperties
-      >
-    > &
+    {
+      abi?: undefined
+      address?: address extends undefined ? Address : undefined
+      functionName?: functionName extends undefined ? name : undefined
+      args?: args | undefined
+    } & Partial<ReadContractCallOptions<config>> &
       ScopeKeyParameter &
       ConfigParameter<config> &
       QueryParameter<

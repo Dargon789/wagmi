@@ -198,9 +198,9 @@ export function createConfig<
   let currentVersion: number
   const prefix = '0.0.0-canary-'
   if (version.startsWith(prefix))
-    currentVersion = Number.parseInt(version.replace(prefix, ''))
+    currentVersion = Number.parseInt(version.replace(prefix, ''), 10)
   // use package major version to version store
-  else currentVersion = Number.parseInt(version.split('.')[0] ?? '0')
+  else currentVersion = Number.parseInt(version.split('.')[0] ?? '0', 10)
 
   const store = createStore(
     subscribeWithSelector(
@@ -414,7 +414,9 @@ export function createConfig<
       return chains.getState() as chains
     },
     get connectors() {
-      return connectors.getState() as Connector<connectorFns[number]>[]
+      return connectors.getState() as Readonly<{
+        [key in keyof connectorFns]: Connector<connectorFns[key]>
+      }>
     },
     storage,
 
@@ -552,7 +554,9 @@ export type Config<
     readonly CreateConnectorFn[] = readonly CreateConnectorFn[],
 > = {
   readonly chains: chains
-  readonly connectors: readonly Connector<connectorFns[number]>[]
+  readonly connectors: Readonly<{
+    [key in keyof connectorFns]: Connector<connectorFns[key]>
+  }>
   readonly storage: Storage | null
 
   readonly state: State<chains>
