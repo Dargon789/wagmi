@@ -18,7 +18,7 @@ export function SignInWithEthereum() {
         const json = await res.json()
         setAddress(json.address)
       } catch (error) {
-        // TODO: Handle error
+        console.log({ error })
       }
     }
     handler()
