@@ -1,7 +1,3 @@
-import * as Bytes from 'ox/Bytes'
-import * as PublicKey from 'ox/PublicKey'
-import * as Secp256k1 from 'ox/Secp256k1'
-import { TokenId } from 'ox/tempo'
 import {
   type Account,
   type Address,
@@ -15,7 +11,7 @@ import {
   sendTransaction as viem_sendTransaction,
   sendTransactionSync as viem_sendTransactionSync,
 } from 'viem/actions'
-import { Abis, Actions } from 'viem/tempo'
+import { Abis, Actions, Bytes, PublicKey, Secp256k1, TokenId } from 'viem/tempo'
 import { Abis as ZoneAbis } from 'viem/tempo/zones'
 import { parseAccount } from 'viem/utils'
 import { getConnectorClient } from '../../actions/getConnectorClient.js'
@@ -1371,7 +1367,7 @@ async function encryptDepositPayload(
 
   const hkdfKey = await globalThis.crypto.subtle.importKey(
     'raw',
-    sharedSecret,
+    sharedSecret.buffer as ArrayBuffer,
     'HKDF',
     false,
     ['deriveKey'],
@@ -1407,7 +1403,7 @@ async function encryptDepositPayload(
 
   return {
     ciphertext: bytesToHex(ciphertext),
-    ephemeralPubkeyX: numberToHex(compressedEphemeral.x, { size: 32 }),
+    ephemeralPubkeyX: `0x${compressedEphemeral.x.toString(16).padStart(64, '0')}`,
     ephemeralPubkeyYParity: compressedEphemeral.prefix,
     nonce: bytesToHex(nonce),
     tag: bytesToHex(tag),
