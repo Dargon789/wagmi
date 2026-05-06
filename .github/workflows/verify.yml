@@ -15,19 +15,17 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PTOKEN }}
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@f7ad7f00e16e73322562922c241f21f0c7ffbbec
         with:
           node-version: 24.5
 
-      # TODO: Remove `--ignore-registry-errors` when issue fixed
-      # https://github.com/pnpm/pnpm/issues/11265
       - name: Audit dependencies
-        run: pnpm audit --ignore-registry-errors
+        run: pnpm audit
 
       - name: Check repo
         run: pnpm check:repo
@@ -56,7 +54,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@f7ad7f00e16e73322562922c241f21f0c7ffbbec
@@ -78,15 +76,15 @@ jobs:
       contents: read
     needs: check
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 5
     strategy:
       matrix:
         typescript-version: ['5.7.3', '5.8.3', '5.9.3', 'latest']
-        viem-version: ['2.48.3', 'latest']
+        viem-version: ['2.44.0', 'latest']
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@f7ad7f00e16e73322562922c241f21f0c7ffbbec
@@ -99,7 +97,7 @@ jobs:
         run: pnpm preconstruct
 
       - name: Check types
-        run: pnpm check:types:typescript
+        run: pnpm check:types
 
       - name: Bench types
         run: pnpm bench:types
@@ -114,7 +112,7 @@ jobs:
     permissions:
       contents: read
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     strategy:
       max-parallel: 4
       matrix:
@@ -123,7 +121,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@f7ad7f00e16e73322562922c241f21f0c7ffbbec
@@ -148,9 +146,6 @@ jobs:
       - name: Install Playwright
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install chromium --with-deps
-
-      - name: Pull Tempo Docker image
-        run: docker pull ghcr.io/tempoxyz/tempo:latest
 
       - name: Run tests
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08

@@ -7,7 +7,7 @@ import { useBlockTransactionCount } from './useBlockTransactionCount.js'
 test('default', async () => {
   const { result } = await renderHook(() => useBlockTransactionCount({}))
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('number')
@@ -56,7 +56,7 @@ test('parameters: chainId', async () => {
     useBlockTransactionCount({ chainId: chain.mainnet2.id }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('number')
@@ -105,7 +105,7 @@ test('parameters: blockNumber', async () => {
     useBlockTransactionCount({ blockNumber: 13677382n }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('number')
@@ -158,7 +158,7 @@ test('parameters: blockHash', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('number')
@@ -210,7 +210,7 @@ test('parameters: blockTag', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('number')

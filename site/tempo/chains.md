@@ -4,7 +4,6 @@ The following Tempo chains are available:
 
 ```ts
 import {
-  tempo, // [!code hl]
   tempoDevnet, // [!code hl]
   tempoLocalnet, // [!code hl]
   tempoTestnet, // [!code hl]
@@ -18,9 +17,9 @@ It is possible to set a default fee token for a Tempo chain by adding a `feeToke
 Once set, all transactions will use this token as the default fee token, unless an override is provided at the transaction level.
 
 ```ts
-import { tempo } from 'wagmi/chains'
+import { tempoTestnet } from 'wagmi/chains'
 
-const chain = tempo.extend({
+const chain = tempoTestnet.extend({
   feeToken: '0x20c0000000000000000000000000000000000001',
 })
 ```

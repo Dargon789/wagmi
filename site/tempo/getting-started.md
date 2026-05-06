@@ -1,7 +1,6 @@
 <script setup>
-import connectorsPackageJson from '../../packages/connectors/package.json'
+import packageJson from '../../packages/core/package.json'
 
-const accountsVersion = connectorsPackageJson.peerDependencies.accounts
 const viemVersion = '>=2.43.3'
 </script>
 
@@ -19,17 +18,16 @@ Wagmi React and Core both have first-class support for Tempo with [Hooks](/tempo
 
 ::: code-group
 ```bash-vue [pnpm]
-pnpm add viem@{{viemVersion}} accounts@{{accountsVersion}}
+pnpm add viem@{{viemVersion}}
 ```
 ```bash-vue [npm]
-npm install viem@{{viemVersion}} accounts@{{accountsVersion}}
+npm install viem@{{viemVersion}}
 ```
 ```bash-vue [yarn]
-yarn add viem@{{viemVersion}} accounts@{{accountsVersion}}
-```
+yarn add viem@{{viemVersion}}
 
 ```bash-vue [bun]
-bun add viem@{{viemVersion}} accounts@{{accountsVersion}}
+bun add viem@{{viemVersion}}
 ```
 :::
 
@@ -97,15 +95,19 @@ function App() {
 ```
 ```tsx [config.ts]
 import { createConfig, http } from 'wagmi'
-import { tempo } from 'wagmi/chains'
-import { tempoWallet } from 'wagmi/tempo'
+import { tempoTest } from 'wagmi/chains'
+import { KeyManager, webAuthn } from 'wagmi/tempo'
 
 export const config = createConfig({
-  connectors: [tempoWallet()],
-  chains: [tempo],
+  connectors: [
+    webAuthn({
+      keyManager: KeyManager.localStorage(),
+    }),
+  ],
+  chains: [tempoTest],
   multiInjectedProviderDiscovery: false,
   transports: {
-    [tempo.id]: http(),
+    [tempoTest.id]: http(),
   },
 })
 ```
@@ -156,74 +158,14 @@ function App() {
 ```tsx [config.ts]
 import { createConfig, http } from 'wagmi'
 import { tempo } from 'wagmi/chains'
-import { tempoWallet } from 'wagmi/tempo'
+import { KeyManager, webAuthn } from 'wagmi/tempo'
 
 export const config = createConfig({
-  connectors: [tempoWallet()],
-  chains: [tempo],
-  multiInjectedProviderDiscovery: false,
-  transports: {
-    [tempo.id]: http(),
-  },
-})
-```
-
-:::
-
-## Use Tempo Actions
-
-You can also use [Tempo-specific Actions](/tempo/actions/) directly via the `wagmi/tempo` and `@wagmi/core/tempo` entrypoints:
-
-::: code-group
-
-```ts [React]
-import { Actions } from 'wagmi/tempo'
-import { config } from './config'
-
-const alphaUsd = '0x20c0000000000000000000000000000000000001'
-
-const metadata = await Actions.token.getMetadata(config, {
-  token: alphaUsd,
-})
-
-console.log('Token:', metadata.name, `(${metadata.symbol})`)
-```
-
-```ts [React config.ts]
-import { createConfig, http } from 'wagmi'
-import { tempo } from 'wagmi/chains'
-import { tempoWallet } from 'wagmi/tempo'
-
-export const config = createConfig({
-  connectors: [tempoWallet()],
-  chains: [tempo],
-  multiInjectedProviderDiscovery: false,
-  transports: {
-    [tempo.id]: http(),
-  },
-})
-```
-
-```ts [Core]
-import { Actions } from '@wagmi/core/tempo'
-import { config } from './config'
-
-const alphaUsd = '0x20c0000000000000000000000000000000000001'
-
-const metadata = await Actions.token.getMetadata(config, {
-  token: alphaUsd,
-})
-
-console.log('Token:', metadata.name, `(${metadata.symbol})`)
-```
-
-```ts [Core config.ts]
-import { createConfig, http } from '@wagmi/core'
-import { tempo } from '@wagmi/core/chains'
-import { tempoWallet } from '@wagmi/core/tempo'
-
-export const config = createConfig({
-  connectors: [tempoWallet()],
+  connectors: [
+    webAuthn({
+      keyManager: KeyManager.localStorage(),
+    }),
+  ],
   chains: [tempo],
   multiInjectedProviderDiscovery: false,
   transports: {

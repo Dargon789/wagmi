@@ -16,7 +16,7 @@ Wagmi is a Svelte library for Ethereum.
 To manually add Wagmi to your project, install the required packages.
 
 ::: code-group
-```bash [pnpm]
+```bash-vue [pnpm]
 pnpm add @wagmi/svelte viem@{{viemVersion}} {{tanstackQuery}}
 ```
 

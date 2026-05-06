@@ -1,5 +1,4 @@
 import path from 'node:path'
-import react from '@vitejs/plugin-react'
 import { playwright } from '@vitest/browser-playwright'
 import reactFallbackThrottlePlugin from 'vite-plugin-react-fallback-throttle'
 import solid from 'vite-plugin-solid'
@@ -48,7 +47,7 @@ export default defineConfig({
           name: 'cli',
           environment: 'node',
           include: ['./packages/cli/src/**/*.test.ts'],
-          testTimeout: 20_000,
+          testTimeout: 10_000,
           setupFiles: ['./packages/cli/test/setup.ts'],
         },
       },
@@ -72,7 +71,7 @@ export default defineConfig({
             ...defaultExclude,
           ],
           environment: 'happy-dom',
-          testTimeout: 20_000,
+          testTimeout: 10_000,
           setupFiles: ['./packages/core/test/setup.ts'],
         },
         resolve: { alias },
@@ -82,11 +81,11 @@ export default defineConfig({
           name: 'create-wagmi',
           include: ['./packages/create-wagmi/src/**/*.test.ts'],
           environment: 'node',
-          testTimeout: 20_000,
+          testTimeout: 10_000,
         },
       },
       {
-        plugins: [react(), reactFallbackThrottlePlugin()],
+        plugins: [reactFallbackThrottlePlugin()],
         resolve: { alias },
         test: {
           name: 'tempo',
@@ -101,9 +100,8 @@ export default defineConfig({
             './packages/core/src/tempo/**/*.test.ts',
             './packages/react/src/tempo/**/*.test.ts',
           ],
-          fileParallelism: false,
           hookTimeout: 20_000,
-          testTimeout: 30_000,
+          testTimeout: 15_000,
           globalSetup: process.env.TYPES
             ? ['./packages/test/src/setup.global.types.ts']
             : ['./packages/test/src/tempo/setup.global.ts'],
@@ -111,7 +109,7 @@ export default defineConfig({
         },
       },
       {
-        plugins: [react(), reactFallbackThrottlePlugin()],
+        plugins: [reactFallbackThrottlePlugin()],
         resolve: { alias },
         test: {
           name: 'react',
@@ -127,7 +125,7 @@ export default defineConfig({
             './packages/react/src/tempo/**/*.test.ts',
             ...defaultExclude,
           ],
-          testTimeout: 20_000,
+          testTimeout: 10_000,
           setupFiles: ['./packages/react/test/setup.ts'],
         },
       },
@@ -136,7 +134,7 @@ export default defineConfig({
           name: 'vue',
           include: ['./packages/vue/src/**/*.test.ts?(x)'],
           environment: 'happy-dom',
-          testTimeout: 20_000,
+          testTimeout: 10_000,
           setupFiles: ['./packages/vue/test/setup.ts'],
         },
         resolve: { alias },
@@ -154,7 +152,7 @@ export default defineConfig({
             screenshotFailures: false,
           },
           include: ['./packages/solid/src/**/*.test.ts?(x)'],
-          testTimeout: 20_000,
+          testTimeout: 10_000,
           setupFiles: ['./packages/solid/test/setup.ts'],
         },
       },

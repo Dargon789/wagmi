@@ -95,13 +95,12 @@ export async function generate(options: Generate = {}) {
     }
 
     // Get contracts from config
-    const contractNames = new Set<string>()
     const contractMap = new Map<string, Contract>()
     for (const contractConfig of contractConfigs) {
       const previouslySeenContract = contractMap.get(contractConfig.name)
       if (previouslySeenContract) {
         if (
-hashAbi(previouslySeenContract.abi) === hashAbi(contractConfig.abi)
+          hashAbi(previouslySeenContract.abi) === hashAbi(contractConfig.abi)
         ) {
           // If the contract name and ABI match, skip adding it again, but allow it since this can occur when generating
           // from sources that mutually import each other, such as peer Foundry projects.
