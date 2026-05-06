@@ -1,22 +1,54 @@
+import { createConfig } from '@wagmi/core'
 import { chain, wait } from '@wagmi/test'
-import { renderHook, waitFor } from '@wagmi/test/react'
-import { expect, test } from 'vitest'
-
+import { renderHook } from '@wagmi/test/react'
 import type { Address } from 'viem'
+import { custom } from 'viem'
+import { expect, test, vi } from 'vitest'
 import { useProof } from './useProof.js'
 
+const proofResponse = {
+  address: '0x4200000000000000000000000000000000000016',
+  accountProof: ['0x1'],
+  balance: '0x0',
+  codeHash: `0x${'0'.repeat(64)}`,
+  nonce: '0x0',
+  storageHash: `0x${'0'.repeat(64)}`,
+  storageProof: [
+    {
+      key: '0x4a932049252365b3eedbc5190e18949f2ec11f39d3bef2d259764799a1b27d99',
+      proof: ['0x1'],
+      value: '0x0',
+    },
+  ],
+} as const
+
+const config = createConfig({
+  chains: [chain.mainnet],
+  storage: null,
+  transports: {
+    [chain.mainnet.id]: custom({
+      async request({ method }) {
+        if (method === 'eth_getProof') return proofResponse
+        if (method === 'eth_chainId')
+          return `0x${chain.mainnet.id.toString(16)}`
+        throw new Error(`Unexpected RPC method: ${method}`)
+      },
+    }),
+  },
+})
+
 test('default', async () => {
-  const { result } = renderHook(() =>
+  const { result } = await renderHook(() =>
     useProof({
+      config,
       address: '0x4200000000000000000000000000000000000016',
-      chainId: chain.optimism.id,
       storageKeys: [
         '0x4a932049252365b3eedbc5190e18949f2ec11f39d3bef2d259764799a1b27d99',
       ],
     }),
   )
 
-  await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect({ ...result.current, data: null }).toMatchInlineSnapshot(`
     {
@@ -46,7 +78,7 @@ test('default', async () => {
         "getProof",
         {
           "address": "0x4200000000000000000000000000000000000016",
-          "chainId": 10,
+          "chainId": 1,
           "storageKeys": [
             "0x4a932049252365b3eedbc5190e18949f2ec11f39d3bef2d259764799a1b27d99",
           ],
@@ -59,16 +91,16 @@ test('default', async () => {
 })
 
 test('behavior: address: undefined -> defined', async () => {
-  let address: Address | undefined = undefined
-
-  const { result, rerender } = renderHook(() =>
-    useProof({
-      address,
-      chainId: chain.optimism.id,
-      storageKeys: [
-        '0x4a932049252365b3eedbc5190e18949f2ec11f39d3bef2d259764799a1b27d99',
-      ],
-    }),
+  const { result, rerender } = await renderHook(
+    (props) =>
+      useProof({
+        config,
+        address: props?.address,
+        storageKeys: [
+          '0x4a932049252365b3eedbc5190e18949f2ec11f39d3bef2d259764799a1b27d99',
+        ],
+      }),
+    { initialProps: { address: undefined as Address | undefined } },
   )
 
   expect(result.current).toMatchInlineSnapshot(`
@@ -99,7 +131,7 @@ test('behavior: address: undefined -> defined', async () => {
         "getProof",
         {
           "address": undefined,
-          "chainId": 10,
+          "chainId": 1,
           "storageKeys": [
             "0x4a932049252365b3eedbc5190e18949f2ec11f39d3bef2d259764799a1b27d99",
           ],
@@ -110,10 +142,9 @@ test('behavior: address: undefined -> defined', async () => {
     }
   `)
 
-  address = '0x4200000000000000000000000000000000000016'
-  rerender()
+  rerender({ address: '0x4200000000000000000000000000000000000016' })
 
-  await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect({ ...result.current, data: null }).toMatchInlineSnapshot(`
     {
@@ -143,7 +174,7 @@ test('behavior: address: undefined -> defined', async () => {
         "getProof",
         {
           "address": "0x4200000000000000000000000000000000000016",
-          "chainId": 10,
+          "chainId": 1,
           "storageKeys": [
             "0x4a932049252365b3eedbc5190e18949f2ec11f39d3bef2d259764799a1b27d99",
           ],
@@ -156,8 +187,8 @@ test('behavior: address: undefined -> defined', async () => {
 })
 
 test('behavior: disabled when properties missing', async () => {
-  const { result } = renderHook(() => useProof())
+  const { result } = await renderHook(() => useProof())
 
   await wait(100)
-  await waitFor(() => expect(result.current.isPending).toBeTruthy())
+  await vi.waitFor(() => expect(result.current.isPending).toBeTruthy())
 })
