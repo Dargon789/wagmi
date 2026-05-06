@@ -35,7 +35,6 @@ type AccountsAdapter = NonNullable<AccountsProviderParameters['adapter']>
 type AccountsDangerousSecp256k1Parameters = NonNullable<
   Parameters<typeof accountsDangerousSecp256k1>[0]
 >
-type AccountsStorage = NonNullable<AccountsProviderParameters['storage']>
 type AccountsWebAuthnParameters = NonNullable<
   Parameters<typeof accountsWebAuthn>[0]
 >
@@ -125,6 +124,7 @@ export function webAuthn(parameters: webAuthn.Parameters = {}) {
     name: name ?? 'EOA (WebAuthn)',
     providerParameters,
     rdns,
+    signable: true,
     type: 'webAuthn',
   })
 }
@@ -160,6 +160,7 @@ export function dangerous_secp256k1(
     name: name ?? 'EOA (Secp256k1)',
     providerParameters,
     rdns,
+    signable: true,
     type: 'secp256k1',
   })
 }
@@ -167,44 +168,6 @@ export function dangerous_secp256k1(
 export declare namespace dangerous_secp256k1 {
   export type Parameters = AccountsDangerousSecp256k1Parameters &
     Omit<AccountsProviderParameters, 'adapter' | 'chains'>
-}
-
-function createAccountsStorage(
-  storage: {
-    getItem(key: string, defaultValue?: null | undefined): unknown
-    setItem(key: string, value: unknown): void | Promise<void>
-    removeItem(key: string): void | Promise<void>
-  },
-  namespace: string,
-): AccountsStorage {
-  const prefix = `accounts.${namespace}`
-  return {
-    async getItem<value>(key: string) {
-      return ((await storage.getItem(`${prefix}.${key}`, null)) ??
-        null) as value | null
-    },
-    async removeItem(key) {
-      await storage.removeItem(`${prefix}.${key}`)
-    },
-    async setItem(key, value) {
-      await storage.setItem(`${prefix}.${key}`, value)
-    },
-  }
-}
-
-function createMemoryAccountsStorage(): AccountsStorage {
-  const map = new Map<string, unknown>()
-  return {
-    async getItem<value>(key: string) {
-      return (map.get(key) ?? null) as value | null
-    },
-    async removeItem(key) {
-      map.delete(key)
-    },
-    async setItem(key, value) {
-      map.set(key, value)
-    },
-  }
 }
 
 function _setup(parameters: setup.Parameters) {
@@ -236,11 +199,6 @@ function _setup(parameters: setup.Parameters) {
           ...parameters.providerParameters,
           adapter: parameters.createAdapter(accounts),
           chains: config.chains as never,
-          storage:
-            parameters.providerParameters.storage ??
-            (config.storage
-              ? createAccountsStorage(config.storage, parameters.id)
-              : createMemoryAccountsStorage()),
         }) as unknown as Provider
       })()
 
@@ -349,7 +307,7 @@ function _setup(parameters: setup.Parameters) {
       async getClient({ chainId } = {}) {
         const provider = await getProvider()
         return Object.assign(provider.getClient({ chainId }), {
-          account: provider.getAccount(),
+          account: provider.getAccount({ signable: parameters.signable }),
         }) as never
       },
       async getProvider() {
@@ -439,12 +397,21 @@ function _setup(parameters: setup.Parameters) {
 
 export declare namespace setup {
   export type Parameters = {
+    /** Builds the underlying `accounts` adapter (dialog, webAuthn, secp256k1) the connector wraps. */
     createAdapter: (accounts: AccountsModule) => AccountsAdapter
+    /** Optional connector icon (data URL or remote URL). Surfaced via EIP-6963 announcement. */
     icon?: string | undefined
+    /** Connector ID. */
     id: string
+    /** Human-readable connector name. */
     name: string
+    /** Forwarded to `Provider.create`. */
     providerParameters: Omit<AccountsProviderParameters, 'adapter' | 'chains'>
+    /** EIP-6963 reverse-DNS ID(s) for the connector. */
     rdns?: string | readonly string[] | undefined
+    /** Whether the connector's accounts can be hydrated for local signing. */
+    signable?: boolean | undefined
+    /** Connector type. */
     type: string
   }
 
