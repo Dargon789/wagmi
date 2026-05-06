@@ -14,7 +14,7 @@ test('default', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -109,7 +109,7 @@ test('behavior: address: undefined -> defined', async () => {
 
   rerender({ account: accounts[0] })
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {

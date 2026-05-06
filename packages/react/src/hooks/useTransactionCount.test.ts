@@ -10,7 +10,7 @@ const address = accounts[0]
 test('default', async () => {
   const { result } = await renderHook(() => useTransactionCount({ address }))
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('number')
@@ -60,7 +60,7 @@ test('parameters: chainId', async () => {
     useTransactionCount({ address, chainId: chain.mainnet2.id }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('number')
@@ -110,7 +110,7 @@ test('parameters: blockNumber', async () => {
     useTransactionCount({ address, blockNumber: 13677382n }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('number')
@@ -210,7 +210,7 @@ test('behavior: address: undefined -> defined', async () => {
   address = accounts[0]
   rerender()
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   const { data, ...rest } = result.current
   expect(data).toBeTypeOf('number')

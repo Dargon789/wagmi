@@ -21,10 +21,14 @@ setUserToken.mutate({
 // @noErrors
 import { createConfig, http } from 'wagmi'
 import { tempo } from 'wagmi/chains'
-import { tempoWallet } from 'wagmi/tempo'
+import { KeyManager, webAuthn } from 'wagmi/tempo'
 
 export const config = createConfig({
-  connectors: [tempoWallet()],
+  connectors: [
+    webAuthn({
+      keyManager: KeyManager.localStorage(),
+    }),
+  ],
   chains: [tempo],
   multiInjectedProviderDiscovery: false,
   transports: {
@@ -57,7 +61,6 @@ setUserToken.mutate({
 if (receipt) {
   const { args } 
     = Actions.fee.setUserToken.extractEvent(receipt.logs)
-}
 ```
 
 ## Return Type

@@ -1,8 +1,13 @@
-# etherscan
+---
+title: 'Etherscan'
+description: 'Etherscan plugin'
+---
 
-Plugin for fetching ABIs from [Etherscan](https://etherscan.io) and adding into `contracts` config.
+import { Callout } from 'nextra-theme-docs'
 
-## Import
+# Etherscan
+
+Plugin for fetching ABIs from Etherscan and adding into `contracts` config.
 
 ```ts
 import { etherscan } from '@wagmi/cli/plugins'
@@ -10,7 +15,7 @@ import { etherscan } from '@wagmi/cli/plugins'
 
 ## Usage
 
-```ts{2,6-14}
+```ts
 import { defineConfig } from '@wagmi/cli'
 import { etherscan } from '@wagmi/cli/plugins'
 
@@ -18,10 +23,9 @@ export default defineConfig({
   plugins: [
     etherscan({
       apiKey: process.env.ETHERSCAN_API_KEY,
-      chainId: 1,
       contracts: [
         {
-          name: 'Wagmigotchi',
+          name: 'wagmigotchi',
           address: '0xecb504d39723b0be0e3a9aa33d646642d1051ee1',
         },
       ],
@@ -29,31 +33,35 @@ export default defineConfig({
   ],
 })
 ```
+
+The following Etherscan block explorers and their testnets are supported (e.g. Ethereum Mainnet and Goerli):
+
+- [Ethereum](https://etherscan.io)
+- [Arbiscan](https://arbiscan.io)
+- [Snowtrace](https://snowtrace.io)
+- [BscScan](https://bscscan.com)
+- [FTMScan](https://ftmscan.com)
+- [HecoScan](https://hecoinfo.com)
+- [Optimistic Etherscan](https://optimistic.etherscan.io)
+- [PolygonScan](https://polygonscan.com)
 
 ## Configuration
 
-```ts
-import { type EtherscanConfig } from '@wagmi/cli/plugins'
-```
-
 ### apiKey
 
-`string`
+Etherscan API key. Etherscan API keys are specific per network and include testnets (e.g. Ethereum Mainnet and Goerli share same API key).
 
-Etherscan API key. Etherscan API keys are specific per network and include testnets (e.g. Ethereum Mainnet and Sepolia share same API key).
-
-```ts
+```ts {7}
 import { defineConfig } from '@wagmi/cli'
 import { etherscan } from '@wagmi/cli/plugins'
 
 export default defineConfig({
   plugins: [
     etherscan({
-      apiKey: process.env.ETHERSCAN_API_KEY, // [!code focus]
-      chainId: 1,
+      apiKey: process.env.ETHERSCAN_API_KEY,
       contracts: [
         {
-          name: 'Wagmigotchi',
+          name: 'wagmigotchi',
           address: '0xecb504d39723b0be0e3a9aa33d646642d1051ee1',
         },
       ],
@@ -62,26 +70,21 @@ export default defineConfig({
 })
 ```
 
-### cacheDuration
+### contracts
 
-`number | undefined`
+Contracts to fetch ABIs for.
 
-- Duration in milliseconds to cache ABIs.
-- Defaults to `1_800_000` (30 minutes).
-
-```ts
+```ts {8-13}
 import { defineConfig } from '@wagmi/cli'
-import { etherscan } from '@wagmi/cli/plugins'
+import { blockExplorer } from '@wagmi/cli/plugins'
 
 export default defineConfig({
   plugins: [
     etherscan({
       apiKey: process.env.ETHERSCAN_API_KEY,
-      cacheDuration: 300_000, // [!code focus]
-      chainId: 1,
       contracts: [
         {
-          name: 'Wagmigotchi',
+          name: 'wagmigotchi',
           address: '0xecb504d39723b0be0e3a9aa33d646642d1051ee1',
         },
       ],
@@ -92,24 +95,20 @@ export default defineConfig({
 
 ### chainId
 
-`number`
+Chain id to use for fetching ABI. If `address` is an object, `chainId` is used to select the address.
 
-Chain ID to use for fetching ABI. If [`address`](/cli/config/options#address) is an object, `chainId` is used to select the address.
-
-View supported chains on the [Etherscan docs](https://docs.etherscan.io/etherscan-v2/getting-started/supported-chains).
-
-```ts
+```ts {8,17}
 import { defineConfig } from '@wagmi/cli'
-import { etherscan } from '@wagmi/cli/plugins'
+import { blockExplorer } from '@wagmi/cli/plugins'
 
 export default defineConfig({
   plugins: [
     etherscan({
       apiKey: process.env.ETHERSCAN_API_KEY,
-      chainId: 1, // [!code focus]
+      chainId: 1,
       contracts: [
         {
-          name: 'Wagmigotchi',
+          name: 'wagmigotchi',
           address: '0xecb504d39723b0be0e3a9aa33d646642d1051ee1',
         },
         {
@@ -125,13 +124,11 @@ export default defineConfig({
 })
 ```
 
-### contracts
+### cacheDuration (optional)
 
-`{ name: string; address?: Address | Record<number, Address> | undefined }[]`
+Duration in milliseconds to cache ABIs. Defaults to `1_800_000` (30 minutes).
 
-Contracts to fetch ABIs for.
-
-```ts
+```ts {8}
 import { defineConfig } from '@wagmi/cli'
 import { etherscan } from '@wagmi/cli/plugins'
 
@@ -139,44 +136,14 @@ export default defineConfig({
   plugins: [
     etherscan({
       apiKey: process.env.ETHERSCAN_API_KEY,
-      chainId: 1,
-      contracts: [ // [!code focus]
-        { // [!code focus]
-          name: 'Wagmigotchi', // [!code focus]
-          address: '0xecb504d39723b0be0e3a9aa33d646642d1051ee1', // [!code focus]
-        }, // [!code focus]
-      ], // [!code focus]
-    }),
-  ],
-})
-```
-
-### tryFetchProxyImplementation
-
-`boolean | undefined`
-
-- Whether to try fetching proxy implementation address of the contract.
-- Defaults to `false`.
-
-```ts
-import { defineConfig } from '@wagmi/cli'
-import { etherscan } from '@wagmi/cli/plugins'
-
-export default defineConfig({
-  plugins: [
-    etherscan({
-      apiKey: process.env.ETHERSCAN_API_KEY,
-      chainId: 1,
+      cacheDuration: 300_000,
       contracts: [
         {
-          name: 'FiatToken',
-          address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          name: 'wagmigotchi',
+          address: '0xecb504d39723b0be0e3a9aa33d646642d1051ee1',
         },
       ],
-      tryFetchProxyImplementation: true, // [!code focus]
     }),
   ],
 })
 ```
-
-
