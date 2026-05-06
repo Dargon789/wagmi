@@ -11,7 +11,7 @@ assignees: ''
 A clear and concise description of what the bug is.
 
 **To Reproduce**
-Steps to reproduce the behavior:
+Steps to reproduce the behavior. A link to a minimal reproduction is highly recommended (e.g. [CodeSandbox](https://codesandbox.io/p/sandbox/wagmi-reproduction-template-15n57l) or [StackBlitz](https://stackblitz.com/fork/wagmi-reproduction-template)):
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
