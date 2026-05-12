@@ -1,5 +1,23 @@
 # @wagmi/core
 
+## 3.4.11
+
+### Patch Changes
+
+- **`wagmi/tempo`:** Fixed `getClient` on Tempo connectors to always provide a JSON-RPC account. ([#5117](https://github.com/wevm/wagmi/pull/5117))
+
+## 3.4.10
+
+### Patch Changes
+
+- **Breaking(`wagmi/tempo`):** Removed the `signable` setup parameter from Tempo connectors. The connector now always hands viem the root account in `getClient` and the SDK provider performs signing orchestration internally. ([#5112](https://github.com/wevm/wagmi/pull/5112))
+
+## 3.4.9
+
+### Patch Changes
+
+- `wagmi/tempo`: Added Actions and Hooks for `viem/tempo#wallet` actions. ([#5103](https://github.com/wevm/wagmi/pull/5103))
+
 ## 3.4.8
 
 ### Patch Changes
