@@ -14,6 +14,7 @@ import {
   UserRejectedRequestError,
   withRetry,
 } from 'viem'
+import { parseAccount } from 'viem/utils'
 
 import { createConnector } from '../connectors/createConnector.js'
 import type { Connector } from '../createConfig.js'
@@ -199,6 +200,7 @@ function _setup(parameters: setup.Parameters) {
           ...parameters.providerParameters,
           adapter: parameters.createAdapter(accounts),
           chains: config.chains as never,
+          transports: config.transports as never,
         }) as unknown as Provider
       })()
 
@@ -306,8 +308,11 @@ function _setup(parameters: setup.Parameters) {
       },
       async getClient({ chainId } = {}) {
         const provider = await getProvider()
+        // Always provide a JSON-RPC account; the SDK provider performs
+        // access key orchestration internally before signing.
+        const { address } = provider.getAccount({ accessKey: false })
         return Object.assign(provider.getClient({ chainId }), {
-          account: provider.getAccount({ signable: true }),
+          account: parseAccount(address),
         }) as never
       },
       async getProvider() {
@@ -397,12 +402,19 @@ function _setup(parameters: setup.Parameters) {
 
 export declare namespace setup {
   export type Parameters = {
+    /** Builds the underlying `accounts` adapter (dialog, webAuthn, secp256k1) the connector wraps. */
     createAdapter: (accounts: AccountsModule) => AccountsAdapter
+    /** Optional connector icon (data URL or remote URL). Surfaced via EIP-6963 announcement. */
     icon?: string | undefined
+    /** Connector ID. */
     id: string
+    /** Human-readable connector name. */
     name: string
+    /** Forwarded to `Provider.create`. */
     providerParameters: Omit<AccountsProviderParameters, 'adapter' | 'chains'>
+    /** EIP-6963 reverse-DNS ID(s) for the connector. */
     rdns?: string | readonly string[] | undefined
+    /** Connector type. */
     type: string
   }
 
