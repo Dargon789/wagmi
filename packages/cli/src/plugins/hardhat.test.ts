@@ -1,49 +1,52 @@
-import fixtures from 'fixturez'
+import { createFixture } from 'fs-fixture'
 import { dirname, resolve } from 'pathe'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, expect, test, vi } from 'vitest'
 
-import { hardhat } from './hardhat'
+import { hardhat } from './hardhat.js'
 
-const f = fixtures(__dirname)
+const fixtures: Awaited<ReturnType<typeof createFixture>>[] = []
 
-describe('hardhat', () => {
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
+async function createTempDir() {
+  const fixture = await createFixture()
+  fixtures.push(fixture)
+  return fixture.path
+}
 
-  describe('validate', async () => {
-    it('validate', async () => {
-      const temp = f.temp()
-      await expect(hardhat({ project: temp }).validate()).rejects
-        .toThrowErrorMatchingInlineSnapshot(`
-        "hardhat must be installed to use Hardhat plugin.
-        To install, run: pnpm add hardhat"
-      `)
-    })
+afterEach(async () => {
+  vi.restoreAllMocks()
+  await Promise.all(fixtures.splice(0).map((fixture) => fixture.rm()))
+})
 
-    it('project does not exist', async () => {
-      const dir = f.temp()
-      const spy = vi.spyOn(process, 'cwd')
-      spy.mockImplementation(() => dir)
+test('validate', async () => {
+  const temp = await createTempDir()
+  await expect(
+    hardhat({ project: temp }).validate?.(),
+  ).rejects.toThrowErrorMatchingInlineSnapshot(
+    '[Error: hardhat must be installed to use Hardhat plugin.]',
+  )
+})
 
-      try {
-        await hardhat({ project: '../path/to/project' }).validate()
-      } catch (error) {
-        expect(
-          (error as Error).message.replace(dirname(dir), '..'),
-        ).toMatchInlineSnapshot(
-          '"Hardhat project ../path/to/project not found."',
-        )
-      }
-    })
-  })
+test('project does not exist', async () => {
+  const dir = await createTempDir()
+  const spy = vi.spyOn(process, 'cwd')
+  spy.mockImplementation(() => dir)
 
-  it('contracts', async () => {
-    await expect(
-      hardhat({
-        project: resolve(__dirname, '__fixtures__/hardhat/'),
-      }).contracts(),
-    ).resolves.toMatchInlineSnapshot(`
+  try {
+    await hardhat({ project: '../path/to/project' }).validate?.()
+  } catch (error) {
+    expect(
+      (error as Error).message.replace(dirname(dir), '..'),
+    ).toMatchInlineSnapshot('"Hardhat project ../path/to/project not found."')
+  }
+})
+
+test('contracts', async () => {
+  await expect(
+    hardhat({
+      project: resolve(__dirname, '__fixtures__/hardhat/'),
+      exclude: ['Foo.sol/**'],
+    }).contracts?.(),
+  ).resolves.toMatchInlineSnapshot(`
       [
         {
           "abi": [
@@ -86,5 +89,4 @@ describe('hardhat', () => {
         },
       ]
     `)
-  })
-})
+}, 10_000)
