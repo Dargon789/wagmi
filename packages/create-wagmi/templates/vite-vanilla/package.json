@@ -1,6 +1,7 @@
 {
   "name": "wagmi-core-vanilla-starter",
   "private": true,
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,13 +11,14 @@
   "dependencies": {
     "@wagmi/connectors": "latest",
     "@wagmi/core": "latest",
-    "react": "latest",
-    "react-dom": "latest",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "viem": "latest"
   },
   "devDependencies": {
     "@wagmi/cli": "latest",
-    "typescript": "latest",
-    "vite": "latest"
+    "buffer": "^6.0.3",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5"
   }
 }
