@@ -1,5 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { connect, getConnection, getConnectorClient } from '@wagmi/core'
+import {
+  connect,
+  createConnector,
+  getConnection,
+  getConnectorClient,
+} from '@wagmi/core'
 import * as chains from '@wagmi/core/chains'
 import type { FixedArray } from '@wagmi/core/internal'
 import { dangerous_secp256k1 } from '@wagmi/core/tempo'
@@ -7,21 +12,35 @@ import { Mnemonic } from 'ox'
 import * as React from 'react'
 import {
   type Account,
+  type Address,
   type Chain,
   type Client,
   defineChain,
+  type Hex,
   http,
+  numberToHex,
   parseUnits,
   type Transport,
 } from 'viem'
 import { sendTransactionSync } from 'viem/actions'
 import { Actions, Addresses, Tick, Account as tempo_Account } from 'viem/tempo'
+import { http as zoneHttp } from 'viem/tempo/zones'
+import { vi } from 'vitest'
 import {
   type RenderHookOptions,
   type RenderHookResult,
   renderHook as vbr_renderHook,
 } from 'vitest-browser-react'
 import { createConfig, WagmiProvider } from 'wagmi'
+import {
+  zoneId,
+  zoneLocal,
+  zonePortalAddress,
+  zonePortalEncryptionKey,
+  zonePortalEncryptionKeyCount,
+  zoneRpcUrl,
+  zoneStorage,
+} from './zone.js'
 
 export const port = Number(import.meta.env.RPC_PORT ?? 4000)
 
@@ -38,31 +57,155 @@ export const addresses = {
   alphaUsd: '0x20c0000000000000000000000000000000000001',
 } as const
 
-export const accounts = Array.from({ length: 20 }, (_, i) => {
-  const privateKey = Mnemonic.toPrivateKey(
+export const privateKeys = Array.from({ length: 20 }, (_, i) =>
+  Mnemonic.toPrivateKey(
     'test test test test test test test test test test test junk',
     { as: 'Hex', path: Mnemonic.path({ account: i }) },
-  )
-  return tempo_Account.fromSecp256k1(privateKey)
-}) as unknown as FixedArray<tempo_Account.RootAccount, 20>
+  ),
+) as unknown as FixedArray<Hex, 20>
+
+export const accounts = privateKeys.map((privateKey) =>
+  tempo_Account.fromSecp256k1(privateKey),
+) as unknown as FixedArray<tempo_Account.RootAccount, 20>
 
 export const tempoLocal = defineChain({
   ...chains.tempoLocalnet,
+  contracts: {
+    zonePortal: {
+      [zoneId]: {
+        address: zonePortalAddress,
+        encryptionKeyCount: zonePortalEncryptionKeyCount,
+        sequencerEncryptionKey: zonePortalEncryptionKey,
+      },
+    },
+  },
   rpcUrls: { default: { http: [rpcUrl] } },
 }).extend({ feeToken: 1n })
 
 export const config = createConfig({
-  chains: [tempoLocal],
+  chains: [tempoLocal, zoneLocal],
   connectors: [
-    dangerous_secp256k1({ account: accounts.at(0) }),
-    dangerous_secp256k1({ account: accounts.at(1) }),
+    dangerous_secp256k1({
+      privateKey: privateKeys[0],
+      storage: createMemoryStorage(),
+    }),
+    dangerous_secp256k1({
+      privateKey: privateKeys[1],
+      storage: createMemoryStorage(),
+    }),
+    mockWallet({ accounts: [accounts[0].address, accounts[1].address] }),
   ],
-  pollingInterval: 100,
+  pollingInterval: 25,
   storage: null,
   transports: {
     [tempoLocal.id]: http(),
+    [zoneLocal.id]: zoneHttp(zoneRpcUrl, { storage: zoneStorage }),
   },
 })
+
+/**
+ * Mock connector for testing tempo wallet flow methods
+ * (`wallet_transfer`, `wallet_swap`, `wallet_deposit`).
+ *
+ * Returns canned receipts for wallet flow methods so tests can verify the
+ * action wiring without needing a real wallet.
+ */
+function mockWallet(parameters: {
+  accounts: readonly [Address, ...Address[]]
+}) {
+  let connected = false
+  let connectedChainId: number = tempoLocal.id
+
+  const receipt = {
+    blockHash:
+      '0x0000000000000000000000000000000000000000000000000000000000000001',
+    blockNumber: 1n,
+    contractAddress: null,
+    cumulativeGasUsed: 1n,
+    effectiveGasPrice: 1n,
+    from: '0x0000000000000000000000000000000000000001',
+    gasUsed: 1n,
+    logs: [],
+    logsBloom: '0x0',
+    status: 'success',
+    to: null,
+    transactionHash:
+      '0x0000000000000000000000000000000000000000000000000000000000000002',
+    transactionIndex: 0,
+    type: 'tempo',
+  } as const
+
+  return createConnector((config) => ({
+    id: 'mock-wallet',
+    name: 'Mock Wallet Connector',
+    type: 'mockWallet' as const,
+    async setup() {
+      connectedChainId = config.chains[0].id
+    },
+    async connect({ chainId } = {}) {
+      connected = true
+      const currentChainId = chainId ?? (await this.getChainId())
+      connectedChainId = currentChainId
+      return {
+        accounts: parameters.accounts as readonly Address[],
+        chainId: currentChainId,
+      } as never
+    },
+    async disconnect() {
+      connected = false
+    },
+    async getAccounts() {
+      return parameters.accounts
+    },
+    async getChainId() {
+      return connectedChainId
+    },
+    async isAuthorized() {
+      return connected
+    },
+    onAccountsChanged(accounts) {
+      config.emitter.emit('change', {
+        accounts: accounts as readonly Address[],
+      })
+    },
+    onChainChanged(chain) {
+      config.emitter.emit('change', { chainId: Number(chain) })
+    },
+    async onDisconnect() {
+      connected = false
+      config.emitter.emit('disconnect')
+    },
+    async getProvider() {
+      return {
+        on() {},
+        removeListener() {},
+        async request({ method }: { method: string }) {
+          if (method === 'eth_chainId') return numberToHex(connectedChainId)
+          if (method === 'eth_accounts' || method === 'eth_requestAccounts')
+            return parameters.accounts
+          if (method === 'wallet_transfer')
+            return { chainId: connectedChainId, receipt }
+          if (method === 'wallet_swap') return { receipt }
+          if (method === 'wallet_deposit') return { receipts: [receipt] }
+          return null
+        },
+      }
+    },
+  }))
+}
+
+function createMemoryStorage() {
+  const map = new Map<string, unknown>()
+  return {
+    getItem: (key: string) => (map.get(key) ?? null) as never,
+    setItem: (key: string, value: unknown) => {
+      map.set(key, value)
+    },
+    removeItem: (key: string) => {
+      map.delete(key)
+    },
+  }
+}
 
 export const queryClient = new QueryClient()
 
@@ -104,12 +247,15 @@ export async function restart() {
       connector: config.connectors[0]!,
     })
   const client = config.getClient()
+
+  // Temporarily restore real Date.now so viem calculates a valid validBefore timestamp.
+  if ((Date.now as any).mockRestore) (Date.now as any).mockRestore()
   await Promise.all(
     [1n, 2n, 3n].map((id) =>
       Actions.amm.mintSync(client, {
         account: accounts[0],
         feeToken: Addresses.pathUsd,
-        nonceKey: 'random',
+        nonceKey: 'expiring',
         userTokenAddress: id,
         validatorTokenAddress: Addresses.pathUsd,
         validatorTokenAmount: parseUnits('1000', 6),
@@ -117,6 +263,13 @@ export async function restart() {
       }),
     ),
   )
+  vi.spyOn(Date, 'now').mockReturnValue(
+    new Date(Date.UTC(2023, 1, 1)).valueOf(),
+  )
+}
+
+export async function destroy() {
+  await fetch(`${rpcUrl}/destroy`)
 }
 
 export async function setupToken() {
@@ -156,7 +309,7 @@ export async function setupOrders() {
 }
 
 export async function viem_setupToken(
-  client: Client<Transport, Chain, Account>,
+  client: Client<Transport, typeof tempoLocal, Account>,
   parameters: Partial<
     Awaited<ReturnType<typeof Actions.token.createSync>>
   > = {},
@@ -168,16 +321,19 @@ export async function viem_setupToken(
     ...parameters,
   })
 
-  await Actions.token.grantRolesSync(client, {
-    roles: ['issuer'],
-    to: client.account.address,
-    token: token.token,
-  })
-
-  await Actions.token.mintSync(client, {
-    amount: parseUnits('10000', 6),
-    to: client.account.address,
-    token: token.token,
+  await sendTransactionSync(client, {
+    calls: [
+      Actions.token.grantRoles.call({
+        role: 'issuer',
+        to: client.account.address,
+        token: token.token,
+      }),
+      Actions.token.mint.call({
+        amount: parseUnits('10000', 6),
+        to: client.account.address,
+        token: token.token,
+      }),
+    ],
   })
 
   return token

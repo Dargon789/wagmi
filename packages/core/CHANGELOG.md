@@ -1,5 +1,125 @@
 # @wagmi/core
 
+## 3.4.12
+
+### Patch Changes
+
+- Handled malformed cookie state in `cookieToInitialState`. ([#5116](https://github.com/wevm/wagmi/pull/5116))
+
+- `wagmi/tempo`: Renamed `Actions.wallet.send` to `Actions.wallet.transfer` and `Hooks.wallet.useSend` to `Hooks.wallet.useTransfer`. ([#5121](https://github.com/wevm/wagmi/pull/5121))
+
+  Also bumps the `accounts` peer dependency to `~0.12`.
+
+  ```diff
+  - await Actions.wallet.send(config, {
+  -   to: '0x...',
+  -   token: '0x...',
+  -   value: '1.5',
+  - })
+  + await Actions.wallet.transfer(config, {
+  +   amount: '1.5',
+  +   to: '0x...',
+  +   token: '0x...',
+  + })
+  ```
+
+  ```diff
+  - const send = Hooks.wallet.useSend()
+  + const transfer = Hooks.wallet.useTransfer()
+  ```
+
+## 3.4.11
+
+### Patch Changes
+
+- **`wagmi/tempo`:** Fixed `getClient` on Tempo connectors to always provide a JSON-RPC account. ([#5117](https://github.com/wevm/wagmi/pull/5117))
+
+## 3.4.10
+
+### Patch Changes
+
+- **Breaking(`wagmi/tempo`):** Removed the `signable` setup parameter from Tempo connectors. The connector now always hands viem the root account in `getClient` and the SDK provider performs signing orchestration internally. ([#5112](https://github.com/wevm/wagmi/pull/5112))
+
+## 3.4.9
+
+### Patch Changes
+
+- `wagmi/tempo`: Added Actions and Hooks for `viem/tempo#wallet` actions. ([#5103](https://github.com/wevm/wagmi/pull/5103))
+
+## 3.4.8
+
+### Patch Changes
+
+- Restricted `signable` account hydration in `getClient` to connectors with locally-hydratable signing material (`webAuthn`, `dangerous_secp256k1`). ([#5093](https://github.com/wevm/wagmi/pull/5093))
+
+## 3.4.7
+
+### Patch Changes
+
+- Fixed an issue where `prepareTransactionRequest` required a top-level `to` when using `calls`. ([#5079](https://github.com/wevm/wagmi/pull/5079))
+
+## 3.4.6
+
+### Patch Changes
+
+- Resolved `account` in `prepareTransactionRequest` via `getConnectorClient` so connectors with a `getClient` method can supply a signable account. ([#5084](https://github.com/wevm/wagmi/pull/5084))
+
+- Fixed `tempoWallet` connector to use default storage on `accounts`. ([#5078](https://github.com/wevm/wagmi/pull/5078))
+
+- Passed `theme` option through to `tempoWallet` connector. ([#5074](https://github.com/wevm/wagmi/pull/5074))
+
+- `wagmi/tempo`: Updated `webAuthn` connector's `getClient` to return a signable account via `provider.getAccount({ signable: true })`. ([#5084](https://github.com/wevm/wagmi/pull/5084))
+
+## 3.4.5
+
+### Patch Changes
+
+- Fixed tempo entrypoint dependency wiring ([#5069](https://github.com/wevm/wagmi/pull/5069))
+
+- Updated `accounts` peer dep range ([`23d6e27`](https://github.com/wevm/wagmi/commit/23d6e2768a8e73f4ed5cc5196cdd1bf600af7c18))
+
+## 3.4.4
+
+### Patch Changes
+
+- Added Tempo Zones support. ([#5062](https://github.com/wevm/wagmi/pull/5062))
+
+## 3.4.3
+
+### Patch Changes
+
+- Added `tempoWallet` connector ([#5058](https://github.com/wevm/wagmi/pull/5058))
+
+## 3.4.2
+
+### Patch Changes
+
+- Fixed `feePayer` types for Tempo chains on `sendTransaction`, `sendTransactionSync`, and `deployContract`. ([#5022](https://github.com/wevm/wagmi/pull/5022))
+
+## 3.4.1
+
+### Patch Changes
+
+- Fixed chainId not being passed to Tempo webAuthn key authorization ([#5024](https://github.com/wevm/wagmi/pull/5024))
+
+## 3.4.0
+
+### Minor Changes
+
+- Added `signTransaction` action ([#4995](https://github.com/wevm/wagmi/pull/4995))
+
+## 3.3.4
+
+### Patch Changes
+
+- Added credential fast path to `webAuthn` connector — pass `capabilities.credential` directly to skip the WebAuthn ceremony when the credential is already known. ([#5005](https://github.com/wevm/wagmi/pull/5005))
+
+## 3.3.3
+
+### Patch Changes
+
+- Added ability to sign arbitrary `hash` on `webAuthn#connect`. ([#4994](https://github.com/wevm/wagmi/pull/4994))
+
 ## 3.3.2
 
 ### Patch Changes
