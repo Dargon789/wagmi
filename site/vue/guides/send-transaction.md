@@ -1,6 +1,6 @@
 # Send Transaction
 
-The following guide teaches you how to send transactions in Wagmi. The example below builds on the [Connect Wallet guide](/vue/guides/connect-wallet) and uses the [useSendTransaction](/vue/api/composables/useSendTransaction) & [useWaitForTransaction](/vue/api/composables/useWaitForTransactionReceipt) composables. 
+The following guide teaches you how to send transactions in Wagmi. The example below builds on the [Connect Wallet guide](/vue/guides/connect-wallet) and uses the [useSendTransaction](/vue/api/composables/useSendTransaction) & [useWaitForTransactionReceipt](/vue/api/composables/useWaitForTransactionReceipt) composables. 
 
 ## Example
 
@@ -247,16 +247,16 @@ Finally, we can wire up our Send Transaction component to our application's entr
 :::code-group
 ```vue [App.vue]
 <script setup lang="ts">
-import { useAccount } from '@wagmi/vue';
-import Account from './Account.vue';
-import Connect from './Connect.vue';
-import SendTransaction from './SendTransaction.vue'; // [!code ++]
+import { useConnection } from '@wagmi/vue'
+import Connection from './Connection.vue'
+import Connect from './Connect.vue'
+import SendTransaction from './SendTransaction.vue' // [!code ++]
 
-const { isConnected } = useAccount();
+const { isConnected } = useConnection()
 </script>
 
 <template>
-  <Account v-if="isConnected" />
+  <Connection v-if="isConnected" />
   <Connect v-else />
   <SendTransaction v-if="isConnected" /> // [!code ++]
 </template>
