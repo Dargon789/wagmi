@@ -11,7 +11,7 @@
   "scripts": {
     "build": "pnpm run build:esm+types",
     "build:esm+types": "tsc --project tsconfig.build.json --outDir ./dist/esm --declaration --declarationMap --declarationDir ./dist/types",
-    "check:types": "tsc --noEmit",
+    "check:types": "tsgo --noEmit",
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "dev": "bun src/cli.ts",
     "test:build": "publint --strict"
@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "cac": "^6.7.14",
-    "cross-spawn": "^7.0.3",
+    "cross-spawn": "^7.0.5",
     "picocolors": "^1.0.0",
     "prompts": "^2.4.2"
   },

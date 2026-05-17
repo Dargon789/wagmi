@@ -1,4 +1,5 @@
 import path from 'node:path'
+import react from '@vitejs/plugin-react'
 import { playwright } from '@vitest/browser-playwright'
 import reactFallbackThrottlePlugin from 'vite-plugin-react-fallback-throttle'
 import solid from 'vite-plugin-solid'
@@ -85,7 +86,7 @@ export default defineConfig({
         },
       },
       {
-        plugins: [reactFallbackThrottlePlugin()],
+        plugins: [react(), reactFallbackThrottlePlugin()],
         resolve: { alias },
         test: {
           name: 'tempo',
@@ -101,7 +102,7 @@ export default defineConfig({
             './packages/react/src/tempo/**/*.test.ts',
           ],
           fileParallelism: false,
-          hookTimeout: 20_000,
+          hookTimeout: 40_000,
           testTimeout: 30_000,
           globalSetup: process.env.TYPES
             ? ['./packages/test/src/setup.global.types.ts']
@@ -110,7 +111,7 @@ export default defineConfig({
         },
       },
       {
-        plugins: [reactFallbackThrottlePlugin()],
+        plugins: [react(), reactFallbackThrottlePlugin()],
         resolve: { alias },
         test: {
           name: 'react',
