@@ -1,64 +1,67 @@
 import fs from 'node:fs/promises'
-import fixtures from 'fixturez'
+import { createFixture } from 'fs-fixture'
 import { dirname, resolve } from 'pathe'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, expect, test, vi } from 'vitest'
 
-import { foundry } from './foundry'
+import { foundry } from './foundry.js'
 
-const f = fixtures(__dirname)
+const fixtures: Awaited<ReturnType<typeof createFixture>>[] = []
 
-describe('foundry', () => {
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
+async function createTempDir() {
+  const fixture = await createFixture()
+  fixtures.push(fixture)
+  return fixture.path
+}
 
-  describe('validate', async () => {
-    it('forge not installed', async () => {
-      const dir = f.temp()
-      await expect(
-        foundry({
-          project: dir,
-          forge: {
-            path: '/path/to/forge',
-          },
-        }).validate(),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(`
-        "forge must be installed to use Foundry plugin.
-        To install, follow the instructions at https://book.getfoundry.sh/getting-started/installation"
-      `)
-    })
+afterEach(async () => {
+  vi.restoreAllMocks()
+  await Promise.all(fixtures.splice(0).map((fixture) => fixture.rm()))
+})
 
-    it('project does not exist', async () => {
-      const dir = f.temp()
-      const spy = vi.spyOn(process, 'cwd')
-      spy.mockImplementation(() => dir)
+test('forge not installed', async () => {
+  const dir = await createTempDir()
+  await expect(
+    foundry({
+      project: dir,
+      forge: {
+        path: '/path/to/forge',
+      },
+    }).validate?.(),
+  ).rejects.toThrowErrorMatchingInlineSnapshot(`
+    [Error: forge must be installed to use Foundry plugin.
+    To install, follow the instructions at https://book.getfoundry.sh/getting-started/installation]
+  `)
+})
 
-      try {
-        await foundry({ project: '../path/to/project' }).validate()
-      } catch (error) {
-        expect(
-          (error as Error).message.replace(dirname(dir), '..'),
-        ).toMatchInlineSnapshot(
-          '"Foundry project ../path/to/project not found."',
-        )
-      }
-    })
+test('project does not exist', async () => {
+  const dir = await createTempDir()
+  const spy = vi.spyOn(process, 'cwd')
+  spy.mockImplementation(() => dir)
 
-    it('validates without project', async () => {
-      const dir = resolve(__dirname, '__fixtures__/foundry/')
-      const spy = vi.spyOn(process, 'cwd')
-      spy.mockImplementation(() => dir)
+  try {
+    await foundry({ project: '../path/to/project' }).validate?.()
+  } catch (error) {
+    expect(
+      (error as Error).message.replace(dirname(dir), '..'),
+    ).toMatchInlineSnapshot('"Foundry project ../path/to/project not found."')
+  }
+})
 
-      await expect(foundry().validate()).resolves.toBeUndefined()
-    })
-  })
+test('validates without project', async () => {
+  const dir = resolve(__dirname, '__fixtures__/foundry/')
+  const spy = vi.spyOn(process, 'cwd')
+  spy.mockImplementation(() => dir)
 
-  it('contracts', async () => {
-    await expect(
-      foundry({
-        project: resolve(__dirname, '__fixtures__/foundry/'),
-      }).contracts(),
-    ).resolves.toMatchInlineSnapshot(`
+  await expect(foundry().validate?.()).resolves.toBeUndefined()
+})
+
+test('contracts', async () => {
+  await expect(
+    foundry({
+      project: resolve(__dirname, '__fixtures__/foundry/'),
+      exclude: ['Foo.sol/**'],
+    }).contracts?.(),
+  ).resolves.toMatchInlineSnapshot(`
       [
         {
           "abi": [
@@ -101,14 +104,18 @@ describe('foundry', () => {
         },
       ]
     `)
-  })
+})
 
-  it('contracts without project', async () => {
-    const dir = resolve(__dirname, '__fixtures__/foundry/')
-    const spy = vi.spyOn(process, 'cwd')
-    spy.mockImplementation(() => dir)
+test('contracts without project', async () => {
+  const dir = resolve(__dirname, '__fixtures__/foundry/')
+  const spy = vi.spyOn(process, 'cwd')
+  spy.mockImplementation(() => dir)
 
-    await expect(foundry().contracts()).resolves.toMatchInlineSnapshot(`
+  await expect(
+    foundry({
+      exclude: ['Foo.sol/**'],
+    }).contracts?.(),
+  ).resolves.toMatchInlineSnapshot(`
       [
         {
           "abi": [
@@ -151,11 +158,10 @@ describe('foundry', () => {
         },
       ]
     `)
-  })
 })
 
 test('broadcast deployments', async () => {
-  const dir = f.temp()
+  const dir = await createTempDir()
   const spy = vi.spyOn(process, 'cwd')
   spy.mockImplementation(() => dir)
 
@@ -257,7 +263,7 @@ test('broadcast deployments', async () => {
 })
 
 test('broadcast deployments filters CALL transactions', async () => {
-  const dir = f.temp()
+  const dir = await createTempDir()
   const spy = vi.spyOn(process, 'cwd')
   spy.mockImplementation(() => dir)
 
@@ -344,7 +350,7 @@ test('broadcast deployments filters CALL transactions', async () => {
 })
 
 test('watch callbacks use broadcast deployments', async () => {
-  const dir = f.temp()
+  const dir = await createTempDir()
   const spy = vi.spyOn(process, 'cwd')
   spy.mockImplementation(() => dir)
 
