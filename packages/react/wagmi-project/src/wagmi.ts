@@ -1,6 +1,6 @@
 import { http, cookieStorage, createConfig, createStorage } from 'wagmi'
 import { mainnet, sepolia } from 'wagmi/chains'
-import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors'
+import { injected, walletConnect } from 'wagmi/connectors'
 
 export function getConfig() {
   const wcProjectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID
