@@ -7,7 +7,6 @@ export function getConfig() {
 
   const connectors = [
     injected(),
-    injected(),
     ...(wcProjectId ? [walletConnect({ projectId: wcProjectId })] : []),
   ]
 
