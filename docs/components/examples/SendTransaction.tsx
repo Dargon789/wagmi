@@ -42,7 +42,7 @@ export function SendTransaction() {
   } = usePrepareSendTransaction({
     request: {
       to: debouncedTo,
-      value: debouncedValue ? parseEther(debouncedValue) : undefined,
+      value: (debouncedValue && /^[0-9]*\.?[0-9]+$/.test(debouncedValue)) ? parseEther(debouncedValue) : undefined,
     },
   })
   const { data, error, isLoading, isError, sendTransaction } =
