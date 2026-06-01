@@ -1,5 +1,94 @@
 # @wagmi/solid
 
+## 0.0.22
+
+### Patch Changes
+
+- Updated dependencies [[`b029f1c`](https://github.com/wevm/wagmi/commit/b029f1cb2d89fa80c4f74d25a2f99c328bc4e8c7), [`df7bd38`](https://github.com/wevm/wagmi/commit/df7bd38954bd6f5dba3c5efe510ac3ada90c1403), [`df7bd38`](https://github.com/wevm/wagmi/commit/df7bd38954bd6f5dba3c5efe510ac3ada90c1403)]:
+  - @wagmi/connectors@9.0.0
+  - @wagmi/core@3.5.0
+
+## 0.0.21
+
+### Patch Changes
+
+- Updated dependencies [[`f1e6d70`](https://github.com/wevm/wagmi/commit/f1e6d702327180699b40cd55e3fd6daa13ca3bbd), [`4c44cd0`](https://github.com/wevm/wagmi/commit/4c44cd012a8fde65dcc3548557b580b5b6b33291)]:
+  - @wagmi/core@3.4.12
+  - @wagmi/connectors@8.0.14
+
+## 0.0.20
+
+### Patch Changes
+
+- Updated dependencies [[`9e8418a`](https://github.com/wevm/wagmi/commit/9e8418a1f751622846dde564ddd1eef4693f6005)]:
+  - @wagmi/core@3.4.11
+  - @wagmi/connectors@8.0.13
+
+## 0.0.19
+
+### Patch Changes
+
+- Fixed `useReadContracts` to prefer an explicit `chainId` parameter over inferred or connected chain ids. ([`8c56235`](https://github.com/wevm/wagmi/commit/8c56235764b33980051beffb3466f36bb200c768))
+
+## 0.0.18
+
+### Patch Changes
+
+- Updated dependencies [[`3829b3c`](https://github.com/wevm/wagmi/commit/3829b3c2abea72f50a25b112f0e6d5bec6ac8be6), [`3829b3c`](https://github.com/wevm/wagmi/commit/3829b3c2abea72f50a25b112f0e6d5bec6ac8be6), [`3829b3c`](https://github.com/wevm/wagmi/commit/3829b3c2abea72f50a25b112f0e6d5bec6ac8be6)]:
+  - @wagmi/connectors@8.0.12
+  - @wagmi/core@3.4.10
+
+## 0.0.17
+
+### Patch Changes
+
+- Updated dependencies [[`bb4fdbb`](https://github.com/wevm/wagmi/commit/bb4fdbb22df7d358dd461a3f32e83ac6ba4a0f20)]:
+  - @wagmi/connectors@8.0.11
+
+## 0.0.16
+
+### Patch Changes
+
+- Updated dependencies [[`f86ad01`](https://github.com/wevm/wagmi/commit/f86ad0140f0d1c90936d43265f483477ace2eb56)]:
+  - @wagmi/core@3.4.9
+  - @wagmi/connectors@8.0.10
+
+## 0.0.15
+
+### Patch Changes
+
+- Updated dependencies [[`28b1437`](https://github.com/wevm/wagmi/commit/28b1437ec427e426b43543203f95ba8dc81ae649)]:
+  - @wagmi/core@3.4.8
+  - @wagmi/connectors@8.0.9
+
+## 0.0.14
+
+### Patch Changes
+
+- Added contract interaction primitives: `useReadContract`, `useReadContracts`, `useInfiniteReadContracts`, `useSimulateContract`, `useWriteContract`, `useWriteContractSync`, and `useWatchContractEvent`. ([#4997](https://github.com/wevm/wagmi/pull/4997))
+
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies [[`c9c0e2b`](https://github.com/wevm/wagmi/commit/c9c0e2b027985edc1e5c1fcd25fd69d9811472f3)]:
+  - @wagmi/connectors@8.0.8
+
+## 0.0.12
+
+### Patch Changes
+
+- Updated dependencies [[`2a9795d`](https://github.com/wevm/wagmi/commit/2a9795dd31f63c92dc0be1898e792fb3be8ec481)]:
+  - @wagmi/core@3.4.7
+  - @wagmi/connectors@8.0.7
+
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies [[`f893ee6`](https://github.com/wevm/wagmi/commit/f893ee6cadd8090d003a9fd1117765c7ac18eb28)]:
+  - @wagmi/connectors@8.0.6
+
 ## 0.0.10
 
 ### Patch Changes

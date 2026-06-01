@@ -1249,7 +1249,23 @@ export function getSidebar() {
             text: 'useDisconnect',
             link: '/solid/api/primitives/useDisconnect',
           },
+          {
+            text: 'useInfiniteReadContracts',
+            link: '/solid/api/primitives/useInfiniteReadContracts',
+          },
+          {
+            text: 'useReadContract',
+            link: '/solid/api/primitives/useReadContract',
+          },
+          {
+            text: 'useReadContracts',
+            link: '/solid/api/primitives/useReadContracts',
+          },
           { text: 'useReconnect', link: '/solid/api/primitives/useReconnect' },
+          {
+            text: 'useSimulateContract',
+            link: '/solid/api/primitives/useSimulateContract',
+          },
           {
             text: 'useSwitchChain',
             link: '/solid/api/primitives/useSwitchChain',
@@ -1261,6 +1277,18 @@ export function getSidebar() {
           {
             text: 'useWatchBlockNumber',
             link: '/solid/api/primitives/useWatchBlockNumber',
+          },
+          {
+            text: 'useWatchContractEvent',
+            link: '/solid/api/primitives/useWatchContractEvent',
+          },
+          {
+            text: 'useWriteContract',
+            link: '/solid/api/primitives/useWriteContract',
+          },
+          {
+            text: 'useWriteContractSync',
+            link: '/solid/api/primitives/useWriteContractSync',
           },
         ],
       },
@@ -1549,6 +1577,15 @@ export function getSidebar() {
             ],
           },
           {
+            text: 'Wallet',
+            collapsed: true,
+            items: [
+              { text: 'useDeposit', link: '/tempo/hooks/wallet.useDeposit' },
+              { text: 'useSwap', link: '/tempo/hooks/wallet.useSwap' },
+              { text: 'useTransfer', link: '/tempo/hooks/wallet.useTransfer' },
+            ],
+          },
+          {
             text: 'Zone',
             collapsed: true,
             items: [
@@ -1801,6 +1838,15 @@ export function getSidebar() {
                 text: 'watchTransfer',
                 link: '/tempo/actions/token.watchTransfer',
               },
+            ],
+          },
+          {
+            text: 'Wallet',
+            collapsed: true,
+            items: [
+              { text: 'deposit', link: '/tempo/actions/wallet.deposit' },
+              { text: 'swap', link: '/tempo/actions/wallet.swap' },
+              { text: 'transfer', link: '/tempo/actions/wallet.transfer' },
             ],
           },
           {
