@@ -169,7 +169,8 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
         const injected = config.providers[0]?.provider
         if (injected) {
           const accounts = await injected.request({ method: 'eth_accounts' })
-          return accounts.map((x) => getAddress(x))
+          if (Array.isArray(accounts)) return accounts.map((x) => getAddress(x))
+          return []
         }
       }
       const instance = await this.getInstance()
