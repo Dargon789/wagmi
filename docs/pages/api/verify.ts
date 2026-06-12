@@ -20,8 +20,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         await req.session.save()
 
         res.json({ ok: true })
-      } catch (error) {
-        console.error(error)
+      } catch (_error) {
         res.json({ ok: false })
       }
       break

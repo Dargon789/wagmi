@@ -25,7 +25,7 @@ test('default', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -114,7 +114,7 @@ test('multichain', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -196,7 +196,7 @@ test('functionName', async () => {
 
   const { result } = await renderHook(() => useSimulateWagmiMintExample({}))
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {

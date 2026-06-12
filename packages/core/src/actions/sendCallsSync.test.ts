@@ -33,7 +33,7 @@ test('default', async () => {
       ],
     }),
     (async () => {
-      await wait(3000)
+      await wait(1000)
       await testClient.mainnet.mine({ blocks: 1 })
     })(),
   ])

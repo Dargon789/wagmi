@@ -10,7 +10,7 @@ test('default', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   const { blockTimestamp: _blockTimestamp, ...data } = result.current.data ?? {}
   const value = { ...result.current, data }

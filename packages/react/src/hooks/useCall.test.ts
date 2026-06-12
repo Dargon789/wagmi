@@ -17,7 +17,7 @@ test('default', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -75,7 +75,7 @@ test('parameters: blockTag', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -134,7 +134,7 @@ test('parameters: blockNumber', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -193,7 +193,7 @@ test('parameters: chainId', async () => {
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
