@@ -115,7 +115,7 @@ const sponsors = [
 
 export function Sponsors() {
   const { resolvedTheme } = useTheme()
-  const mode = (resolvedTheme ?? 'dark') as 'dark' | 'light'
+  const mode = resolvedTheme === 'light' ? 'light' : 'dark'
   return (
     <div className="my-5">
       <div className="mb-2 -ml-2">
