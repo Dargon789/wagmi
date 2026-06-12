@@ -36,7 +36,7 @@ export function ContractWriteDynamic() {
       },
     ],
     args: [parseInt(debouncedTokenId, 10)],
-    enabled: Boolean(debouncedTokenId),
+    enabled: Boolean(debouncedTokenId) && isConnected,
   })
   const {
     data,
