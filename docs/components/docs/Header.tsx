@@ -9,7 +9,7 @@ const TITLE_WITH_TRANSLATIONS: Record<string, string> = {
 export function Header() {
   const { locale, defaultLocale = 'en-US' } = useRouter()
   const resolvedLocale = locale || defaultLocale
-  const title = TITLE_WITH_TRANSLATIONS[resolvedLocale]
+  const title = TITLE_WITH_TRANSLATIONS[resolvedLocale] || TITLE_WITH_TRANSLATIONS['en-US']
 
   return (
     <header className="mb-10 flex flex-col items-center">
