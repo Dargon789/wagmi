@@ -44,6 +44,7 @@ export function SendTransaction() {
       to: debouncedTo,
       value: debouncedValue ? parseEther(debouncedValue) : undefined,
     },
+    enabled: isConnected && Boolean(debouncedTo) && Boolean(debouncedValue),
   })
   const { data, error, isLoading, isError, sendTransaction } =
     useSendTransaction(config)
