@@ -17,10 +17,10 @@ const redirects: Record<string, string> = {
 export function middleware(request: NextRequest) {
   // Handle redirect in `_middleware.ts` because of bug using `next.config.js`
   // https://github.com/shuding/nextra/issues/384
-  if (request.nextUrl.pathname in redirects) {
+  const redirectPath = redirects[request.nextUrl.pathname]
+  if (redirectPath) {
     const url = request.nextUrl.clone()
-    const pathname = redirects[request.nextUrl.pathname] ?? '/'
-    url.pathname = pathname
+    url.pathname = redirectPath
     return NextResponse.redirect(url)
   }
 
