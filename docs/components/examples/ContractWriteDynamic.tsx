@@ -68,7 +68,7 @@ export function ContractWriteDynamic() {
               value={tokenId}
             />
             <Button
-              disabled={isPreparing || isWriteLoading || isConfirming}
+              disabled={!write || isPreparing || isWriteLoading || isConfirming}
               loading={isPreparing || isWriteLoading || isConfirming}
               width="full"
               type="submit"
