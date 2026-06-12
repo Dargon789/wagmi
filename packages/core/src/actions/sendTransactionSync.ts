@@ -23,6 +23,11 @@ import {
   getConnectorClient,
 } from './getConnectorClient.js'
 
+type SendTransactionSyncOverrides = ConnectorParameter & {
+  /** Gas provided for transaction execution. */
+  gas?: TransactionRequest['gas'] | null
+}
+
 export type SendTransactionSyncParameters<
   config extends Config = Config,
   chainId extends
@@ -39,11 +44,6 @@ export type SendTransactionSyncParameters<
       SendTransactionSyncOverrides
   >
 }[number]
-
-type SendTransactionSyncOverrides = ConnectorParameter & {
-  /** Gas provided for transaction execution. */
-  gas?: TransactionRequest['gas'] | null
-}
 
 export type SendTransactionSyncReturnType = viem_SendTransactionSyncReturnType
 

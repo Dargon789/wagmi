@@ -308,7 +308,9 @@ function _setup(parameters: setup.Parameters) {
       },
       async getClient({ chainId } = {}) {
         const provider = await getProvider()
-        // Always provide a JSON-RPC account; the SDK provider performs
+        const account = provider.getAccount({ accessKey: false })
+        if (!account) throw new Error('account not found')
+        const { address } = account
         // access key orchestration internally before signing.
         const { address } = provider.getAccount({ accessKey: false })
         return Object.assign(provider.getClient({ chainId }), {

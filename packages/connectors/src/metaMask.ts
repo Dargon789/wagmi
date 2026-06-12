@@ -169,7 +169,8 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
         const injected = config.providers[0]?.provider
         if (injected) {
           const accounts = await injected.request({ method: 'eth_accounts' })
-          return accounts.map((x) => getAddress(x))
+          if (Array.isArray(accounts)) return accounts.map((x) => getAddress(x))
+          return []
         }
       }
       const instance = await this.getInstance()
@@ -219,12 +220,12 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
           const injected = config.providers[0]?.provider
           if (injected) {
             const accounts = await injected.request({ method: 'eth_accounts' })
-            return accounts.length > 0
+            return Array.isArray(accounts) && accounts.length > 0
           }
         }
         // MetaMask mobile provider sometimes fails to immediately resolve
         // JSON-RPC requests on page load
-        const timeout = 10
+        const timeout = 100
         const accounts = await withRetry(
           async () =>
             withTimeout(

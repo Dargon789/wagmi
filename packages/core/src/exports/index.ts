@@ -338,13 +338,6 @@ export {
 } from '../actions/signMessage.js'
 
 export {
-  type SignTransactionErrorType,
-  type SignTransactionParameters,
-  type SignTransactionReturnType,
-  signTransaction,
-} from '../actions/signTransaction.js'
-
-export {
   type SignTypedDataErrorType,
   type SignTypedDataParameters,
   type SignTypedDataReturnType,
@@ -597,6 +590,8 @@ export { fallback } from '../transports/fallback.js'
 ////////////////////////////////////////////////////////////////////////////////
 
 export type { SelectChains } from '../types/chain.js'
+
+export type { MutationFunctionContext } from '../types/query.js'
 
 export type { Register, ResolvedRegister } from '../types/register.js'
 
