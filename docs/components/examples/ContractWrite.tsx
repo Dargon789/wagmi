@@ -49,7 +49,7 @@ export function ContractWrite() {
         <Stack>
           <Account />
           <Button
-            disabled={isPreparing || isWriteLoading || isConfirming}
+            disabled={!write || isPreparing || isWriteLoading || isConfirming}
             loading={isPreparing || isWriteLoading || isConfirming}
             onClick={() => write?.()}
             center

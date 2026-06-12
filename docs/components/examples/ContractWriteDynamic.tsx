@@ -36,7 +36,7 @@ export function ContractWriteDynamic() {
       },
     ],
     args: [parseInt(debouncedTokenId, 10)],
-    enabled: Boolean(debouncedTokenId),
+    enabled: Boolean(debouncedTokenId) && isConnected,
   })
   const {
     data,
@@ -68,7 +68,7 @@ export function ContractWriteDynamic() {
               value={tokenId}
             />
             <Button
-              disabled={isPreparing || isWriteLoading || isConfirming}
+              disabled={!write || isPreparing || isWriteLoading || isConfirming}
               loading={isPreparing || isWriteLoading || isConfirming}
               width="full"
               type="submit"
