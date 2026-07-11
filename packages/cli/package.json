@@ -59,7 +59,7 @@
     }
   },
   "peerDependencies": {
-    "typescript": ">=5.7.3"
+    "typescript": ">=5.9.3"
   },
   "peerDependenciesMeta": {
     "typescript": {
@@ -75,7 +75,7 @@
     "dedent": "^0.7.0",
     "dotenv": "^16.3.1",
     "dotenv-expand": "^10.0.0",
-    "esbuild": "~0.25.4",
+    "esbuild": "~0.28.1",
     "escalade": "3.2.0",
     "fdir": "^6.1.1",
     "nanospinner": "1.2.2",
@@ -89,7 +89,7 @@
   "devDependencies": {
     "@types/dedent": "^0.7.2",
     "@types/node": "^24.5.1",
-    "fixturez": "^1.1.0",
+    "fs-fixture": "^2.13.0",
     "msw": "^2.4.9"
   },
   "contributors": [

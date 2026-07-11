@@ -20,7 +20,12 @@ import {
 } from 'viem'
 
 export type MetaMaskParameters = UnionCompute<
-  ExactPartial<Omit<CreateEVMClientParameters, 'api' | 'eventHandlers'>> & {
+  ExactPartial<
+    Omit<
+      CreateEVMClientParameters,
+      'api' | 'eventHandlers' | 'skipAutoAnnounce'
+    >
+  > & {
     /**
      * @deprecated Use `dapp` instead.
      *
@@ -163,6 +168,15 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
       return instance.disconnect()
     },
     async getAccounts() {
+      // Pre-connect: serve from the EIP-6963 MetaMask provider when present
+      // so we don't import the SDK chunk just to answer this probe.
+      if (!metamask && !metamaskPromise) {
+        const injected = config.providers[0]?.provider
+        if (injected) {
+          const accounts = await injected.request({ method: 'eth_accounts' })
+          return accounts.map((x) => getAddress(x))
+        }
+      }
       const instance = await this.getInstance()
       if (instance.accounts.length)
         return instance.accounts.map((x) => getAddress(x))
@@ -174,6 +188,14 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
       return accounts.map((x) => getAddress(x))
     },
     async getChainId() {
+      // Pre-connect: serve from the EIP-6963 MetaMask provider when present.
+      if (!metamask && !metamaskPromise) {
+        const injected = config.providers[0]?.provider
+        if (injected) {
+          const chainId = await injected.request({ method: 'eth_chainId' })
+          return Number(chainId)
+        }
+      }
       const instance = await this.getInstance()
       if (instance.getChainId()) return Number(instance.getChainId())
       // Fallback to provider if SDK doesn't return chainId
@@ -182,11 +204,34 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
       return Number(chainId)
     },
     async getProvider() {
+      // Pre-connect: return the EIP-6963 MetaMask provider directly so
+      // wagmi's `reconnect()` probe doesn't have to dynamically import the
+      // SDK on every page load for extension users.
+      if (!metamask && !metamaskPromise) {
+        const injected = config.providers[0]?.provider
+        // In `@metamask/connect-evm` v2, `EIP1193Provider` is a class with
+        // private fields, so it's nominally typed — an injected EIP-6963
+        // provider can't be assigned to it directly and must be cast through
+        // `unknown`. The provider implements the EIP-1193 surface (`request` +
+        // events) wagmi uses at runtime.
+        if (injected) return injected as unknown as EIP1193Provider
+      }
       const instance = await this.getInstance()
       return instance.getProvider()
     },
     async isAuthorized() {
       try {
+        // Pre-connect: ask the EIP-6963 MetaMask provider directly to avoid
+        // a chunk download for an `eth_accounts` probe on page load. The
+        // SDK retry/timeout dance below is only necessary for the mobile
+        // SDK transport path.
+        if (!metamask && !metamaskPromise) {
+          const injected = config.providers[0]?.provider
+          if (injected) {
+            const accounts = await injected.request({ method: 'eth_accounts' })
+            return accounts.length > 0
+          }
+        }
         // MetaMask mobile provider sometimes fails to immediately resolve
         // JSON-RPC requests on page load
         const timeout = 10
@@ -279,7 +324,10 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
         if (!metamaskPromise) {
           const { createEVMClient } = await (async () => {
             try {
-              return import('@metamask/connect-evm')
+              return import(
+                /* turbopackOptional: true */
+                '@metamask/connect-evm'
+              )
             } catch {
               throw new Error('dependency "@metamask/connect-evm" not found')
             }
@@ -291,6 +339,7 @@ export function metaMask(parameters: MetaMaskParameters = {}) {
 
           metamaskPromise = createEVMClient({
             ...parameters,
+            skipAutoAnnounce: true,
             api: {
               supportedNetworks: Object.fromEntries(
                 config.chains.map((chain) => [
