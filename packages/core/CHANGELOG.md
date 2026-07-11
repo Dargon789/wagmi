@@ -1,5 +1,17 @@
 # @wagmi/core
 
+## 3.6.1
+
+### Patch Changes
+
+- Fixed `waitForTransactionReceipt` staying pending for reverted transactions when revert-reason lookup hangs behind a fallback transport. ([#5190](https://github.com/wevm/wagmi/pull/5190))
+
+## 3.6.0
+
+### Minor Changes
+
+- **Breaking (@wagmi/core/tempo):** Updated Tempo APIs for viem 2.54.0: token balance and allowance reads now return `Amount` objects. ([#5188](https://github.com/wevm/wagmi/pull/5188))
+
 ## 3.5.5
 
 ### Patch Changes
