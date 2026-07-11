@@ -1,5 +1,62 @@
 # @wagmi/connectors
 
+## 8.0.22
+
+### Patch Changes
+
+- Updated dependencies [[`18e9421`](https://github.com/wevm/wagmi/commit/18e94210c6d394a9049b42e5d016b30a50a5154b)]:
+  - @wagmi/core@3.6.1
+
+## 8.0.21
+
+### Patch Changes
+
+- Updated dependencies [[`a45049e`](https://github.com/wevm/wagmi/commit/a45049ea060adb3326bab3f4fe3ef681013d9c63)]:
+  - @wagmi/core@3.6.0
+
+## 8.0.20
+
+### Patch Changes
+
+- Updated dependencies [[`1d6989e`](https://github.com/wevm/wagmi/commit/1d6989e4692ba70a0fbd6b353fe1294c54824a69)]:
+  - @wagmi/core@3.5.5
+
+## 8.0.19
+
+### Patch Changes
+
+- Updated dependencies [[`f0b78c3`](https://github.com/wevm/wagmi/commit/f0b78c3cc1b298134497d157543816f8c7bf007d)]:
+  - @wagmi/core@3.5.4
+
+## 8.0.18
+
+### Patch Changes
+
+- Added connector-specific subpath exports and marked optional connector dependency imports as optional for Turbopack resolution. ([#5165](https://github.com/wevm/wagmi/pull/5165))
+
+- Deprecated Porto connector following [sunset announcement](https://ithaca.xyz/updates/sunsetting-porto). ([#5165](https://github.com/wevm/wagmi/pull/5165))
+
+- Updated dependencies [[`05338be`](https://github.com/wevm/wagmi/commit/05338be96451fdc7eae4410fbe2b360605944f11)]:
+  - @wagmi/core@3.5.3
+
+## 8.0.17
+
+### Patch Changes
+
+- Bumped accounts peer version ([`3e12a5e`](https://github.com/wevm/wagmi/commit/3e12a5e43e050101123afeedf44333373f03e9bf))
+
+- Updated dependencies [[`3e12a5e`](https://github.com/wevm/wagmi/commit/3e12a5e43e050101123afeedf44333373f03e9bf)]:
+  - @wagmi/core@3.5.2
+
+## 8.0.16
+
+### Patch Changes
+
+- Updated `@metamask/connect-evm` to `2.1.0` and set `skipAutoAnnounce: true` on the `metaMask` connector to prevent the SDK from announcing its EIP-1193 provider via EIP-6963. ([#5151](https://github.com/wevm/wagmi/pull/5151))
+
+- Updated dependencies [[`a800b79`](https://github.com/wevm/wagmi/commit/a800b795f1829ee4ec8feeaed2a60c00f6b55464)]:
+  - @wagmi/core@3.5.1
+
 ## 8.0.15
 
 ### Patch Changes
