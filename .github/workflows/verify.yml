@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -56,7 +56,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@2a55cccb5234b9fa0bbd87c1eaba45571c466a68
@@ -86,7 +86,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@2a55cccb5234b9fa0bbd87c1eaba45571c466a68
@@ -125,7 +125,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Install dependencies
         uses: wevm/actions/.github/actions/pnpm@2a55cccb5234b9fa0bbd87c1eaba45571c466a68
