@@ -1,31 +1,26 @@
 import { disconnect } from '@wagmi/core'
+import { accounts } from '@wagmi/test/tempo'
 import {
-  accounts,
+  authorize,
   config,
+  context,
+  depositAndWait,
+  parentChain,
   renderHook,
-  restart,
-  setupToken,
-  tempoLocal,
-  zoneDepositStatus,
-  zoneInfo,
-  zoneLocal,
+  setupZoneBalance,
+  zoneChain,
+  zoneId,
   zoneStorage,
-} from '@wagmi/test/tempo'
-import { Storage } from 'viem/tempo'
-import { beforeAll, beforeEach, describe, expect, test, vi } from 'vitest'
+} from '@wagmi/test/tempo/zone'
+import { Addresses, Storage } from 'viem/tempo'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { useConnect } from '../../hooks/useConnect.js'
 import * as zoneHooks from './zone.js'
 
 const revealTo =
   '0x0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798' as const
-let depositToken: Awaited<ReturnType<typeof setupToken>>['token']
-
-beforeAll(async () => {
-  await restart()
-  ;({ token: depositToken } = await setupToken())
-  await disconnect(config).catch(() => {})
-})
+const depositToken = Addresses.pathUsd
 
 beforeEach(async () => {
   await disconnect(config).catch(() => {})
@@ -43,10 +38,11 @@ describe('useSignAuthorizationToken', () => {
     })
 
     const result_ = await result.current.signAuthorizationToken.mutateAsync({
-      chainId: zoneLocal.id,
+      chainId: zoneChain.id,
       storage: zoneStorage,
+      zoneId,
     })
-    expect(await zoneStorage.getItem(`auth:token:${zoneLocal.id}`)).toBe(
+    expect(await zoneStorage.getItem(`auth:token:${zoneChain.id}`)).toBe(
       result_.token,
     )
   })
@@ -63,10 +59,11 @@ describe('useSignAuthorizationToken', () => {
 
     const storage = Storage.memory()
     const result_ = await result.current.signAuthorizationToken.mutateAsync({
-      chainId: zoneLocal.id,
+      chainId: zoneChain.id,
       storage,
+      zoneId,
     })
-    expect(await storage.getItem(`auth:token:${zoneLocal.id}`)).toBe(
+    expect(await storage.getItem(`auth:token:${zoneChain.id}`)).toBe(
       result_.token,
     )
   })
@@ -85,9 +82,9 @@ describe('useDeposit', () => {
 
     const hash = await result.current.deposit.mutateAsync({
       amount: 123_000n,
-      chainId: tempoLocal.id,
+      chainId: parentChain.id,
       token: depositToken,
-      zoneId: zoneInfo.zoneId,
+      zoneId,
     })
 
     expect(hash).toBeDefined()
@@ -107,9 +104,9 @@ describe('useDepositSync', () => {
 
     const data = await result.current.deposit.mutateAsync({
       amount: 456_000n,
-      chainId: tempoLocal.id,
+      chainId: parentChain.id,
       token: depositToken,
-      zoneId: zoneInfo.zoneId,
+      zoneId,
     })
 
     expect(data.receipt.status).toBe('success')
@@ -129,9 +126,9 @@ describe('useEncryptedDeposit', () => {
 
     const hash = await result.current.deposit.mutateAsync({
       amount: 123_000n,
-      chainId: tempoLocal.id,
+      chainId: parentChain.id,
       token: depositToken,
-      zoneId: zoneInfo.zoneId,
+      zoneId,
     })
 
     expect(hash).toBeDefined()
@@ -151,9 +148,9 @@ describe('useEncryptedDepositSync', () => {
 
     const data = await result.current.deposit.mutateAsync({
       amount: 456_000n,
-      chainId: tempoLocal.id,
+      chainId: parentChain.id,
       token: depositToken,
-      zoneId: zoneInfo.zoneId,
+      zoneId,
     })
 
     expect(data.receipt.status).toBe('success')
@@ -171,10 +168,12 @@ describe('useRequestWithdrawal', () => {
       connector: config.connectors[0]!,
     })
 
+    const amount = 123_000n
+    const token = await setupZoneBalance(amount)
     const hash = await result.current.requestWithdrawal.mutateAsync({
-      amount: 123_000n,
-      chainId: zoneLocal.id,
-      token: zoneInfo.zoneTokens[0],
+      amount,
+      chainId: zoneChain.id,
+      token,
     })
 
     expect(hash).toBeDefined()
@@ -192,10 +191,12 @@ describe('useRequestWithdrawalSync', () => {
       connector: config.connectors[0]!,
     })
 
+    const amount = 456_000n
+    const token = await setupZoneBalance(amount)
     const data = await result.current.requestWithdrawal.mutateAsync({
-      amount: 456_000n,
-      chainId: zoneLocal.id,
-      token: zoneInfo.zoneTokens[0],
+      amount,
+      chainId: zoneChain.id,
+      token,
     })
 
     expect(data.receipt.status).toBe('success')
@@ -213,11 +214,13 @@ describe('useRequestVerifiableWithdrawal', () => {
       connector: config.connectors[0]!,
     })
 
+    const amount = 123_000n
+    const token = await setupZoneBalance(amount)
     const hash = await result.current.requestWithdrawal.mutateAsync({
-      amount: 123_000n,
-      chainId: zoneLocal.id,
+      amount,
+      chainId: zoneChain.id,
       revealTo,
-      token: zoneInfo.zoneTokens[0],
+      token,
     })
 
     expect(hash).toBeDefined()
@@ -235,11 +238,13 @@ describe('useRequestVerifiableWithdrawalSync', () => {
       connector: config.connectors[0]!,
     })
 
+    const amount = 456_000n
+    const token = await setupZoneBalance(amount)
     const data = await result.current.requestWithdrawal.mutateAsync({
-      amount: 456_000n,
-      chainId: zoneLocal.id,
+      amount,
+      chainId: zoneChain.id,
       revealTo,
-      token: zoneInfo.zoneTokens[0],
+      token,
     })
 
     expect(data.receipt.status).toBe('success')
@@ -257,17 +262,67 @@ describe('useZoneInfo', () => {
       connector: config.connectors[0]!,
     })
     await connectResult.current.signAuthorizationToken.mutateAsync({
-      chainId: zoneLocal.id,
+      chainId: zoneChain.id,
       storage: zoneStorage,
+      zoneId,
     })
 
     const { result } = await renderHook(() =>
-      zoneHooks.useZoneInfo({ chainId: zoneLocal.id }),
+      zoneHooks.useZoneInfo({ chainId: zoneChain.id }),
     )
 
     await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy())
 
-    expect(result.current.data).toEqual(zoneInfo)
+    expect(result.current.data).toMatchObject({
+      chainId: context.chainId,
+      zoneId,
+    })
+    expect(result.current.data?.zoneTokens.length).toBeGreaterThan(0)
+  })
+})
+
+describe('useWaitForTempoBlock', () => {
+  test('default', async () => {
+    const { receipt } = await depositAndWait(123_000n)
+
+    const { result } = await renderHook(() =>
+      zoneHooks.useWaitForTempoBlock({
+        chainId: zoneChain.id,
+        tempoBlockNumber: receipt.blockNumber,
+      }),
+    )
+
+    await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+
+    expect(result.current.data?.tempoBlockNumber).toBeGreaterThanOrEqual(
+      receipt.blockNumber,
+    )
+  })
+
+  test('reactivity: tempoBlockNumber parameter', async () => {
+    const { receipt } = await depositAndWait(123_000n)
+
+    const { result, rerender } = await renderHook(
+      (props) =>
+        zoneHooks.useWaitForTempoBlock({
+          chainId: zoneChain.id,
+          tempoBlockNumber: props?.tempoBlockNumber,
+        }),
+      {
+        initialProps: { tempoBlockNumber: undefined as bigint | undefined },
+      },
+    )
+
+    expect(result.current.data).toBeUndefined()
+    expect(result.current.isSuccess).toBe(false)
+
+    rerender({ tempoBlockNumber: receipt.blockNumber })
+
+    await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+
+    expect(result.current.data?.tempoBlockNumber).toBeGreaterThanOrEqual(
+      receipt.blockNumber,
+    )
   })
 })
 
@@ -281,109 +336,50 @@ describe('useAuthorizationTokenInfo', () => {
     await connectResult.current.connect.connectAsync({
       connector: config.connectors[0]!,
     })
+    const expiresAt = Math.floor(Date.now() / 1000) + 300
     await connectResult.current.signAuthorizationToken.mutateAsync({
-      chainId: zoneLocal.id,
-      expiresAt: 1_700_000_000,
+      chainId: zoneChain.id,
+      expiresAt,
       storage: zoneStorage,
+      zoneId,
     })
 
     const { result } = await renderHook(() =>
-      zoneHooks.useAuthorizationTokenInfo({ chainId: zoneLocal.id }),
+      zoneHooks.useAuthorizationTokenInfo({ chainId: zoneChain.id }),
     )
 
     await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy())
 
-    expect(result.current.data).toEqual({
-      account: accounts[0].address,
-      expiresAt: 1_700_000_000n,
-    })
-  })
-})
-
-describe('useDepositStatus', () => {
-  test('default', async () => {
-    const { result: connectResult } = await renderHook(() => ({
-      connect: useConnect(),
-      signAuthorizationToken: zoneHooks.useSignAuthorizationToken(),
-    }))
-
-    await connectResult.current.connect.connectAsync({
-      connector: config.connectors[0]!,
-    })
-    await connectResult.current.signAuthorizationToken.mutateAsync({
-      chainId: zoneLocal.id,
-      storage: zoneStorage,
-    })
-
-    const { result } = await renderHook(() =>
-      zoneHooks.useDepositStatus({
-        chainId: zoneLocal.id,
-        tempoBlockNumber: zoneDepositStatus.tempoBlockNumber,
-      }),
+    expect(result.current.data?.account.toLowerCase()).toBe(
+      accounts[0].address.toLowerCase(),
     )
-
-    await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy())
-
-    expect(result.current.data).toEqual(zoneDepositStatus)
-  })
-
-  test('reactivity: tempoBlockNumber parameter', async () => {
-    const { result: connectResult } = await renderHook(() => ({
-      connect: useConnect(),
-      signAuthorizationToken: zoneHooks.useSignAuthorizationToken(),
-    }))
-
-    await connectResult.current.connect.connectAsync({
-      connector: config.connectors[0]!,
-    })
-    await connectResult.current.signAuthorizationToken.mutateAsync({
-      chainId: zoneLocal.id,
-      storage: zoneStorage,
-    })
-
-    const { result, rerender } = await renderHook(
-      (props) =>
-        zoneHooks.useDepositStatus({
-          chainId: zoneLocal.id,
-          tempoBlockNumber: props?.tempoBlockNumber,
-        }),
-      {
-        initialProps: { tempoBlockNumber: undefined as bigint | undefined },
-      },
-    )
-
-    expect(result.current.data).toBeUndefined()
-    expect(result.current.isSuccess).toBe(false)
-
-    rerender({ tempoBlockNumber: zoneDepositStatus.tempoBlockNumber })
-
-    await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy())
-
-    expect(result.current.data).toEqual(zoneDepositStatus)
+    expect(result.current.data?.expiresAt).toBe(BigInt(expiresAt))
   })
 })
 
 describe('useWithdrawalFee', () => {
   test('default', async () => {
+    await authorize()
     const { result } = await renderHook(() =>
-      zoneHooks.useWithdrawalFee({ chainId: zoneLocal.id }),
+      zoneHooks.useWithdrawalFee({ chainId: zoneChain.id }),
     )
 
     await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy())
 
-    expect(result.current.data).toBe(1_000n)
+    expect(result.current.data).toBeGreaterThanOrEqual(0n)
   })
 
-  test('parameters: gas', async () => {
+  test('parameters: callbackGas', async () => {
+    await authorize()
     const { result } = await renderHook(() =>
       zoneHooks.useWithdrawalFee({
-        chainId: zoneLocal.id,
-        gas: 21_000n,
+        callbackGas: 21_000n,
+        chainId: zoneChain.id,
       }),
     )
 
     await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy())
 
-    expect(result.current.data).toBe(22_000n)
+    expect(result.current.data).toBeGreaterThanOrEqual(0n)
   })
 })

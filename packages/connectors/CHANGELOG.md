@@ -1,5 +1,26 @@
 # @wagmi/connectors
 
+## 8.0.25
+
+### Patch Changes
+
+- Updated dependencies [[`0a8eb51`](https://github.com/wevm/wagmi/commit/0a8eb51805bca0f684ad7bc1851c6ad6ba806ba2), [`bfa70e3`](https://github.com/wevm/wagmi/commit/bfa70e36ef420ef6b3546e7dd74a22f51835d25a)]:
+  - @wagmi/core@3.6.4
+
+## 8.0.24
+
+### Patch Changes
+
+- Updated dependencies [[`57ac9b0`](https://github.com/wevm/wagmi/commit/57ac9b0a4b31d02875fc4ae7f76bb785e3d17fd6)]:
+  - @wagmi/core@3.6.3
+
+## 8.0.23
+
+### Patch Changes
+
+- Updated dependencies [[`54497eb`](https://github.com/wevm/wagmi/commit/54497eb43667829c8abd9f90ad9093b2ec6afe09)]:
+  - @wagmi/core@3.6.2
+
 ## 8.0.22
 
 ### Patch Changes
