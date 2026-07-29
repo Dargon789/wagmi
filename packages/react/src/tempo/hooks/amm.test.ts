@@ -1,17 +1,12 @@
-import { disconnect } from '@wagmi/core'
 import { accounts, addresses, config, renderHook } from '@wagmi/test/tempo'
 import { type Address, parseUnits } from 'viem'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 
 import { useConnect } from '../../hooks/useConnect.js'
 import * as hooks from './amm.js'
 import * as tokenHooks from './token.js'
 
 const account = accounts[0]
-
-beforeEach(async () => {
-  await disconnect(config).catch(() => {})
-})
 
 describe('usePool', () => {
   test('default', async () => {
@@ -36,21 +31,17 @@ describe('usePool', () => {
   })
 
   test('reactivity: token parameters', async () => {
-    const { result, rerender } = await renderHook(
-      (props) =>
-        hooks.usePool({
-          userToken: props?.userToken,
-          validatorToken: props?.validatorToken,
-        }),
-      {
-        initialProps: {
-          userToken: undefined as Address | undefined,
-          validatorToken: undefined as Address | undefined,
-        },
-      },
+    let userToken: Address | undefined
+    let validatorToken: Address | undefined
+
+    const { result, rerender } = await renderHook(() =>
+      hooks.usePool({
+        userToken,
+        validatorToken,
+      }),
     )
 
-    await vi.waitFor(() => expect(result.current.fetchStatus).toBe('idle'))
+    await vi.waitFor(() => result.current.fetchStatus === 'idle')
 
     // Should be disabled when tokens are undefined
     expect(result.current.data).toBeUndefined()
@@ -58,10 +49,9 @@ describe('usePool', () => {
     // expect(result.current.isEnabled).toBe(false)
 
     // Set tokens
-    rerender({
-      userToken: addresses.alphaUsd,
-      validatorToken: '0x20c0000000000000000000000000000000000001',
-    })
+    userToken = addresses.alphaUsd
+    validatorToken = '0x20c0000000000000000000000000000000000001'
+    rerender()
 
     await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy())
 
@@ -82,30 +72,26 @@ describe('useLiquidityBalance', () => {
     )
 
     await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy(), {
-      timeout: 10_000,
+      timeout: 5_000,
     })
 
     expect(result.current.data).toMatchInlineSnapshot('0n')
   })
 
   test('reactivity: poolId and address parameters', async () => {
-    const { result, rerender } = await renderHook(
-      (props) =>
-        hooks.useLiquidityBalance({
-          userToken: props?.userToken,
-          validatorToken: props?.validatorToken,
-          address: props?.address,
-        }),
-      {
-        initialProps: {
-          userToken: undefined as Address | undefined,
-          validatorToken: undefined as Address | undefined,
-          address: undefined as Address | undefined,
-        },
-      },
+    let userToken: Address | undefined
+    let validatorToken: Address | undefined
+    let address: Address | undefined
+
+    const { result, rerender } = await renderHook(() =>
+      hooks.useLiquidityBalance({
+        userToken,
+        validatorToken,
+        address,
+      }),
     )
 
-    await vi.waitFor(() => expect(result.current.fetchStatus).toBe('idle'))
+    await vi.waitFor(() => result.current.fetchStatus === 'idle')
 
     // Should be disabled when parameters are undefined
     expect(result.current.data).toBeUndefined()
@@ -113,11 +99,10 @@ describe('useLiquidityBalance', () => {
     // expect(result.current.isEnabled).toBe(false)
 
     // Set parameters
-    rerender({
-      userToken: addresses.alphaUsd,
-      validatorToken: '0x20c0000000000000000000000000000000000001',
-      address: account.address,
-    })
+    userToken = addresses.alphaUsd
+    validatorToken = '0x20c0000000000000000000000000000000000001'
+    address = account.address
+    rerender()
 
     await vi.waitFor(() => expect(result.current.isSuccess).toBeTruthy())
 

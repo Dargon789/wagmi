@@ -1,4 +1,4 @@
-import type { abi } from '@wagmi/test'
+import { type abi, config as testConfig } from '@wagmi/test'
 import {
   type UseSimulateContractParameters,
   useSimulateContract,
@@ -90,4 +90,12 @@ test('UseSimulateContractParameters', () => {
     typeof celo.id
   >
   expectTypeOf<Result4['chainId']>().toEqualTypeOf<ChainId | undefined>()
+})
+
+test('parameters: config', async () => {
+  useSimulateContract({
+    config: testConfig,
+    // @ts-expect-error
+    feeCurrency: '0x',
+  })
 })

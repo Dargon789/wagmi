@@ -1,16 +1,15 @@
 import { del, get, set } from 'idb-keyval'
-import { createConfig, createStorage, http } from 'wagmi'
+import { createConfig, http } from 'wagmi'
+import { celo, mainnet, optimism, sepolia } from 'wagmi/chains'
 import {
-  celo,
-  mainnet,
-  optimism,
-  sepolia,
-  tempo,
-  tempoTestnet,
-} from 'wagmi/chains'
-import { baseAccount, metaMask, porto, walletConnect } from 'wagmi/connectors'
-import { tempoWallet } from 'wagmi/tempo'
+  baseAccount,
+  gemini,
+  metaMask,
+  porto,
+  walletConnect,
+} from 'wagmi/connectors'
 
+// biome-ignore lint/correctness/noUnusedVariables: allowed
 const indexedDBStorage = {
   async getItem(name: string) {
     return get(name)
@@ -24,24 +23,21 @@ const indexedDBStorage = {
 }
 
 export const config = createConfig({
-  chains: [mainnet, sepolia, optimism, celo, tempo, tempoTestnet],
+  chains: [mainnet, sepolia, optimism, celo],
   connectors: [
     walletConnect({
       projectId: import.meta.env.VITE_WC_PROJECT_ID,
     }),
     porto(),
     baseAccount(),
-    tempoWallet(),
-    metaMask({ ui: { headless: true } }),
+    metaMask(),
+    gemini(),
   ],
-  storage: createStorage({ storage: indexedDBStorage, key: 'vite-react' }),
   transports: {
     [mainnet.id]: http(),
     [sepolia.id]: http(),
     [optimism.id]: http(),
     [celo.id]: http(),
-    [tempo.id]: http(),
-    [tempoTestnet.id]: http(),
   },
 })
 

@@ -8,8 +8,7 @@ export {
   Actions,
   type Dangerous_Secp256k1Parameters,
   dangerous_secp256k1,
-  type TempoWalletParameters,
-  tempoWallet,
+  KeyManager,
   type WebAuthnParameters,
   webAuthn,
 } from '@wagmi/core/tempo'

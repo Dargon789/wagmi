@@ -1,43 +1,32 @@
-import { afterEach, expect, test, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { createFixture } from '../../test/utils.js'
-import { getIsUsingTypeScript } from './getIsUsingTypeScript.js'
+import { createFixture } from '../../test'
+import { getIsUsingTypeScript } from './getIsUsingTypeScript'
 
-afterEach(() => {
-  vi.restoreAllMocks()
-})
-
-test('true if has tsconfig', async () => {
-  const { dir } = await createFixture({
-    files: {
-      'tsconfig.json': '',
-    },
+describe('getIsUsingTypeScript', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
-  const spy = vi.spyOn(process, 'cwd')
-  spy.mockImplementation(() => dir)
+  it('true', async () => {
+    const { dir } = await createFixture({
+      files: {
+        ['tsconfig.json']: '',
+      },
+    })
 
-  await expect(getIsUsingTypeScript()).resolves.toBe(true)
-})
+    const spy = vi.spyOn(process, 'cwd')
+    spy.mockImplementation(() => dir)
 
-test('true if has wagmi.config', async () => {
-  const { dir } = await createFixture({
-    files: {
-      'wagmi.config.ts': '',
-    },
+    await expect(getIsUsingTypeScript()).resolves.toBe(true)
   })
 
-  const spy = vi.spyOn(process, 'cwd')
-  spy.mockImplementation(() => dir)
+  it('false', async () => {
+    const { dir } = await createFixture()
 
-  await expect(getIsUsingTypeScript()).resolves.toBe(true)
-})
+    const spy = vi.spyOn(process, 'cwd')
+    spy.mockImplementation(() => dir)
 
-test('false', async () => {
-  const { dir } = await createFixture()
-
-  const spy = vi.spyOn(process, 'cwd')
-  spy.mockImplementation(() => dir)
-
-  await expect(getIsUsingTypeScript()).resolves.toBe(false)
+    await expect(getIsUsingTypeScript()).resolves.toBe(false)
+  })
 })

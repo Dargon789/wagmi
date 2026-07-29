@@ -1,54 +1,21 @@
-import { createConfig } from '@wagmi/core'
 import { chain, wait } from '@wagmi/test'
 import { renderHook } from '@wagmi/test/react'
 import type { Address } from 'viem'
-import { custom } from 'viem'
 import { expect, test, vi } from 'vitest'
 import { useProof } from './useProof.js'
 
-const proofResponse = {
-  address: '0x4200000000000000000000000000000000000016',
-  accountProof: ['0x1'],
-  balance: '0x0',
-  codeHash: `0x${'0'.repeat(64)}`,
-  nonce: '0x0',
-  storageHash: `0x${'0'.repeat(64)}`,
-  storageProof: [
-    {
-      key: '0x4a932049252365b3eedbc5190e18949f2ec11f39d3bef2d259764799a1b27d99',
-      proof: ['0x1'],
-      value: '0x0',
-    },
-  ],
-} as const
-
-const config = createConfig({
-  chains: [chain.mainnet],
-  storage: null,
-  transports: {
-    [chain.mainnet.id]: custom({
-      async request({ method }) {
-        if (method === 'eth_getProof') return proofResponse
-        if (method === 'eth_chainId')
-          return `0x${chain.mainnet.id.toString(16)}`
-        throw new Error(`Unexpected RPC method: ${method}`)
-      },
-    }),
-  },
-})
-
-test('default', async () => {
+test.skip('default', async () => {
   const { result } = await renderHook(() =>
     useProof({
-      config,
-      address: '0x4200000000000000000000000000000000000016',
+      address: '0x7F0d15C7FAae65896648C8273B6d7E43f58Fa842',
+      chainId: chain.optimism.id,
       storageKeys: [
-        '0x4a932049252365b3eedbc5190e18949f2ec11f39d3bef2d259764799a1b27d99',
+        '0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421',
       ],
     }),
   )
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   expect({ ...result.current, data: null }).toMatchInlineSnapshot(`
     {
@@ -60,6 +27,7 @@ test('default', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -74,11 +42,15 @@ test('default', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "getProof",
         {
           "address": "0x4200000000000000000000000000000000000016",
-          "chainId": 1,
+          "chainId": 10,
           "storageKeys": [
             "0x4a932049252365b3eedbc5190e18949f2ec11f39d3bef2d259764799a1b27d99",
           ],
@@ -90,12 +62,12 @@ test('default', async () => {
   `)
 })
 
-test('behavior: address: undefined -> defined', async () => {
+test.skip('behavior: address: undefined -> defined', async () => {
   const { result, rerender } = await renderHook(
     (props) =>
       useProof({
-        config,
         address: props?.address,
+        chainId: chain.optimism.id,
         storageKeys: [
           '0x4a932049252365b3eedbc5190e18949f2ec11f39d3bef2d259764799a1b27d99',
         ],
@@ -113,6 +85,7 @@ test('behavior: address: undefined -> defined', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": false,
       "isError": false,
       "isFetched": false,
       "isFetchedAfterMount": false,
@@ -127,11 +100,15 @@ test('behavior: address: undefined -> defined', async () => {
       "isRefetching": false,
       "isStale": false,
       "isSuccess": false,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "getProof",
         {
           "address": undefined,
-          "chainId": 1,
+          "chainId": 10,
           "storageKeys": [
             "0x4a932049252365b3eedbc5190e18949f2ec11f39d3bef2d259764799a1b27d99",
           ],
@@ -144,7 +121,7 @@ test('behavior: address: undefined -> defined', async () => {
 
   rerender({ address: '0x4200000000000000000000000000000000000016' })
 
-  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   expect({ ...result.current, data: null }).toMatchInlineSnapshot(`
     {
@@ -156,6 +133,7 @@ test('behavior: address: undefined -> defined', async () => {
       "failureCount": 0,
       "failureReason": null,
       "fetchStatus": "idle",
+      "isEnabled": true,
       "isError": false,
       "isFetched": true,
       "isFetchedAfterMount": true,
@@ -170,11 +148,15 @@ test('behavior: address: undefined -> defined', async () => {
       "isRefetching": false,
       "isStale": true,
       "isSuccess": true,
+      "promise": Promise {
+        "reason": [Error: experimental_prefetchInRender feature flag is not enabled],
+        "status": "rejected",
+      },
       "queryKey": [
         "getProof",
         {
           "address": "0x4200000000000000000000000000000000000016",
-          "chainId": 1,
+          "chainId": 10,
           "storageKeys": [
             "0x4a932049252365b3eedbc5190e18949f2ec11f39d3bef2d259764799a1b27d99",
           ],

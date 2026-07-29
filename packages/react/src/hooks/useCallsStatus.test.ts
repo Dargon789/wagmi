@@ -14,7 +14,7 @@ test('default', async () => {
 
   const { result } = await renderHook(() => useSendCalls())
 
-  const data = await result.current.mutateAsync({
+  result.current.mutate({
     calls: [
       {
         data: '0xdeadbeef',
@@ -31,12 +31,13 @@ test('default', async () => {
       },
     ],
   })
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 5_000 })
 
   const { result: result_2 } = await renderHook(() =>
-    useCallsStatus({ id: data.id }),
+    useCallsStatus({ id: result.current.data?.id! }),
   )
   await vi.waitFor(() => expect(result_2.current.isSuccess).toBeTruthy(), {
-    timeout: 10_000,
+    timeout: 5_000,
   })
 
   expect(result_2.current.data).toMatchInlineSnapshot(
@@ -56,10 +57,10 @@ test('default', async () => {
   await testClient.mainnet.mine({ blocks: 1 })
 
   const { result: result_3 } = await renderHook(() =>
-    useCallsStatus({ id: data.id }),
+    useCallsStatus({ id: result.current.data?.id! }),
   )
   await vi.waitFor(() => expect(result_3.current.isSuccess).toBeTruthy(), {
-    timeout: 10_000,
+    timeout: 5_000,
   })
 
   expect(result_3.current.data?.status).toBe('success')
