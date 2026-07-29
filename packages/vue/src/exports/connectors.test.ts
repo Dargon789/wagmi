@@ -7,11 +7,14 @@ test('exports', () => {
     [
       "injected",
       "mock",
+      "tempoWallet",
+      "baseAccount",
       "coinbaseWallet",
       "metaMask",
+      "porto",
       "safe",
-      "walletConnect",
       "version",
+      "walletConnect",
     ]
   `)
 })

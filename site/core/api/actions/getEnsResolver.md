@@ -157,11 +157,11 @@ The address of the resolver.
 ## Error
 
 ```ts
-import { type getEnsResolverError } from '@wagmi/core'
+import { type GetEnsResolverErrorType } from '@wagmi/core'
 ```
 
 <!--@include: @shared/query-imports.md-->
 
 ## Viem
 
-- [`getEnsResolver`](https://viem.sh/docs/ens/actions/getEnsResolver.html)
+- [`getEnsResolver`](https://viem.sh/docs/ens/actions/getEnsResolver)

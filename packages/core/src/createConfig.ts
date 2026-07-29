@@ -1,30 +1,30 @@
 import {
+  createStore as createMipd,
   type EIP6963ProviderDetail,
   type Store as MipdStore,
-  createStore as createMipd,
 } from 'mipd'
 import {
   type Address,
   type Chain,
   type Client,
-  type EIP1193RequestFn,
   createClient,
+  type EIP1193RequestFn,
   type ClientConfig as viem_ClientConfig,
   type Transport as viem_Transport,
 } from 'viem'
 import { persist, subscribeWithSelector } from 'zustand/middleware'
-import { type Mutate, type StoreApi, createStore } from 'zustand/vanilla'
+import { createStore, type Mutate, type StoreApi } from 'zustand/vanilla'
 
 import type {
   ConnectorEventMap,
   CreateConnectorFn,
 } from './connectors/createConnector.js'
 import { injected } from './connectors/injected.js'
-import { type Emitter, type EventData, createEmitter } from './createEmitter.js'
+import { createEmitter, type Emitter, type EventData } from './createEmitter.js'
 import {
-  type Storage,
   createStorage,
   getDefaultStorage,
+  type Storage,
 } from './createStorage.js'
 import { ChainNotConfiguredError } from './errors/config.js'
 import type {
@@ -90,16 +90,26 @@ export function createConfig<
   function setup(connectorFn: CreateConnectorFn): Connector {
     // Set up emitter with uid and add to connector so they are "linked" together.
     const emitter = createEmitter<ConnectorEventMap>(uid())
+    let rdns: string | readonly string[] | undefined
     const connector = {
       ...connectorFn({
         emitter,
         chains: chains.getState(),
+        get providers() {
+          if (!mipd || !rdns) return []
+          const rdnsValues = typeof rdns === 'string' ? [rdns] : rdns
+          const providers = mipd.getProviders()
+          return rdnsValues.flatMap((rdns) =>
+            providers.filter((provider) => provider.info.rdns === rdns),
+          )
+        },
         storage,
         transports: rest.transports,
       }),
       emitter,
       uid: emitter.uid,
     }
+    rdns = connector.rdns
 
     // Start listening for `connect` events on connector setup
     // This allows connectors to "connect" themselves without user interaction (e.g. MetaMask's "Manually connect to current site")
@@ -198,9 +208,9 @@ export function createConfig<
   let currentVersion: number
   const prefix = '0.0.0-canary-'
   if (version.startsWith(prefix))
-    currentVersion = Number.parseInt(version.replace(prefix, ''))
+    currentVersion = Number.parseInt(version.replace(prefix, ''), 10)
   // use package major version to version store
-  else currentVersion = Number.parseInt(version.split('.')[0] ?? '0')
+  else currentVersion = Number.parseInt(version.split('.')[0] ?? '0', 10)
 
   const store = createStore(
     subscribeWithSelector(
@@ -414,7 +424,9 @@ export function createConfig<
       return chains.getState() as chains
     },
     get connectors() {
-      return connectors.getState() as Connector<connectorFns[number]>[]
+      return connectors.getState() as Readonly<{
+        [key in keyof connectorFns]: Connector<connectorFns[key]>
+      }>
     },
     storage,
 
@@ -451,6 +463,26 @@ export function createConfig<
 
     _internal: {
       mipd,
+      async revalidate() {
+        // Check connections to see if they are still active
+        const state = store.getState()
+        const connections = state.connections
+        let current = state.current
+        for (const [, connection] of connections) {
+          const connector = connection.connector
+          // check if `connect.isAuthorized` exists
+          // partial connectors in storage do not have it
+          const isAuthorized = connector.isAuthorized
+            ? await connector.isAuthorized()
+            : false
+          if (isAuthorized) continue
+          // Remove stale connection
+          connections.delete(connector.uid)
+          if (current === connector.uid) current = null
+        }
+        // set connections
+        store.setState((x) => ({ ...x, connections, current }))
+      },
       store,
       ssr: Boolean(ssr),
       syncConnectedChain,
@@ -515,10 +547,9 @@ export type CreateConfigParameters<
           | undefined
       })
     | {
-        client(parameters: { chain: chains[number] }): Client<
-          transports[chains[number]['id']],
-          chains[number]
-        >
+        client(parameters: {
+          chain: chains[number]
+        }): Client<transports[chains[number]['id']], chains[number]>
       }
   >
 >
@@ -533,7 +564,9 @@ export type Config<
     readonly CreateConnectorFn[] = readonly CreateConnectorFn[],
 > = {
   readonly chains: chains
-  readonly connectors: readonly Connector<connectorFns[number]>[]
+  readonly connectors: Readonly<{
+    [key in keyof connectorFns]: Connector<connectorFns[key]>
+  }>
   readonly storage: Storage | null
 
   readonly state: State<chains>
@@ -570,6 +603,7 @@ type Internal<
   >,
 > = {
   readonly mipd: MipdStore | undefined
+  revalidate: () => Promise<void>
   readonly store: Mutate<StoreApi<any>, [['zustand/persist', any]]>
   readonly ssr: boolean
   readonly syncConnectedChain: boolean

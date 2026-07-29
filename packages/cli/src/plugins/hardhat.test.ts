@@ -1,18 +1,25 @@
-import fixtures from 'fixturez'
+import { createFixture } from 'fs-fixture'
 import { dirname, resolve } from 'pathe'
 import { afterEach, expect, test, vi } from 'vitest'
 
 import { hardhat } from './hardhat.js'
 
-const f = fixtures(__dirname)
+const fixtures: Awaited<ReturnType<typeof createFixture>>[] = []
 
-afterEach(() => {
+async function createTempDir() {
+  const fixture = await createFixture()
+  fixtures.push(fixture)
+  return fixture.path
+}
+
+afterEach(async () => {
   vi.restoreAllMocks()
+  await Promise.all(fixtures.splice(0).map((fixture) => fixture.rm()))
 })
 
 test('validate', async () => {
-  const temp = f.temp()
-  expect(
+  const temp = await createTempDir()
+  await expect(
     hardhat({ project: temp }).validate?.(),
   ).rejects.toThrowErrorMatchingInlineSnapshot(
     '[Error: hardhat must be installed to use Hardhat plugin.]',
@@ -20,7 +27,7 @@ test('validate', async () => {
 })
 
 test('project does not exist', async () => {
-  const dir = f.temp()
+  const dir = await createTempDir()
   const spy = vi.spyOn(process, 'cwd')
   spy.mockImplementation(() => dir)
 
@@ -34,7 +41,7 @@ test('project does not exist', async () => {
 })
 
 test('contracts', async () => {
-  expect(
+  await expect(
     hardhat({
       project: resolve(__dirname, '__fixtures__/hardhat/'),
       exclude: ['Foo.sol/**'],

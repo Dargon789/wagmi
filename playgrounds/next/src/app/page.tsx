@@ -1,26 +1,28 @@
 'use client'
 
 import type { FormEvent } from 'react'
-import { type Hex, formatEther, parseAbi, parseEther } from 'viem'
+import { formatEther, type Hex, parseAbi, parseEther } from 'viem'
 import {
   type BaseError,
-  useAccount,
-  useAccountEffect,
   useBalance,
   useBlockNumber,
   useChainId,
+  useChains,
   useConfig,
   useConnect,
+  useConnection,
+  useConnectionEffect,
   useConnections,
   useConnectorClient,
+  useConnectors,
   useDisconnect,
   useEnsName,
   useReadContract,
   useReadContracts,
   useSendTransaction,
   useSignMessage,
-  useSwitchAccount,
   useSwitchChain,
+  useSwitchConnection,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from 'wagmi'
@@ -30,7 +32,7 @@ import { optimism, sepolia } from 'wagmi/chains'
 import { wagmiContractConfig } from './contracts'
 
 export default function App() {
-  useAccountEffect({
+  useConnectionEffect({
     onConnect(_data) {
       // console.log('onConnect', data)
     },
@@ -41,9 +43,9 @@ export default function App() {
 
   return (
     <>
-      <Account />
+      <Connection />
       <Connect />
-      <SwitchAccount />
+      <SwitchConnection />
       <SwitchChain />
       <Repro />
       <SignMessage />
@@ -59,26 +61,26 @@ export default function App() {
   )
 }
 
-function Account() {
-  const account = useAccount()
-  const { disconnect } = useDisconnect()
+function Connection() {
+  const connection = useConnection()
+  const { mutate: disconnect } = useDisconnect()
   const { data: ensName } = useEnsName({
-    address: account.address,
+    address: connection.address,
   })
 
   return (
     <div>
-      <h2>Account</h2>
+      <h2>Connection</h2>
 
       <div>
-        account: {account.address} {ensName}
+        account: {connection.address} {ensName}
         <br />
-        chainId: {account.chainId}
+        chainId: {connection.chainId}
         <br />
-        status: {account.status}
+        status: {connection.status}
       </div>
 
-      {account.status === 'connected' && (
+      {connection.status === 'connected' && (
         <button type="button" onClick={() => disconnect()}>
           Disconnect
         </button>
@@ -89,7 +91,8 @@ function Account() {
 
 function Connect() {
   const chainId = useChainId()
-  const { connectors, connect, status, error } = useConnect()
+  const { mutate: connect, status, error } = useConnect()
+  const connectors = useConnectors()
 
   return (
     <div>
@@ -109,19 +112,20 @@ function Connect() {
   )
 }
 
-function SwitchAccount() {
-  const account = useAccount()
-  const { connectors, switchAccount } = useSwitchAccount()
+function SwitchConnection() {
+  const connection = useConnection()
+  const { mutate: switchConnection } = useSwitchConnection()
+  const connections = useConnections()
 
   return (
     <div>
-      <h2>Switch Account</h2>
+      <h2>Switch Connection</h2>
 
-      {connectors.map((connector) => (
+      {connections.map(({ connector }) => (
         <button
-          disabled={account.connector?.uid === connector.uid}
+          disabled={connection.connector?.uid === connector.uid}
           key={connector.uid}
-          onClick={() => switchAccount({ connector })}
+          onClick={() => switchConnection({ connector })}
           type="button"
         >
           {connector.name}
@@ -133,7 +137,8 @@ function SwitchAccount() {
 
 function SwitchChain() {
   const chainId = useChainId()
-  const { chains, switchChain, error } = useSwitchChain()
+  const { mutate: switchChain, error } = useSwitchChain()
+  const chains = useChains()
 
   return (
     <div>
@@ -156,7 +161,7 @@ function SwitchChain() {
 }
 
 function SignMessage() {
-  const { data, signMessage } = useSignMessage()
+  const { data, mutate: signMessage } = useSignMessage()
 
   return (
     <div>
@@ -197,7 +202,7 @@ function Connections() {
 }
 
 function Balance() {
-  const { address } = useAccount()
+  const { address } = useConnection()
 
   const { data: default_ } = useBalance({ address })
   const { data: account_ } = useBalance({ address })
@@ -215,7 +220,7 @@ function Balance() {
         {!!default_?.value && formatEther(default_.value)}
       </div>
       <div>
-        Balance (Account Chain):{' '}
+        Balance (Connection Chain):{' '}
         {!!account_?.value && formatEther(account_.value)}
       </div>
       <div>
@@ -241,7 +246,7 @@ function BlockNumber() {
       <h2>Block Number</h2>
 
       <div>Block Number (Default Chain): {default_?.toString()}</div>
-      <div>Block Number (Account Chain): {account_?.toString()}</div>
+      <div>Block Number (Connection Chain): {account_?.toString()}</div>
       <div>Block Number (Optimism): {optimism_?.toString()}</div>
     </div>
   )
@@ -259,7 +264,12 @@ function ConnectorClient() {
 }
 
 function SendTransaction() {
-  const { data: hash, error, isPending, sendTransaction } = useSendTransaction()
+  const {
+    data: hash,
+    error,
+    isPending,
+    mutate: sendTransaction,
+  } = useSendTransaction()
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -348,7 +358,12 @@ function ReadContracts() {
 }
 
 function WriteContract() {
-  const { data: hash, error, isPending, writeContract } = useWriteContract()
+  const {
+    data: hash,
+    error,
+    isPending,
+    mutate: writeContract,
+  } = useWriteContract()
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -390,7 +405,6 @@ function Repro() {
   const config = useConfig()
   const chainId = useChainId()
 
-  // biome-ignore lint/suspicious/noConsoleLog: <explanation>
   console.log('chainId from useChainId is', chainId)
   return (
     <main className="flex min-h-screen flex-col items-center p-24">

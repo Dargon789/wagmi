@@ -1,6 +1,6 @@
 ---
 title: useCallsStatus
-description: Hook for fetching the number of the most recent block seen.
+description: Hook for fetching the status and receipts of a call batch.
 ---
 
 <script setup>
@@ -94,13 +94,14 @@ function App() {
 Identifier of the call batch.
 
 ::: code-group
-```ts [index.ts]
-import { useCallsStatus } from '@wagmi/core'
-import { config } from './config'
+```tsx [index.tsx]
+import { useCallsStatus } from 'wagmi'
 
-const status = await useCallsStatus({
-  id: '0x1234567890abcdef', // [!code focus]
-})
+function App() {
+  const result = useCallsStatus({
+    id: '0x1234567890abcdef', // [!code focus]
+  })
+}
 ```
 <<< @/snippets/react/config.ts[config.ts]
 :::
@@ -140,4 +141,4 @@ import { type UseCallsStatusReturnType } from 'wagmi'
 
 ## Action
 
-- [`getCallsStatus`](https://viem.sh/experimental/eip5792/getCallsStatus)
+- [`getCallsStatus`](https://viem.sh/docs/actions/wallet/getCallsStatus)

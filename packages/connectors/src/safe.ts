@@ -2,8 +2,8 @@ import type { SafeAppProvider } from '@safe-global/safe-apps-provider'
 import type { Opts } from '@safe-global/safe-apps-sdk'
 import {
   type Connector,
-  ProviderNotFoundError,
   createConnector,
+  ProviderNotFoundError,
 } from '@wagmi/core'
 import type { Compute } from '@wagmi/core/internal'
 import { getAddress, withTimeout } from 'viem'
@@ -45,7 +45,7 @@ export function safe(parameters: SafeParameters = {}) {
     id: 'safe',
     name: 'Safe',
     type: safe.type,
-    async connect() {
+    async connect({ withCapabilities } = {}) {
       const provider = await this.getProvider()
       if (!provider) throw new ProviderNotFoundError()
 
@@ -60,7 +60,13 @@ export function safe(parameters: SafeParameters = {}) {
       // Remove disconnected shim if it exists
       if (shimDisconnect) await config.storage?.removeItem('safe.disconnected')
 
-      return { accounts, chainId }
+      return {
+        // TODO(v3): Make `withCapabilities: true` default behavior
+        accounts: (withCapabilities
+          ? accounts.map((address) => ({ address, capabilities: {} }))
+          : accounts) as never,
+        chainId,
+      }
     },
     async disconnect() {
       const provider = await this.getProvider()
@@ -89,27 +95,39 @@ export function safe(parameters: SafeParameters = {}) {
       if (!isIframe) return
 
       if (!provider_) {
-        const { default: SDK } = await import('@safe-global/safe-apps-sdk')
-        const sdk = new SDK(parameters)
-
-        // `getInfo` hangs when not used in Safe App iFrame
-        // https://github.com/safe-global/safe-apps-sdk/issues/263#issuecomment-1029835840
-        const safe = await withTimeout(() => sdk.safe.getInfo(), {
-          timeout: parameters.unstable_getInfoTimeout ?? 10,
-        })
-        if (!safe) throw new Error('Could not load Safe information')
-        // Unwrapping import for Vite compatibility.
-        // See: https://github.com/vitejs/vite/issues/9703
-        const SafeAppProvider = await (async () => {
-          const Provider = await import('@safe-global/safe-apps-provider')
-          if (
-            typeof Provider.SafeAppProvider !== 'function' &&
-            typeof Provider.default.SafeAppProvider === 'function'
+        // safe webpack optional peer dependency dynamic imports
+        try {
+          const { default: SDK } = await import(
+            /* turbopackOptional: true */
+            '@safe-global/safe-apps-sdk'
           )
-            return Provider.default.SafeAppProvider
-          return Provider.SafeAppProvider
-        })()
-        provider_ = new SafeAppProvider(safe, sdk)
+          const sdk = new SDK(parameters)
+
+          // `getInfo` hangs when not used in Safe App iFrame
+          // https://github.com/safe-global/safe-apps-sdk/issues/263#issuecomment-1029835840
+          const safe = await withTimeout(() => sdk.safe.getInfo(), {
+            timeout: parameters.unstable_getInfoTimeout ?? 10,
+          })
+          if (!safe) throw new Error('Could not load Safe information')
+          // Unwrapping import for Vite compatibility.
+          // See: https://github.com/vitejs/vite/issues/9703
+          const Provider = await import(
+            /* turbopackOptional: true */
+            '@safe-global/safe-apps-provider'
+          )
+          const SafeAppProvider = (() => {
+            if (
+              typeof Provider.SafeAppProvider !== 'function' &&
+              typeof Provider.default.SafeAppProvider === 'function'
+            )
+              return Provider.default.SafeAppProvider
+            return Provider.SafeAppProvider
+          })()
+          provider_ = new SafeAppProvider(safe, sdk)
+        } catch (error) {
+          // biome-ignore lint/complexity/noUselessCatch: try block marks dependencies as optional for webpack
+          throw error
+        }
       }
       return provider_
     },

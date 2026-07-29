@@ -1,6 +1,7 @@
 <!-- <script setup>
 const packageName = 'wagmi'
 const connectorsPackageName = 'wagmi/connectors'
+const connectorDependencyVersion = 'x.y.z'
 </script> -->
 
 # walletConnect
@@ -12,6 +13,28 @@ Connector for [WalletConnect](https://walletconnect.com).
 ```ts-vue
 import { walletConnect } from '{{connectorsPackageName}}'
 ```
+
+## Install
+
+<PackageMetadata package="@walletconnect/ethereum-provider" repo="WalletConnect/walletconnect-monorepo" licenseUrl="https://github.com/WalletConnect/walletconnect-monorepo/blob/v2.0/providers/ethereum-provider/LICENSE.md" />
+
+::: code-group
+```bash-vue [pnpm]
+pnpm add @walletconnect/ethereum-provider@{{connectorDependencyVersion}}
+```
+
+```bash-vue [npm]
+npm install @walletconnect/ethereum-provider@{{connectorDependencyVersion}}
+```
+
+```bash-vue [yarn]
+yarn add @walletconnect/ethereum-provider@{{connectorDependencyVersion}}
+```
+
+```bash-vue [bun]
+bun add @walletconnect/ethereum-provider@{{connectorDependencyVersion}}
+```
+:::
 
 ## Usage
 
@@ -53,19 +76,6 @@ import { walletConnect } from '{{connectorsPackageName}}'
 
 const connector = walletConnect({
   customStoragePrefix: 'wagmi', // [!code focus]
-  projectId: '3fcc6bba6f1de962d911bb5b5c3dba68',
-})
-```
-
-### disableProviderPing
-
-`boolean | undefined`
-
-```ts-vue
-import { walletConnect } from '{{connectorsPackageName}}'
-
-const connector = walletConnect({
-  disableProviderPing: false, // [!code focus]
   projectId: '3fcc6bba6f1de962d911bb5b5c3dba68',
 })
 ```
@@ -138,7 +148,7 @@ const connector = walletConnect({
 
 `string`
 
-WalletConnect Cloud project identifier. You can find your `projectId` on your [WalletConnect dashboard](https://cloud.reown.com/sign-in).
+WalletConnect Cloud project identifier. You can find your `projectId` on your [WalletConnect dashboard](https://dashboard.reown.com/sign-in).
 
 ```ts-vue
 import { walletConnect } from '{{connectorsPackageName}}'

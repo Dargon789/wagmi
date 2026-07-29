@@ -1,6 +1,6 @@
 # Send Transaction
 
-The following guide teaches you how to send transactions in Wagmi. The example below builds on the [Connect Wallet guide](/react/guides/connect-wallet) and uses the [useSendTransaction](/react/api/hooks/useSendTransaction) & [useWaitForTransaction](/react/api/hooks/useWaitForTransactionReceipt) hooks. 
+The following guide teaches you how to send transactions in Wagmi. The example below builds on the [Connect Wallet guide](/react/guides/connect-wallet) and uses the [useSendTransaction](/react/api/hooks/useSendTransaction) & [useWaitForTransactionReceipt](/react/api/hooks/useWaitForTransactionReceipt) hooks. 
 
 ## Example
 
@@ -267,7 +267,7 @@ Finally, we can wire up our Send Transaction component to our application's entr
 
 ```tsx [app.tsx]
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { WagmiProvider, useAccount } from 'wagmi'
+import { WagmiProvider } from 'wagmi'
 import { config } from './config'
 import { SendTransaction } from './send-transaction' // [!code ++]
 

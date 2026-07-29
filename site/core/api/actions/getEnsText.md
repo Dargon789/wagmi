@@ -185,11 +185,11 @@ Returns `null` if name does not have text assigned.
 ## Error
 
 ```ts
-import { type getEnsTextError } from '@wagmi/core'
+import { type GetEnsTextErrorType } from '@wagmi/core'
 ```
 
 <!--@include: @shared/query-imports.md-->
 
 ## Viem
 
-- [`getEnsText`](https://viem.sh/docs/ens/actions/getEnsText.html)
+- [`getEnsText`](https://viem.sh/docs/ens/actions/getEnsText)

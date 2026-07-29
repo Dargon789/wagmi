@@ -1,25 +1,26 @@
 import { typedData, wait } from '@wagmi/test'
-import { renderHook, waitFor } from '@wagmi/test/react'
+import { renderHook } from '@wagmi/test/react'
 import type { Hex } from 'viem'
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 
 import { useVerifyTypedData } from './useVerifyTypedData.js'
 
-const smartAccountAddress = '0x3FCf42e10CC70Fe75A62EB3aDD6D305Aa840d145'
+const eoaAddress = '0x95132632579b073D12a6673e18Ab05777a6B86f8'
+const eoaSignature =
+  '0xc75a2d80156ba6a5dc4ce0d3526b105da4674c8d1da690650f1403eb7855489b4c84fa0e7d3fa893479269f6d4cd0026c94f654bc5d51e7b17c3b71641c44d291c'
 const notDeployedAddress = '0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef'
 
 test('valid signature', async () => {
-  const { result } = renderHook(() =>
+  const { result } = await renderHook(() =>
     useVerifyTypedData({
       ...typedData.basic,
       primaryType: 'Mail',
-      address: smartAccountAddress,
-      signature:
-        '0x79d756d805073dc97b7bc885b0d56ddf319a2599530fe1e178c2a7de5be88980068d24f20a79b318ea0a84d33ae06f93db77e4235e5d9eeb8b1d7a63922ada3e1c',
+      address: eoaAddress,
+      signature: eoaSignature,
     }),
   )
 
-  await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -48,7 +49,7 @@ test('valid signature', async () => {
       "queryKey": [
         "verifyTypedData",
         {
-          "address": "0x3FCf42e10CC70Fe75A62EB3aDD6D305Aa840d145",
+          "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
           "chainId": 1,
           "domain": {
             "chainId": 1,
@@ -68,7 +69,7 @@ test('valid signature', async () => {
             },
           },
           "primaryType": "Mail",
-          "signature": "0x79d756d805073dc97b7bc885b0d56ddf319a2599530fe1e178c2a7de5be88980068d24f20a79b318ea0a84d33ae06f93db77e4235e5d9eeb8b1d7a63922ada3e1c",
+          "signature": "0xc75a2d80156ba6a5dc4ce0d3526b105da4674c8d1da690650f1403eb7855489b4c84fa0e7d3fa893479269f6d4cd0026c94f654bc5d51e7b17c3b71641c44d291c",
           "types": {
             "Mail": [
               {
@@ -104,16 +105,16 @@ test('valid signature', async () => {
 })
 
 test('invalid signature', async () => {
-  const { result } = renderHook(() =>
+  const { result } = await renderHook(() =>
     useVerifyTypedData({
       ...typedData.basic,
       primaryType: 'Mail',
-      address: smartAccountAddress,
+      address: eoaAddress,
       signature: '0xdead',
     }),
   )
 
-  await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -142,7 +143,7 @@ test('invalid signature', async () => {
       "queryKey": [
         "verifyTypedData",
         {
-          "address": "0x3FCf42e10CC70Fe75A62EB3aDD6D305Aa840d145",
+          "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
           "chainId": 1,
           "domain": {
             "chainId": 1,
@@ -198,7 +199,7 @@ test('invalid signature', async () => {
 })
 
 test('account not deployed', async () => {
-  const { result } = renderHook(() =>
+  const { result } = await renderHook(() =>
     useVerifyTypedData({
       ...typedData.basic,
       primaryType: 'Mail',
@@ -208,7 +209,7 @@ test('account not deployed', async () => {
     }),
   )
 
-  await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -293,15 +294,15 @@ test('account not deployed', async () => {
 })
 
 test('behavior: signature: undefined -> defined', async () => {
-  let signature: Hex | undefined = undefined
-
-  const { result, rerender } = renderHook(() =>
-    useVerifyTypedData({
-      ...typedData.basic,
-      primaryType: 'Mail',
-      address: smartAccountAddress,
-      signature,
-    }),
+  const { result, rerender } = await renderHook(
+    (props) =>
+      useVerifyTypedData({
+        ...typedData.basic,
+        primaryType: 'Mail',
+        address: eoaAddress,
+        signature: props?.signature,
+      }),
+    { initialProps: { signature: undefined as Hex | undefined } },
   )
 
   expect(result.current).toMatchInlineSnapshot(`
@@ -331,7 +332,7 @@ test('behavior: signature: undefined -> defined', async () => {
       "queryKey": [
         "verifyTypedData",
         {
-          "address": "0x3FCf42e10CC70Fe75A62EB3aDD6D305Aa840d145",
+          "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
           "chainId": 1,
           "domain": {
             "chainId": 1,
@@ -385,11 +386,11 @@ test('behavior: signature: undefined -> defined', async () => {
     }
   `)
 
-  signature =
-    '0x79d756d805073dc97b7bc885b0d56ddf319a2599530fe1e178c2a7de5be88980068d24f20a79b318ea0a84d33ae06f93db77e4235e5d9eeb8b1d7a63922ada3e1c'
-  rerender()
+  rerender({
+    signature: eoaSignature,
+  })
 
-  await waitFor(() => expect(result.current.isSuccess).toBeTruthy())
+  await vi.waitUntil(() => result.current.isSuccess, { timeout: 10_000 })
 
   expect(result.current).toMatchInlineSnapshot(`
     {
@@ -418,7 +419,7 @@ test('behavior: signature: undefined -> defined', async () => {
       "queryKey": [
         "verifyTypedData",
         {
-          "address": "0x3FCf42e10CC70Fe75A62EB3aDD6D305Aa840d145",
+          "address": "0x95132632579b073D12a6673e18Ab05777a6B86f8",
           "chainId": 1,
           "domain": {
             "chainId": 1,
@@ -438,7 +439,7 @@ test('behavior: signature: undefined -> defined', async () => {
             },
           },
           "primaryType": "Mail",
-          "signature": "0x79d756d805073dc97b7bc885b0d56ddf319a2599530fe1e178c2a7de5be88980068d24f20a79b318ea0a84d33ae06f93db77e4235e5d9eeb8b1d7a63922ada3e1c",
+          "signature": "0xc75a2d80156ba6a5dc4ce0d3526b105da4674c8d1da690650f1403eb7855489b4c84fa0e7d3fa893479269f6d4cd0026c94f654bc5d51e7b17c3b71641c44d291c",
           "types": {
             "Mail": [
               {
@@ -474,8 +475,8 @@ test('behavior: signature: undefined -> defined', async () => {
 })
 
 test('behavior: disabled when properties missing', async () => {
-  const { result } = renderHook(() => useVerifyTypedData())
+  const { result } = await renderHook(() => useVerifyTypedData())
 
   await wait(100)
-  await waitFor(() => expect(result.current.isPending).toBeTruthy())
+  await vi.waitFor(() => expect(result.current.isPending).toBeTruthy())
 })

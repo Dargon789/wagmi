@@ -140,7 +140,7 @@ import { normalize } from 'viem/ens'
 import { config } from './config'
 
 const ensAvatar = await getEnsAvatar(config, {
-  gatewayUrls: ['https://cloudflare-ipfs.com'] { // [!code focus]
+  gatewayUrls: ['https://cloudflare-ipfs.com'], // [!code focus]
   name: normalize('wevm.eth'),
 })
 ```
@@ -200,11 +200,11 @@ The avatar URI for ENS name.
 ## Error
 
 ```ts
-import { type getEnsAvatarError } from '@wagmi/core'
+import { type GetEnsAvatarErrorType } from '@wagmi/core'
 ```
 
 <!--@include: @shared/query-imports.md-->
 
 ## Viem
 
-- [`getEnsAvatar`](https://viem.sh/docs/ens/actions/getEnsAvatar.html)
+- [`getEnsAvatar`](https://viem.sh/docs/ens/actions/getEnsAvatar)

@@ -1,3 +1,4 @@
+import type { EIP6963ProviderDetail } from 'mipd'
 import type {
   AddEthereumChainParameter,
   Address,
@@ -30,6 +31,7 @@ export type CreateConnectorFn<
 > = (config: {
   chains: readonly [Chain, ...Chain[]]
   emitter: Emitter<ConnectorEventMap>
+  readonly providers: readonly EIP6963ProviderDetail[]
   storage?: Compute<Storage<storageItem>> | null | undefined
   transports?: Record<number, Transport> | undefined
 }) => Compute<
@@ -38,17 +40,23 @@ export type CreateConnectorFn<
     readonly id: string
     readonly name: string
     readonly rdns?: string | readonly string[] | undefined
-    /** @deprecated */
-    readonly supportsSimulation?: boolean | undefined
     readonly type: string
 
     setup?(): Promise<void>
-    connect(
+    // TODO(v3): Make `withCapabilities: true` default behavior
+    connect<withCapabilities extends boolean = false>(
       parameters?:
-        | { chainId?: number | undefined; isReconnecting?: boolean | undefined }
+        | {
+            chainId?: number | undefined
+            isReconnecting?: boolean | undefined
+            withCapabilities?: withCapabilities | boolean | undefined
+          }
         | undefined,
     ): Promise<{
-      accounts: readonly Address[]
+      // TODO(v3): Add `capabilities` (e.g. `readonly { address: Address; capabilities: Record<string, unknown> | undefined }`)
+      accounts: withCapabilities extends true
+        ? readonly { address: Address; capabilities: Record<string, unknown> }[]
+        : readonly Address[]
       chainId: number
     }>
     disconnect(): Promise<void>

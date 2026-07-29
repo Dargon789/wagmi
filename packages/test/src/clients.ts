@@ -1,11 +1,11 @@
 import {
-  http,
   type Account,
   type Client,
+  createTestClient,
+  http,
   type TestActions,
   type TestRpcSchema,
   type Transport,
-  createTestClient,
 } from 'viem'
 
 import { type Chain, mainnet, mainnet2, optimism } from './chains.js'
@@ -47,6 +47,10 @@ function wagmiTestMethods(
   >,
 ) {
   return {
+    /** Destroys instance attached to chain. */
+    async destroy() {
+      return await fetch(`${client.chain.rpcUrls.default.http[0]}/destroy`)
+    },
     /** Resets instance attached to chain. */
     async restart() {
       return await fetch(`${client.chain.rpcUrls.default.http[0]}/restart`)

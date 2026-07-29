@@ -1,0 +1,34 @@
+# `token.useWatchBurn`
+
+Watches for token burn events on TIP20 tokens.
+
+## Usage
+
+::: code-group
+```ts [example.ts]
+import { Hooks } from 'wagmi/tempo'
+
+Hooks.token.useWatchBurn({
+  onBurn: (args, log) => {
+    console.log('args:', args)
+  },
+  token: '0x20c0000000000000000000000000000000000000',
+})
+```
+<<< @/snippets/react/config-tempo.ts{ts} [config.ts]
+:::
+
+## Parameters
+
+See [Wagmi Action `token.watchBurn` Parameters](/tempo/actions/token.watchBurn#parameters)
+
+### config
+
+`Config | undefined`
+
+[`Config`](https://wagmi.sh/react/api/createConfig#config) to use instead of retrieving from the nearest [`WagmiProvider`](https://wagmi.sh/react/api/WagmiProvider).
+
+## Action
+
+- [`token.burn`](/tempo/actions/token.burn)
+- [`token.watchBurn`](/tempo/actions/token.watchBurn)
