@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
+  type Config,
   connect,
   createConnector,
   getConnection,
@@ -24,7 +25,6 @@ import {
 } from 'viem'
 import { sendTransactionSync } from 'viem/actions'
 import { Actions, Addresses, Tick, Account as tempo_Account } from 'viem/tempo'
-import { http as zoneHttp } from 'viem/tempo/zones'
 import { vi } from 'vitest'
 import {
   type RenderHookOptions,
@@ -32,15 +32,6 @@ import {
   renderHook as vbr_renderHook,
 } from 'vitest-browser-react'
 import { createConfig, WagmiProvider } from 'wagmi'
-import {
-  zoneId,
-  zoneLocal,
-  zonePortalAddress,
-  zonePortalEncryptionKey,
-  zonePortalEncryptionKeyCount,
-  zoneRpcUrl,
-  zoneStorage,
-} from './zone.js'
 
 export const port = Number(import.meta.env.RPC_PORT ?? 4000)
 
@@ -70,20 +61,11 @@ export const accounts = privateKeys.map((privateKey) =>
 
 export const tempoLocal = defineChain({
   ...chains.tempoLocalnet,
-  contracts: {
-    zonePortal: {
-      [zoneId]: {
-        address: zonePortalAddress,
-        encryptionKeyCount: zonePortalEncryptionKeyCount,
-        sequencerEncryptionKey: zonePortalEncryptionKey,
-      },
-    },
-  },
   rpcUrls: { default: { http: [rpcUrl] } },
 }).extend({ feeToken: 1n })
 
 export const config = createConfig({
-  chains: [tempoLocal, zoneLocal],
+  chains: [tempoLocal],
   connectors: [
     dangerous_secp256k1({
       privateKey: privateKeys[0],
@@ -99,7 +81,6 @@ export const config = createConfig({
   storage: null,
   transports: {
     [tempoLocal.id]: http(),
-    [zoneLocal.id]: zoneHttp(zoneRpcUrl, { storage: zoneStorage }),
   },
 })
 
@@ -212,31 +193,36 @@ export const queryClient = new QueryClient()
 export function createWrapper<component extends React.FunctionComponent<any>>(
   Wrapper: component,
   props: Parameters<component>[0],
+  client = queryClient,
 ) {
   type Props = { children?: React.ReactNode | undefined }
   return function CreatedWrapper({ children }: Props) {
     return React.createElement(
       Wrapper,
       props,
-      React.createElement(
-        QueryClientProvider,
-        { client: queryClient },
-        children,
-      ),
+      React.createElement(QueryClientProvider, { client }, children),
     )
   }
 }
 
-export function renderHook<result, props>(
-  renderCallback: (initialProps?: props) => result,
-  options?: RenderHookOptions<props>,
-): Promise<RenderHookResult<result, props>> {
-  queryClient.clear()
-  return vbr_renderHook(renderCallback, {
-    wrapper: createWrapper(WagmiProvider, { config, reconnectOnMount: false }),
-    ...options,
-  })
+export function createRenderHook(config: Config, client: QueryClient) {
+  return function renderHook<result, props>(
+    renderCallback: (initialProps?: props) => result,
+    options?: RenderHookOptions<props>,
+  ): Promise<RenderHookResult<result, props>> {
+    client.clear()
+    return vbr_renderHook(renderCallback, {
+      wrapper: createWrapper(
+        WagmiProvider,
+        { config, reconnectOnMount: false },
+        client,
+      ),
+      ...options,
+    })
+  }
 }
+
+export const renderHook = createRenderHook(config, queryClient)
 
 export async function restart() {
   await fetch(`${rpcUrl}/restart`)
@@ -263,6 +249,16 @@ export async function restart() {
       }),
     ),
   )
+
+  await Actions.validator.add(client, {
+    account: accounts[0],
+    newValidatorAddress: accounts[19].address,
+    publicKey:
+      '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+    active: true,
+    inboundAddress: '192.168.1.100:8080',
+    outboundAddress: '192.168.1.100:8080',
+  })
   vi.spyOn(Date, 'now').mockReturnValue(
     new Date(Date.UTC(2023, 1, 1)).valueOf(),
   )
@@ -323,12 +319,12 @@ export async function viem_setupToken(
 
   await sendTransactionSync(client, {
     calls: [
-      Actions.token.grantRoles.call({
+      Actions.token.grantRoles.call(client, {
         role: 'issuer',
         to: client.account.address,
         token: token.token,
       }),
-      Actions.token.mint.call({
+      Actions.token.mint.call(client, {
         amount: parseUnits('10000', 6),
         to: client.account.address,
         token: token.token,
@@ -394,32 +390,32 @@ export async function viem_setupTokenPair(
 
   await sendTransactionSync(client, {
     calls: [
-      Actions.token.grantRoles.call({
+      Actions.token.grantRoles.call(client, {
         token: baseToken,
         role: 'issuer',
         to: client.account.address,
       }),
-      Actions.token.grantRoles.call({
+      Actions.token.grantRoles.call(client, {
         token: quoteToken,
         role: 'issuer',
         to: client.account.address,
       }),
-      Actions.token.mint.call({
+      Actions.token.mint.call(client, {
         token: baseToken,
         to: client.account.address,
         amount: parseUnits('10000', 6),
       }),
-      Actions.token.mint.call({
+      Actions.token.mint.call(client, {
         token: quoteToken,
         to: client.account.address,
         amount: parseUnits('10000', 6),
       }),
-      Actions.token.approve.call({
+      Actions.token.approve.call(client, {
         token: baseToken,
         spender: Addresses.stablecoinDex,
         amount: parseUnits('10000', 6),
       }),
-      Actions.token.approve.call({
+      Actions.token.approve.call(client, {
         token: quoteToken,
         spender: Addresses.stablecoinDex,
         amount: parseUnits('10000', 6),

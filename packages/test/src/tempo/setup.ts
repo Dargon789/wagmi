@@ -3,27 +3,14 @@ import { parseUnits } from 'viem'
 import { Actions, Addresses } from 'viem/tempo'
 import { beforeAll, beforeEach, vi } from 'vitest'
 import { accounts, config } from './config.js'
-import { zoneLocal, zoneStorage } from './zone.js'
 
 // @ts-expect-error
 BigInt.prototype.toJSON = function () {
   return this.toString()
 }
 
-async function clearZoneStorage() {
-  await Promise.all([
-    zoneStorage.removeItem(`auth:token:${zoneLocal.id}`),
-    ...accounts.map((account) =>
-      zoneStorage.removeItem(
-        `auth:${account.address.toLowerCase()}:${zoneLocal.id}`,
-      ),
-    ),
-  ])
-}
-
 beforeAll(async () => {
   await disconnect(config).catch(() => {})
-  await clearZoneStorage()
   await connect(config, {
     connector: config.connectors[0]!,
   })
@@ -45,6 +32,16 @@ beforeAll(async () => {
       }),
     ),
   )
+
+  await Actions.validator.add(client, {
+    account: accounts[0],
+    newValidatorAddress: accounts[19].address,
+    publicKey:
+      '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+    active: true,
+    inboundAddress: '192.168.1.100:8080',
+    outboundAddress: '192.168.1.100:8080',
+  })
   vi.spyOn(Date, 'now').mockReturnValue(
     new Date(Date.UTC(2023, 1, 1)).valueOf(),
   )
@@ -54,7 +51,6 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await disconnect(config).catch(() => {})
-  await clearZoneStorage()
   // Make dates stable across runs (set here so it doesn't affect beforeAll setup)
   vi.spyOn(Date, 'now').mockReturnValue(
     new Date(Date.UTC(2023, 1, 1)).valueOf(),

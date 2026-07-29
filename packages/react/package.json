@@ -1,7 +1,7 @@
 {
   "name": "wagmi",
   "description": "React Hooks for Ethereum",
-  "version": "3.6.15",
+  "version": "3.7.4",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -89,7 +89,7 @@
   "peerDependencies": {
     "@tanstack/react-query": ">=5.0.0",
     "react": ">=18",
-    "typescript": ">=5.7.3",
+    "typescript": ">=5.9.3",
     "viem": "2.x"
   },
   "peerDependenciesMeta": {
@@ -108,7 +108,8 @@
     "@types/react-dom": "catalog:",
     "@types/use-sync-external-store": "^0.0.6",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "@types/bun": "latest"
   },
   "contributors": [
     "awkweb.eth <t@wevm.dev>",
@@ -124,5 +125,6 @@
     "dapps",
     "wallet",
     "web3"
-  ]
+  ],
+  "private": true
 }
