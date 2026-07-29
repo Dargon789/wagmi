@@ -1,5 +1,25 @@
 # @wagmi/core
 
+## 3.6.4
+
+### Patch Changes
+
+- Fixed `getBalance` and `getTransactionCount` querying the wrong block for `blockNumber: 0n` (genesis), which is a valid input but was treated as falsy and fell back to `blockTag: 'latest'`. ([#5203](https://github.com/wevm/wagmi/pull/5203))
+
+- **Breaking (`@wagmi/core/tempo`):** Removed `Actions.zone.getDepositStatus` to align with the current Tempo Zone API. Use `Actions.zone.waitForTempoBlock` to wait for a block import, or use `Actions.zone.getZoneInfo` and inspect `tempoBlockNumber` for a one-shot read. ([#5204](https://github.com/wevm/wagmi/pull/5204))
+
+## 3.6.3
+
+### Patch Changes
+
+- Fixed `getTransaction` query being disabled for transaction `index: 0`, which is a valid input (the first transaction in a block) but was treated as falsy. ([#5197](https://github.com/wevm/wagmi/pull/5197))
+
+## 3.6.2
+
+### Patch Changes
+
+- Fixed Tempo Zone action compatibility with Viem 2.55.2. ([#5198](https://github.com/wevm/wagmi/pull/5198))
+
 ## 3.6.1
 
 ### Patch Changes
