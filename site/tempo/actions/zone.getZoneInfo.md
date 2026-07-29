@@ -1,6 +1,6 @@
 # `zone.getZoneInfo`
 
-Gets metadata for a Tempo zone chain, including the zone ID, parent chain ID, sequencer, and available zone tokens.
+Gets metadata for a Tempo zone chain, including the latest imported Tempo block number, zone ID, parent chain ID, sequencer, and available zone tokens.
 
 This action expects the zone transport to already have an authorization token in storage. Use [`zone.signAuthorizationToken`](/tempo/actions/zone.signAuthorizationToken) first.
 
@@ -14,17 +14,13 @@ Zone actions and hooks require `viem >=2.48.0`.
 
 ```ts [example.ts]
 import { createConfig } from 'wagmi'
-import { KeyManager, webAuthn } from 'wagmi/tempo'
+import { webAuthn } from 'wagmi/tempo'
 import { http as zoneHttp, zone } from 'viem/tempo/zones'
 
 const zoneChain = zone(7)
 
 const config = createConfig({
-  connectors: [
-    webAuthn({
-      keyManager: KeyManager.localStorage(),
-    }),
-  ],
+  connectors: [webAuthn()],
   chains: [zoneChain],
   multiInjectedProviderDiscovery: false,
   transports: {
@@ -54,6 +50,7 @@ console.log('Zone ID:', result.zoneId)
 type ReturnType = {
   chainId: number
   sequencer: Address
+  tempoBlockNumber: bigint
   zoneId: number
   zoneTokens: readonly Address[]
 }
