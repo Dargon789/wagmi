@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Install dependencies
-        uses: wevm/actions/.github/actions/pnpm@f7ad7f00e16e73322562922c241f21f0c7ffbbec
+        uses: wevm/actions/.github/actions/pnpm@2a55cccb5234b9fa0bbd87c1eaba45571c466a68
         with:
           node-version: 24.5
 
@@ -55,7 +55,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Install dependencies
-        uses: wevm/actions/.github/actions/pnpm@f7ad7f00e16e73322562922c241f21f0c7ffbbec
+        uses: wevm/actions/.github/actions/pnpm@2a55cccb5234b9fa0bbd87c1eaba45571c466a68
         with:
           node-version: 24.5
 

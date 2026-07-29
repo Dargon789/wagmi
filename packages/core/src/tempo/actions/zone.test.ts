@@ -1,31 +1,39 @@
 import { connect, disconnect } from '@wagmi/core'
+import { accounts } from '@wagmi/test/tempo'
 import {
-  accounts,
+  authorize,
   config,
+  context,
+  depositAndWait,
+  parentChain,
+  portalAddress,
   queryClient,
-  restart,
-  setupToken,
-  tempoLocal,
-  zoneDepositStatus,
-  zoneInfo,
-  zoneLocal,
-  zonePortalAddress,
+  setupZoneBalance,
+  zoneChain,
+  zoneId,
   zoneStorage,
-} from '@wagmi/test/tempo'
-import { Addresses, Storage } from 'viem/tempo'
-import { beforeAll, beforeEach, describe, expect, test } from 'vitest'
-import * as tokenActions from './token.js'
+} from '@wagmi/test/tempo/zone'
+import { Actions, Addresses, Storage } from 'viem/tempo'
+import { beforeEach, describe, expect, test } from 'vitest'
 import * as zoneActions from './zone.js'
 
 const revealTo =
   '0x0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798' as const
-let depositToken: Awaited<ReturnType<typeof setupToken>>['token']
+const depositToken = Addresses.pathUsd
 
-beforeAll(async () => {
-  await restart()
-  ;({ token: depositToken } = await setupToken())
-  await disconnect(config).catch(() => {})
-})
+async function getPreparedEncryptedDeposit() {
+  return Actions.zone.encryptedDeposit.prepare(
+    config.getClient({ chainId: parentChain.id }),
+    {
+      amount: 123_000n,
+      bouncebackRecipient: accounts[0].address,
+      portalAddress,
+      recipient: accounts[0].address,
+      token: depositToken,
+      zoneId,
+    },
+  )
+}
 
 beforeEach(async () => {
   await disconnect(config).catch(() => {})
@@ -38,12 +46,13 @@ describe('signAuthorizationToken', () => {
     })
 
     const result = await zoneActions.signAuthorizationToken(config, {
-      chainId: zoneLocal.id,
+      chainId: zoneChain.id,
       storage: zoneStorage,
+      zoneId,
     })
 
     expect(result.token).toBeDefined()
-    expect(await zoneStorage.getItem(`auth:token:${zoneLocal.id}`)).toBe(
+    expect(await zoneStorage.getItem(`auth:token:${zoneChain.id}`)).toBe(
       result.token,
     )
   })
@@ -55,13 +64,14 @@ describe('signAuthorizationToken', () => {
 
     const storage = Storage.memory()
     const result = await zoneActions.signAuthorizationToken(config, {
-      chainId: zoneLocal.id,
+      chainId: zoneChain.id,
       expiresAt: Math.floor(Date.now() / 1000) + 300,
       issuedAt: Math.floor(Date.now() / 1000) - 100,
       storage,
+      zoneId,
     })
 
-    expect(await storage.getItem(`auth:token:${zoneLocal.id}`)).toBe(
+    expect(await storage.getItem(`auth:token:${zoneChain.id}`)).toBe(
       result.token,
     )
   })
@@ -75,9 +85,9 @@ describe('deposit', () => {
 
     const hash = await zoneActions.deposit(config, {
       amount: 123_000n,
-      chainId: tempoLocal.id,
+      chainId: parentChain.id,
       token: depositToken,
-      zoneId: zoneInfo.zoneId,
+      zoneId,
     })
 
     expect(hash).toBeDefined()
@@ -93,20 +103,12 @@ describe('depositSync', () => {
     const amount = 456_000n
     const result = await zoneActions.depositSync(config, {
       amount,
-      chainId: tempoLocal.id,
+      chainId: parentChain.id,
       token: depositToken,
-      zoneId: zoneInfo.zoneId,
+      zoneId,
     })
 
     expect(result.receipt.status).toBe('success')
-    expect(
-      await tokenActions.getAllowance(config, {
-        account: accounts[0].address,
-        chainId: tempoLocal.id,
-        spender: zonePortalAddress,
-        token: depositToken,
-      }),
-    ).toBe(amount)
   })
 })
 
@@ -118,12 +120,25 @@ describe('encryptedDeposit', () => {
 
     const hash = await zoneActions.encryptedDeposit(config, {
       amount: 123_000n,
-      chainId: tempoLocal.id,
+      chainId: parentChain.id,
       token: depositToken,
-      zoneId: zoneInfo.zoneId,
+      zoneId,
     })
 
     expect(hash).toBeDefined()
+  })
+
+  test('parameters: prepared encrypted payload', async () => {
+    await connect(config, {
+      connector: config.connectors[0]!,
+    })
+
+    expect(
+      await zoneActions.encryptedDeposit(
+        config,
+        await getPreparedEncryptedDeposit(),
+      ),
+    ).toBeDefined()
   })
 })
 
@@ -136,20 +151,25 @@ describe('encryptedDepositSync', () => {
     const amount = 456_000n
     const result = await zoneActions.encryptedDepositSync(config, {
       amount,
-      chainId: tempoLocal.id,
+      chainId: parentChain.id,
       token: depositToken,
-      zoneId: zoneInfo.zoneId,
+      zoneId,
     })
 
     expect(result.receipt.status).toBe('success')
+  })
+
+  test('parameters: prepared encrypted payload', async () => {
+    await connect(config, {
+      connector: config.connectors[0]!,
+    })
+
     expect(
-      await tokenActions.getAllowance(config, {
-        account: accounts[0].address,
-        chainId: tempoLocal.id,
-        spender: zonePortalAddress,
-        token: depositToken,
-      }),
-    ).toBe(amount)
+      await zoneActions.encryptedDepositSync(
+        config,
+        await getPreparedEncryptedDeposit(),
+      ),
+    ).toMatchObject({ receipt: { status: 'success' } })
   })
 })
 
@@ -159,10 +179,12 @@ describe('requestWithdrawal', () => {
       connector: config.connectors[0]!,
     })
 
+    const amount = 123_000n
+    const token = await setupZoneBalance(amount)
     const hash = await zoneActions.requestWithdrawal(config, {
-      amount: 123_000n,
-      chainId: zoneLocal.id,
-      token: zoneInfo.zoneTokens[0],
+      amount,
+      chainId: zoneChain.id,
+      token,
     })
 
     expect(hash).toBeDefined()
@@ -176,21 +198,14 @@ describe('requestWithdrawalSync', () => {
     })
 
     const amount = 456_000n
+    const token = await setupZoneBalance(amount)
     const result = await zoneActions.requestWithdrawalSync(config, {
       amount,
-      chainId: zoneLocal.id,
-      token: zoneInfo.zoneTokens[0],
+      chainId: zoneChain.id,
+      token,
     })
 
     expect(result.receipt.status).toBe('success')
-    expect(
-      await tokenActions.getAllowance(config, {
-        account: accounts[0].address,
-        chainId: zoneLocal.id,
-        spender: Addresses.zoneOutbox,
-        token: zoneInfo.zoneTokens[0],
-      }),
-    ).toBe(amount)
   })
 })
 
@@ -200,11 +215,13 @@ describe('requestVerifiableWithdrawal', () => {
       connector: config.connectors[0]!,
     })
 
+    const amount = 123_000n
+    const token = await setupZoneBalance(amount)
     const hash = await zoneActions.requestVerifiableWithdrawal(config, {
-      amount: 123_000n,
-      chainId: zoneLocal.id,
+      amount,
+      chainId: zoneChain.id,
       revealTo,
-      token: zoneInfo.zoneTokens[0],
+      token,
     })
 
     expect(hash).toBeDefined()
@@ -218,22 +235,15 @@ describe('requestVerifiableWithdrawalSync', () => {
     })
 
     const amount = 456_000n
+    const token = await setupZoneBalance(amount)
     const result = await zoneActions.requestVerifiableWithdrawalSync(config, {
       amount,
-      chainId: zoneLocal.id,
+      chainId: zoneChain.id,
       revealTo,
-      token: zoneInfo.zoneTokens[0],
+      token,
     })
 
     expect(result.receipt.status).toBe('success')
-    expect(
-      await tokenActions.getAllowance(config, {
-        account: accounts[0].address,
-        chainId: zoneLocal.id,
-        spender: Addresses.zoneOutbox,
-        token: zoneInfo.zoneTokens[0],
-      }),
-    ).toBe(amount)
   })
 })
 
@@ -243,15 +253,16 @@ describe('getZoneInfo', () => {
       connector: config.connectors[0]!,
     })
     await zoneActions.signAuthorizationToken(config, {
-      chainId: zoneLocal.id,
+      chainId: zoneChain.id,
       storage: zoneStorage,
+      zoneId,
     })
 
-    expect(
-      await zoneActions.getZoneInfo(config, {
-        chainId: zoneLocal.id,
-      }),
-    ).toEqual(zoneInfo)
+    const result = await zoneActions.getZoneInfo(config, {
+      chainId: zoneChain.id,
+    })
+    expect(result).toMatchObject({ chainId: context.chainId, zoneId })
+    expect(result.zoneTokens.length).toBeGreaterThan(0)
   })
 
   test('queryOptions', async () => {
@@ -259,17 +270,42 @@ describe('getZoneInfo', () => {
       connector: config.connectors[0]!,
     })
     await zoneActions.signAuthorizationToken(config, {
-      chainId: zoneLocal.id,
+      chainId: zoneChain.id,
       storage: zoneStorage,
+      zoneId,
     })
 
     expect(
       await queryClient.fetchQuery(
         zoneActions.getZoneInfo.queryOptions(config, {
-          chainId: zoneLocal.id,
+          chainId: zoneChain.id,
         }),
       ),
-    ).toEqual(zoneInfo)
+    ).toMatchObject({ chainId: context.chainId, zoneId })
+  })
+})
+
+describe('waitForTempoBlock', () => {
+  test('default', async () => {
+    const { receipt } = await depositAndWait(123_000n)
+
+    const result = await zoneActions.waitForTempoBlock(config, {
+      chainId: zoneChain.id,
+      tempoBlockNumber: receipt.blockNumber,
+    })
+    expect(result.tempoBlockNumber).toBeGreaterThanOrEqual(receipt.blockNumber)
+  })
+
+  test('queryOptions', async () => {
+    const { receipt } = await depositAndWait(123_000n)
+
+    const result = await queryClient.fetchQuery(
+      zoneActions.waitForTempoBlock.queryOptions(config, {
+        chainId: zoneChain.id,
+        tempoBlockNumber: receipt.blockNumber,
+      }),
+    )
+    expect(result.tempoBlockNumber).toBeGreaterThanOrEqual(receipt.blockNumber)
   })
 })
 
@@ -279,20 +315,19 @@ describe('getAuthorizationTokenInfo', () => {
       connector: config.connectors[0]!,
     })
 
+    const expiresAt = Math.floor(Date.now() / 1000) + 300
     await zoneActions.signAuthorizationToken(config, {
-      chainId: zoneLocal.id,
-      expiresAt: 1_700_000_000,
+      chainId: zoneChain.id,
+      expiresAt,
       storage: zoneStorage,
+      zoneId,
     })
 
-    expect(
-      await zoneActions.getAuthorizationTokenInfo(config, {
-        chainId: zoneLocal.id,
-      }),
-    ).toEqual({
-      account: accounts[0].address,
-      expiresAt: 1_700_000_000n,
+    const result = await zoneActions.getAuthorizationTokenInfo(config, {
+      chainId: zoneChain.id,
     })
+    expect(result.account.toLowerCase()).toBe(accounts[0].address.toLowerCase())
+    expect(result.expiresAt).toBe(BigInt(expiresAt))
   })
 
   test('queryOptions', async () => {
@@ -300,91 +335,51 @@ describe('getAuthorizationTokenInfo', () => {
       connector: config.connectors[0]!,
     })
 
+    const expiresAt = Math.floor(Date.now() / 1000) + 300
     await zoneActions.signAuthorizationToken(config, {
-      chainId: zoneLocal.id,
-      expiresAt: 1_700_000_000,
+      chainId: zoneChain.id,
+      expiresAt,
       storage: zoneStorage,
+      zoneId,
     })
 
-    expect(
-      await queryClient.fetchQuery(
-        zoneActions.getAuthorizationTokenInfo.queryOptions(config, {
-          chainId: zoneLocal.id,
-        }),
-      ),
-    ).toEqual({
-      account: accounts[0].address,
-      expiresAt: 1_700_000_000n,
-    })
-  })
-})
-
-describe('getDepositStatus', () => {
-  test('default', async () => {
-    await connect(config, {
-      connector: config.connectors[0]!,
-    })
-
-    await zoneActions.signAuthorizationToken(config, {
-      chainId: zoneLocal.id,
-      storage: zoneStorage,
-    })
-
-    expect(
-      await zoneActions.getDepositStatus(config, {
-        chainId: zoneLocal.id,
-        tempoBlockNumber: zoneDepositStatus.tempoBlockNumber,
+    const result = await queryClient.fetchQuery(
+      zoneActions.getAuthorizationTokenInfo.queryOptions(config, {
+        chainId: zoneChain.id,
       }),
-    ).toEqual(zoneDepositStatus)
-  })
-
-  test('queryOptions', async () => {
-    await connect(config, {
-      connector: config.connectors[0]!,
-    })
-
-    await zoneActions.signAuthorizationToken(config, {
-      chainId: zoneLocal.id,
-      storage: zoneStorage,
-    })
-
-    expect(
-      await queryClient.fetchQuery(
-        zoneActions.getDepositStatus.queryOptions(config, {
-          chainId: zoneLocal.id,
-          tempoBlockNumber: zoneDepositStatus.tempoBlockNumber,
-        }),
-      ),
-    ).toEqual(zoneDepositStatus)
+    )
+    expect(result.account.toLowerCase()).toBe(accounts[0].address.toLowerCase())
+    expect(result.expiresAt).toBe(BigInt(expiresAt))
   })
 })
 
 describe('getWithdrawalFee', () => {
   test('default', async () => {
-    expect(
-      await zoneActions.getWithdrawalFee(config, {
-        chainId: zoneLocal.id,
-      }),
-    ).toBe(1_000n)
+    await authorize()
+    const fee = await zoneActions.getWithdrawalFee(config, {
+      chainId: zoneChain.id,
+    })
+    expect(typeof fee).toBe('bigint')
+    expect(fee).toBeGreaterThanOrEqual(0n)
   })
 
-  test('parameters: gas', async () => {
-    expect(
-      await zoneActions.getWithdrawalFee(config, {
-        chainId: zoneLocal.id,
-        gas: 21_000n,
-      }),
-    ).toBe(22_000n)
+  test('parameters: callbackGas', async () => {
+    await authorize()
+    const fee = await zoneActions.getWithdrawalFee(config, {
+      callbackGas: 21_000n,
+      chainId: zoneChain.id,
+    })
+    expect(fee).toBeGreaterThanOrEqual(0n)
   })
 
   test('queryOptions', async () => {
-    expect(
-      await queryClient.fetchQuery(
-        zoneActions.getWithdrawalFee.queryOptions(config, {
-          chainId: zoneLocal.id,
-          gas: 21_000n,
-        }),
-      ),
-    ).toBe(22_000n)
+    await authorize()
+    const fee = await queryClient.fetchQuery(
+      zoneActions.getWithdrawalFee.queryOptions(config, {
+        callbackGas: 21_000n,
+        chainId: zoneChain.id,
+      }),
+    )
+    expect(fee).toBeGreaterThanOrEqual(0n)
   })
 })

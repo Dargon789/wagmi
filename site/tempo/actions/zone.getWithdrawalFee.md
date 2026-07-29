@@ -32,8 +32,8 @@ import { Actions } from 'wagmi/tempo'
 import { config, zoneChain } from './config'
 
 const result = await Actions.zone.getWithdrawalFee(config, {
+  callbackGas: 21_000n,
   chainId: zoneChain.id,
-  gas: 21_000n,
 })
 
 console.log('Fee:', result)
@@ -56,7 +56,7 @@ The withdrawal fee for the provided gas limit.
 
 Zone chain ID to query. Useful when your Wagmi config supports more than one chain.
 
-### gas (optional)
+### callbackGas (optional)
 
 - **Type:** `bigint`
 

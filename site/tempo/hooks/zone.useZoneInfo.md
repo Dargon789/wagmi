@@ -1,6 +1,6 @@
 # `zone.useZoneInfo`
 
-Hook for getting Tempo zone metadata.
+Hook for getting Tempo zone metadata and the latest imported Tempo block number.
 
 This hook expects a zone authorization token to already exist in storage. Use [`zone.useSignAuthorizationToken`](/tempo/hooks/zone.useSignAuthorizationToken) first.
 
@@ -24,6 +24,7 @@ const { data: zoneInfo } = Hooks.zone.useZoneInfo({
     initialData: {
       chainId: zoneChain.id,
       sequencer: '0x0000000000000000000000000000000000000007',
+      tempoBlockNumber: 42n,
       zoneId: 7,
       zoneTokens: ['0x20c0000000000000000000000000000000000001'],
     },
@@ -37,17 +38,13 @@ console.log('Zone ID:', zoneInfo?.zoneId)
 ```ts [wagmi.config.ts] filename="wagmi.config.ts"
 // @noErrors
 import { createConfig } from 'wagmi'
-import { KeyManager, webAuthn } from 'wagmi/tempo'
+import { webAuthn } from 'wagmi/tempo'
 import { http as zoneHttp, zone } from 'viem/tempo/zones'
 
 const zoneChain = zone(7)
 
 export const config = createConfig({
-  connectors: [
-    webAuthn({
-      keyManager: KeyManager.localStorage(),
-    }),
-  ],
+  connectors: [webAuthn()],
   chains: [zoneChain],
   multiInjectedProviderDiscovery: false,
   transports: {

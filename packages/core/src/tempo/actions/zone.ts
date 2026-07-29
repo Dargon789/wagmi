@@ -25,7 +25,11 @@ import type {
   ConnectorParameter,
 } from '../../types/properties.js'
 import type { PartialBy, UnionLooseOmit } from '../../types/utils.js'
-import type { QueryOptions, QueryParameter } from './utils.js'
+import type {
+  OptionalTransactionOverrides,
+  QueryOptions,
+  QueryParameter,
+} from './utils.js'
 import { filterQueryOptions } from './utils.js'
 
 /**
@@ -132,116 +136,6 @@ export namespace getAuthorizationTokenInfo {
 }
 
 /**
- * Gets deposit processing status for a Tempo block number.
- *
- * @example
- * ```ts
- * import { createConfig } from '@wagmi/core'
- * import { Actions, dangerous_secp256k1 } from '@wagmi/core/tempo'
- * import { Account } from 'viem/tempo'
- * import { http as zoneHttp, zone } from 'viem/tempo/zones'
- *
- * const zoneChain = zone(7)
- * const account = Account.fromSecp256k1('0x...')
- * const config = createConfig({
- *   chains: [zoneChain],
- *   connectors: [dangerous_secp256k1({ account })],
- *   transports: {
- *     [zoneChain.id]: zoneHttp(),
- *   },
- * })
- *
- * await Actions.zone.signAuthorizationToken(config, {
- *   chainId: zoneChain.id,
- * })
- *
- * const status = await Actions.zone.getDepositStatus(config, {
- *   chainId: zoneChain.id,
- *   tempoBlockNumber: 42n,
- * })
- *
- * console.log(status.processed)
- * ```
- *
- * @param config - Config.
- * @param parameters - Parameters.
- * @returns The deposit status.
- */
-export function getDepositStatus<config extends Config>(
-  config: config,
-  parameters: getDepositStatus.Parameters<config>,
-): Promise<getDepositStatus.ReturnValue> {
-  const { chainId, ...rest } = parameters
-  const client = config.getClient({ chainId })
-  return Actions.zone.getDepositStatus(client, rest)
-}
-
-export namespace getDepositStatus {
-  export type Parameters<config extends Config> = ChainIdParameter<config> &
-    Actions.zone.getDepositStatus.Parameters
-
-  export type ReturnValue = Actions.zone.getDepositStatus.ReturnType
-
-  export type ErrorType = Actions.zone.getDepositStatus.ErrorType
-
-  export function queryKey<config extends Config>(
-    parameters: PartialBy<Parameters<config>, 'tempoBlockNumber'>,
-  ) {
-    return ['getDepositStatus', filterQueryOptions(parameters)] as const
-  }
-
-  export type QueryKey<config extends Config> = ReturnType<
-    typeof queryKey<config>
-  >
-
-  export function queryOptions<config extends Config, selectData = ReturnValue>(
-    config: Config,
-    parameters: queryOptions.Parameters<config, selectData>,
-  ): queryOptions.ReturnValue<config, selectData> {
-    const { query, ...rest } = parameters
-    return {
-      ...query,
-      enabled: Boolean(
-        rest.tempoBlockNumber !== undefined && (query?.enabled ?? true),
-      ),
-      queryKey: queryKey(rest),
-      async queryFn(context) {
-        const [, { tempoBlockNumber, ...parameters }] = context.queryKey
-        if (tempoBlockNumber === undefined)
-          throw new Error('tempoBlockNumber is required.')
-        return await getDepositStatus(config, {
-          ...parameters,
-          tempoBlockNumber,
-        })
-      },
-    }
-  }
-
-  export declare namespace queryOptions {
-    export type Parameters<
-      config extends Config,
-      selectData = getDepositStatus.ReturnValue,
-    > = PartialBy<getDepositStatus.Parameters<config>, 'tempoBlockNumber'> &
-      QueryParameter<
-        getDepositStatus.ReturnValue,
-        getDepositStatus.ErrorType,
-        selectData,
-        getDepositStatus.QueryKey<config>
-      >
-
-    export type ReturnValue<
-      config extends Config,
-      selectData = getDepositStatus.ReturnValue,
-    > = QueryOptions<
-      getDepositStatus.ReturnValue,
-      getDepositStatus.ErrorType,
-      selectData,
-      getDepositStatus.QueryKey<config>
-    >
-  }
-}
-
-/**
  * Gets the withdrawal fee for a given gas limit.
  *
  * @example
@@ -260,7 +154,7 @@ export namespace getDepositStatus {
  *
  * const fee = await Actions.zone.getWithdrawalFee(config, {
  *   chainId: zoneChain.id,
- *   gas: 21_000n,
+ *   callbackGas: 21_000n,
  * })
  *
  * console.log(fee)
@@ -338,7 +232,7 @@ export namespace getWithdrawalFee {
 }
 
 /**
- * Gets the current zone metadata.
+ * Gets the current zone metadata and latest imported Tempo block number.
  *
  * @example
  * ```ts
@@ -358,12 +252,12 @@ export namespace getWithdrawalFee {
  *   chainId: zoneChain.id,
  * })
  *
- * console.log(info.zoneId)
+ * console.log(info.tempoBlockNumber)
  * ```
  *
  * @param config - Config.
  * @param parameters - Parameters.
- * @returns The zone metadata.
+ * @returns The zone metadata and latest imported Tempo block number.
  */
 export function getZoneInfo<config extends Config>(
   config: config,
@@ -426,6 +320,109 @@ export namespace getZoneInfo {
       getZoneInfo.ErrorType,
       selectData,
       getZoneInfo.QueryKey<config>
+    >
+  }
+}
+
+/**
+ * Waits for a zone to import a Tempo block.
+ *
+ * @example
+ * ```ts
+ * import { createConfig } from '@wagmi/core'
+ * import { Actions } from '@wagmi/core/tempo'
+ * import { http as zoneHttp, zone } from 'viem/tempo/zones'
+ *
+ * const zoneChain = zone(7)
+ * const config = createConfig({
+ *   chains: [zoneChain],
+ *   transports: {
+ *     [zoneChain.id]: zoneHttp(),
+ *   },
+ * })
+ *
+ * const info = await Actions.zone.waitForTempoBlock(config, {
+ *   chainId: zoneChain.id,
+ *   tempoBlockNumber: 42n,
+ * })
+ *
+ * console.log(info.tempoBlockNumber)
+ * ```
+ *
+ * @param config - Config.
+ * @param parameters - Parameters.
+ * @returns The zone metadata after the block has been imported.
+ */
+export function waitForTempoBlock<config extends Config>(
+  config: config,
+  parameters: waitForTempoBlock.Parameters<config>,
+): Promise<waitForTempoBlock.ReturnValue> {
+  const { chainId, ...rest } = parameters
+  const client = config.getClient({ chainId })
+  return Actions.zone.waitForTempoBlock(client, rest)
+}
+
+export namespace waitForTempoBlock {
+  export type Parameters<config extends Config> = ChainIdParameter<config> &
+    Actions.zone.waitForTempoBlock.Parameters
+
+  export type ReturnValue = Actions.zone.waitForTempoBlock.ReturnType
+
+  export type ErrorType = Actions.zone.waitForTempoBlock.ErrorType
+
+  export function queryKey<config extends Config>(
+    parameters: PartialBy<Parameters<config>, 'tempoBlockNumber'>,
+  ) {
+    return ['waitForTempoBlock', filterQueryOptions(parameters)] as const
+  }
+
+  export type QueryKey<config extends Config> = ReturnType<
+    typeof queryKey<config>
+  >
+
+  export function queryOptions<config extends Config, selectData = ReturnValue>(
+    config: Config,
+    parameters: queryOptions.Parameters<config, selectData>,
+  ): queryOptions.ReturnValue<config, selectData> {
+    const { query, ...rest } = parameters
+    return {
+      ...query,
+      enabled: Boolean(
+        rest.tempoBlockNumber !== undefined && (query?.enabled ?? true),
+      ),
+      queryKey: queryKey(rest),
+      async queryFn(context) {
+        const [, { tempoBlockNumber, ...parameters }] = context.queryKey
+        if (tempoBlockNumber === undefined)
+          throw new Error('tempoBlockNumber is required.')
+        return await waitForTempoBlock(config, {
+          ...parameters,
+          tempoBlockNumber,
+        })
+      },
+    }
+  }
+
+  export declare namespace queryOptions {
+    export type Parameters<
+      config extends Config,
+      selectData = waitForTempoBlock.ReturnValue,
+    > = PartialBy<waitForTempoBlock.Parameters<config>, 'tempoBlockNumber'> &
+      QueryParameter<
+        waitForTempoBlock.ReturnValue,
+        waitForTempoBlock.ErrorType,
+        selectData,
+        waitForTempoBlock.QueryKey<config>
+      >
+
+    export type ReturnValue<
+      config extends Config,
+      selectData = waitForTempoBlock.ReturnValue,
+    > = QueryOptions<
+      waitForTempoBlock.ReturnValue,
+      waitForTempoBlock.ErrorType,
+      selectData,
+      waitForTempoBlock.QueryKey<config>
     >
   }
 }
@@ -536,6 +533,7 @@ export async function deposit<config extends Config>(
   const accountAddress = parseAccount(account_).address
   const {
     amount,
+    bouncebackRecipient = accountAddress,
     memo = zeroHash,
     recipient = accountAddress,
     token,
@@ -564,7 +562,7 @@ export async function deposit<config extends Config>(
         data: encodeFunctionData({
           abi: ZoneAbis.zonePortal,
           functionName: 'deposit',
-          args: [tokenAddress, recipient, amount, memo],
+          args: [tokenAddress, recipient, amount, memo, bouncebackRecipient],
         }),
         to: portalAddress,
       },
@@ -576,7 +574,9 @@ export declare namespace deposit {
   export type Parameters<config extends Config> = ChainIdParameter<config> &
     ConnectorParameter &
     UnionLooseOmit<
-      Actions.zone.deposit.Parameters<config['chains'][number], Account>,
+      OptionalTransactionOverrides<
+        Actions.zone.deposit.Parameters<config['chains'][number], Account>
+      >,
       'chain'
     >
 
@@ -644,6 +644,7 @@ export async function depositSync<config extends Config>(
   const accountAddress = parseAccount(account_).address
   const {
     amount,
+    bouncebackRecipient = accountAddress,
     memo = zeroHash,
     recipient = accountAddress,
     token,
@@ -672,7 +673,7 @@ export async function depositSync<config extends Config>(
         data: encodeFunctionData({
           abi: ZoneAbis.zonePortal,
           functionName: 'deposit',
-          args: [tokenAddress, recipient, amount, memo],
+          args: [tokenAddress, recipient, amount, memo, bouncebackRecipient],
         }),
         to: portalAddress,
       },
@@ -687,7 +688,9 @@ export declare namespace depositSync {
   export type Parameters<config extends Config> = ChainIdParameter<config> &
     ConnectorParameter &
     UnionLooseOmit<
-      Actions.zone.depositSync.Parameters<config['chains'][number], Account>,
+      OptionalTransactionOverrides<
+        Actions.zone.depositSync.Parameters<config['chains'][number], Account>
+      >,
       'chain'
     >
 
@@ -743,6 +746,15 @@ export async function encryptedDeposit<config extends Config>(
   if (!account_) throw new Error('`account` is required.')
 
   const accountAddress = parseAccount(account_).address
+  const { bouncebackRecipient = accountAddress, ...rest_ } = rest
+
+  if ('encrypted' in rest_)
+    return Actions.zone.encryptedDeposit(client, {
+      ...rest_,
+      bouncebackRecipient,
+      chainId: resolvedChainId,
+    } as never)
+
   const {
     amount,
     memo,
@@ -750,7 +762,7 @@ export async function encryptedDeposit<config extends Config>(
     token,
     zoneId,
     ...tx
-  } = rest
+  } = rest_
   const portal = resolvePortal(config, resolvedChainId, zoneId)
   const portalAddress = portal.address
   const tokenAddress = TokenId.toAddress(token)
@@ -788,7 +800,13 @@ export async function encryptedDeposit<config extends Config>(
         data: encodeFunctionData({
           abi: ZoneAbis.zonePortal,
           functionName: 'depositEncrypted',
-          args: [tokenAddress, amount, keyIndex - 1n, encrypted],
+          args: [
+            tokenAddress,
+            amount,
+            keyIndex - 1n,
+            encrypted,
+            bouncebackRecipient,
+          ],
         }),
         to: portalAddress,
       },
@@ -800,9 +818,11 @@ export declare namespace encryptedDeposit {
   export type Parameters<config extends Config> = ChainIdParameter<config> &
     ConnectorParameter &
     UnionLooseOmit<
-      Actions.zone.encryptedDeposit.Parameters<
-        config['chains'][number],
-        Account
+      OptionalTransactionOverrides<
+        Actions.zone.encryptedDeposit.Parameters<
+          config['chains'][number],
+          Account
+        >
       >,
       'chain'
     >
@@ -870,6 +890,16 @@ export async function encryptedDepositSync<config extends Config>(
   if (!account_) throw new Error('`account` is required.')
 
   const accountAddress = parseAccount(account_).address
+  const { bouncebackRecipient = accountAddress, ...rest_ } = rest
+
+  if ('encrypted' in rest_)
+    return Actions.zone.encryptedDepositSync(client, {
+      ...rest_,
+      bouncebackRecipient,
+      chainId: resolvedChainId,
+      throwOnReceiptRevert,
+    } as never)
+
   const {
     amount,
     memo,
@@ -877,7 +907,7 @@ export async function encryptedDepositSync<config extends Config>(
     token,
     zoneId,
     ...tx
-  } = rest
+  } = rest_
   const portal = resolvePortal(config, resolvedChainId, zoneId)
   const portalAddress = portal.address
   const tokenAddress = TokenId.toAddress(token)
@@ -915,7 +945,13 @@ export async function encryptedDepositSync<config extends Config>(
         data: encodeFunctionData({
           abi: ZoneAbis.zonePortal,
           functionName: 'depositEncrypted',
-          args: [tokenAddress, amount, keyIndex - 1n, encrypted],
+          args: [
+            tokenAddress,
+            amount,
+            keyIndex - 1n,
+            encrypted,
+            bouncebackRecipient,
+          ],
         }),
         to: portalAddress,
       },
@@ -930,9 +966,11 @@ export declare namespace encryptedDepositSync {
   export type Parameters<config extends Config> = ChainIdParameter<config> &
     ConnectorParameter &
     UnionLooseOmit<
-      Actions.zone.encryptedDepositSync.Parameters<
-        config['chains'][number],
-        Account
+      OptionalTransactionOverrides<
+        Actions.zone.encryptedDepositSync.Parameters<
+          config['chains'][number],
+          Account
+        >
       >,
       'chain'
     >
@@ -992,9 +1030,11 @@ export declare namespace requestWithdrawal {
   export type Parameters<config extends Config> = ChainIdParameter<config> &
     ConnectorParameter &
     UnionLooseOmit<
-      Actions.zone.requestWithdrawal.Parameters<
-        config['chains'][number],
-        Account
+      OptionalTransactionOverrides<
+        Actions.zone.requestWithdrawal.Parameters<
+          config['chains'][number],
+          Account
+        >
       >,
       'chain'
     >
@@ -1057,9 +1097,11 @@ export declare namespace requestWithdrawalSync {
   export type Parameters<config extends Config> = ChainIdParameter<config> &
     ConnectorParameter &
     UnionLooseOmit<
-      Actions.zone.requestWithdrawalSync.Parameters<
-        config['chains'][number],
-        Account
+      OptionalTransactionOverrides<
+        Actions.zone.requestWithdrawalSync.Parameters<
+          config['chains'][number],
+          Account
+        >
       >,
       'chain'
     >
@@ -1121,9 +1163,11 @@ export declare namespace requestVerifiableWithdrawal {
   export type Parameters<config extends Config> = ChainIdParameter<config> &
     ConnectorParameter &
     UnionLooseOmit<
-      Actions.zone.requestVerifiableWithdrawal.Parameters<
-        config['chains'][number],
-        Account
+      OptionalTransactionOverrides<
+        Actions.zone.requestVerifiableWithdrawal.Parameters<
+          config['chains'][number],
+          Account
+        >
       >,
       'chain'
     >
@@ -1191,9 +1235,11 @@ export declare namespace requestVerifiableWithdrawalSync {
   export type Parameters<config extends Config> = ChainIdParameter<config> &
     ConnectorParameter &
     UnionLooseOmit<
-      Actions.zone.requestVerifiableWithdrawalSync.Parameters<
-        config['chains'][number],
-        Account
+      OptionalTransactionOverrides<
+        Actions.zone.requestVerifiableWithdrawalSync.Parameters<
+          config['chains'][number],
+          Account
+        >
       >,
       'chain'
     >

@@ -16,10 +16,20 @@ import {
   withRetry,
 } from 'viem'
 
+/**
+ * @deprecated https://ithaca.xyz/updates/sunsetting-porto
+ */
 export type PortoParameters = ExactPartial<Porto.Config>
 
+/**
+ * @deprecated https://ithaca.xyz/updates/sunsetting-porto
+ */
 export function porto(parameters: PortoParameters = {}) {
   type Provider = ReturnType<typeof Porto.create>['provider']
+  type ProviderWithEvents = Provider & {
+    on: NonNullable<Provider['on']>
+    removeListener: NonNullable<Provider['removeListener']>
+  }
   type Properties = {
     connect<withCapabilities extends boolean = false>(parameters?: {
       chainId?: number | undefined
@@ -42,6 +52,10 @@ export function porto(parameters: PortoParameters = {}) {
     getPortoInstance(): Promise<Porto.Porto>
     onConnect(connectInfo: ProviderConnectInfo): void
   }
+
+  const supportsEvents = (provider: Provider): provider is ProviderWithEvents =>
+    typeof provider.on === 'function' &&
+    typeof provider.removeListener === 'function'
 
   return createConnector<Provider, Properties>((wagmiConfig) => {
     const chains = wagmiConfig.chains ?? parameters.chains ?? []
@@ -88,8 +102,14 @@ export function porto(parameters: PortoParameters = {}) {
 
         try {
           if (!accounts?.length && !isReconnecting) {
-            const { RpcSchema } = await import('porto')
-            const { z } = await import('porto/internal')
+            const { RpcSchema } = await import(
+              /* turbopackOptional: true */
+              'porto'
+            )
+            const { z } = await import(
+              /* turbopackOptional: true */
+              'porto/internal'
+            )
             const res = await provider.request({
               method: 'wallet_connect',
               params: [
@@ -119,23 +139,25 @@ export function porto(parameters: PortoParameters = {}) {
 
           // Manage EIP-1193 event listeners
           // https://eips.ethereum.org/EIPS/eip-1193#events
-          if (connect) {
-            provider.removeListener('connect', connect)
-            connect = undefined
-          }
-          if (!accountsChanged) {
-            accountsChanged = this.onAccountsChanged.bind(this)
-            // Porto Provider uses Ox, which uses `readonly Address.Address[]` for `accountsChanged`,
-            // while Connector `accountsChanged` is `string[]`
-            provider.on('accountsChanged', accountsChanged as never)
-          }
-          if (!chainChanged) {
-            chainChanged = this.onChainChanged.bind(this)
-            provider.on('chainChanged', chainChanged)
-          }
-          if (!disconnect) {
-            disconnect = this.onDisconnect.bind(this)
-            provider.on('disconnect', disconnect)
+          if (supportsEvents(provider)) {
+            if (connect) {
+              provider.removeListener('connect', connect)
+              connect = undefined
+            }
+            if (!accountsChanged) {
+              accountsChanged = this.onAccountsChanged.bind(this)
+              // Porto Provider uses Ox, which uses `readonly Address.Address[]` for `accountsChanged`,
+              // while Connector `accountsChanged` is `string[]`
+              provider.on('accountsChanged', accountsChanged as never)
+            }
+            if (!chainChanged) {
+              chainChanged = this.onChainChanged.bind(this)
+              provider.on('chainChanged', chainChanged)
+            }
+            if (!disconnect) {
+              disconnect = this.onDisconnect.bind(this)
+              provider.on('disconnect', disconnect)
+            }
           }
 
           return {
@@ -158,17 +180,19 @@ export function porto(parameters: PortoParameters = {}) {
       async disconnect() {
         const provider = await this.getProvider()
 
-        if (chainChanged) {
-          provider.removeListener('chainChanged', chainChanged)
-          chainChanged = undefined
-        }
-        if (disconnect) {
-          provider.removeListener('disconnect', disconnect)
-          disconnect = undefined
-        }
-        if (!connect) {
-          connect = this.onConnect.bind(this)
-          provider.on('connect', connect)
+        if (supportsEvents(provider)) {
+          if (chainChanged) {
+            provider.removeListener('chainChanged', chainChanged)
+            chainChanged = undefined
+          }
+          if (disconnect) {
+            provider.removeListener('disconnect', disconnect)
+            disconnect = undefined
+          }
+          if (!connect) {
+            connect = this.onConnect.bind(this)
+            provider.on('connect', connect)
+          }
         }
 
         await provider.request({ method: 'wallet_disconnect' })
@@ -189,13 +213,25 @@ export function porto(parameters: PortoParameters = {}) {
       },
       async getPortoInstance() {
         porto_promise ??= (async () => {
-          const { Porto } = await import('porto')
-          return Porto.create({
-            ...parameters,
-            announceProvider: false,
-            chains: chains as never,
-            transports: transports as never,
-          })
+          // safe webpack optional peer dependency dynamic import
+          try {
+            const { Porto } = await import(
+              /* turbopackOptional: true */
+              'porto'
+            )
+            // @ts-ignore
+            return Porto.create({
+              ...parameters,
+              announceProvider: false,
+              // @ts-ignore
+              chains,
+              // @ts-ignore
+              transports,
+            })
+          } catch (error) {
+            // biome-ignore lint/complexity/noUselessCatch: try block marks dependency as optional for webpack
+            throw error
+          }
         })()
         return await porto_promise
       },
@@ -233,7 +269,7 @@ export function porto(parameters: PortoParameters = {}) {
 
         // Manage EIP-1193 event listeners
         const provider = await this.getProvider()
-        if (provider) {
+        if (supportsEvents(provider)) {
           if (connect) {
             provider.removeListener('connect', connect)
             connect = undefined
@@ -260,7 +296,7 @@ export function porto(parameters: PortoParameters = {}) {
         wagmiConfig.emitter.emit('disconnect')
 
         // Manage EIP-1193 event listeners
-        if (provider) {
+        if (supportsEvents(provider)) {
           if (chainChanged) {
             provider.removeListener('chainChanged', chainChanged)
             chainChanged = undefined
@@ -278,6 +314,7 @@ export function porto(parameters: PortoParameters = {}) {
       async setup() {
         if (!connect) {
           const provider = await this.getProvider()
+          if (!supportsEvents(provider)) return
           connect = this.onConnect.bind(this)
           provider.on('connect', connect)
         }
