@@ -34,29 +34,21 @@ function createTempoWalletDialog(
   address: `0x${string}`,
   capabilities: Record<string, unknown> = {},
 ) {
-  return Dialog.define({ name: 'test' }, ({ store }: any) => ({
+  return Dialog.define({ name: 'test' }, ({ onResponse }) => ({
     close() {},
     destroy() {},
     open() {},
     syncTheme() {},
-    async syncRequests(requests) {
+    async syncRequests({ requests }) {
       for (const queued of requests) {
         if (queued.request.method !== 'wallet_connect') continue
 
-        store.setState((state: any) => ({
-          ...state,
-          requestQueue: state.requestQueue.map((request: any) =>
-            request.request.id === queued.request.id
-              ? {
-                  request: request.request,
-                  result: {
-                    accounts: [{ address, capabilities }],
-                  },
-                  status: 'success',
-                }
-              : request,
-          ),
-        }))
+        onResponse({
+          id: queued.request.id,
+          result: {
+            accounts: [{ address, capabilities }],
+          },
+        })
       }
     },
   }))
@@ -103,6 +95,38 @@ describe('tempoWallet', () => {
     await disconnect(config, { connector })
     expect(await connector.getAccounts()).toEqual([])
     expect(await connector.isAuthorized()).toBe(false)
+  })
+})
+
+describe('getProvider', () => {
+  test('resolves when dynamic import returns a then-only thenable', async () => {
+    const config = createConfig({
+      chains: [tempoLocal],
+      connectors: [],
+      storage: null,
+      transports: {
+        [tempoLocal.id]: http(),
+      },
+    })
+
+    const address = accounts[0]!.address
+    const dialog = createTempoWalletDialog(address)
+    const storage = AccountsStorage.memory({ key: 'tempo-metro-test' })
+
+    const originalCatch = Promise.prototype.catch
+    let provider: Promise<unknown>
+    // @ts-expect-error Simulate Metro's then-only dynamic import result.
+    Promise.prototype.catch = undefined
+    try {
+      const connector = config._internal.connectors.setup(
+        tempoWallet({ dialog, storage }),
+      )
+      provider = connector.getProvider()
+    } finally {
+      Promise.prototype.catch = originalCatch
+    }
+
+    await expect(provider).resolves.toBeDefined()
   })
 })
 
