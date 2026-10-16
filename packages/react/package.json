@@ -108,7 +108,8 @@
     "@types/react-dom": "catalog:",
     "@types/use-sync-external-store": "^0.0.6",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "@types/bun": "latest"
   },
   "contributors": [
     "awkweb.eth <t@wevm.dev>",
@@ -124,5 +125,6 @@
     "dapps",
     "wallet",
     "web3"
-  ]
+  ],
+  "private": true
 }
