@@ -11,9 +11,8 @@ import {
   dangerous_secp256k1,
   Actions as wagmi_Actions,
 } from '@wagmi/core/tempo'
-import { type Address, defineChain, parseUnits, webSocket } from 'viem'
-import { Actions, Addresses, Storage } from 'viem/tempo'
-import { zone, http as zoneHttp } from 'viem/tempo/zones'
+import { type Address, defineChain, http, parseUnits, webSocket } from 'viem'
+import { Actions, Addresses, Store } from 'viem/tempo'
 import { inject } from 'vitest'
 import { accounts, createRenderHook, privateKeys } from './config.js'
 
@@ -36,7 +35,7 @@ declare module 'vitest' {
 export const context = inject('tempoZone')
 export const portalAddress = context.portalAddress
 export const zoneId = context.zoneId
-export const zoneStorage = Storage.memory()
+export const zoneStore = Store.memory()
 
 export const parentChain = defineChain({
   ...tempoLocalnet,
@@ -50,10 +49,12 @@ export const parentChain = defineChain({
 }).extend({ feeToken: 1n })
 
 export const zoneChain = defineChain({
-  ...zone(zoneId),
+  ...tempoLocalnet,
   id: context.chainId,
+  name: `Tempo Zone ${String(zoneId).padStart(3, '0')}`,
   rpcUrls: { default: { http: [context.privateRpcUrl] } },
   sourceId: parentChain.id,
+  supportsTransactionReplacementDetection: false,
 })
 
 export const config = createConfig({
@@ -67,7 +68,15 @@ export const config = createConfig({
   storage: null,
   transports: {
     [parentChain.id]: webSocket(context.l1RpcUrl),
-    [zoneChain.id]: zoneHttp(context.privateRpcUrl, { storage: zoneStorage }),
+    [zoneChain.id]: http(context.privateRpcUrl, {
+      async onFetchRequest(_request, init) {
+        const token = await zoneStore.getItem(`auth:token:${zoneChain.id}`)
+        if (!token) return init
+        const headers = new Headers(init.headers)
+        headers.set('X-Authorization-Token', token)
+        return { ...init, headers }
+      },
+    }),
   },
 } as const satisfies CreateConfigParameters)
 
@@ -82,7 +91,7 @@ export async function authorize() {
   })
   return Actions.zone.signAuthorizationToken(client, {
     account: accounts[0],
-    storage: zoneStorage,
+    store: zoneStore,
     zoneId,
   })
 }

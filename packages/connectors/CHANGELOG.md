@@ -1,5 +1,28 @@
 # @wagmi/connectors
 
+## 8.2.0
+
+### Minor Changes
+
+- Bumped min `accounts` peer dependency to `0.18`. ([#5230](https://github.com/wevm/wagmi/pull/5230))
+
+### Patch Changes
+
+- Updated dependencies [[`45c0b88`](https://github.com/wevm/wagmi/commit/45c0b88098669f00af624eee03ca5fd23730e4f5), [`8fcb5f5`](https://github.com/wevm/wagmi/commit/8fcb5f50efcbaea5463ea402c1932508feb44a02)]:
+  - @wagmi/core@3.6.5
+
+## 8.1.0
+
+### Minor Changes
+
+- **Breaking:** Removed the deprecated `porto` connector following its sunset. ([#5214](https://github.com/wevm/wagmi/pull/5214))
+
+## 8.0.26
+
+### Patch Changes
+
+- Fixed optional connector SDK imports retaining unused dependency exports in application bundles. ([#5207](https://github.com/wevm/wagmi/pull/5207))
+
 ## 8.0.25
 
 ### Patch Changes
