@@ -1,5 +1,23 @@
 # @wagmi/solid
 
+## 0.0.37
+
+### Patch Changes
+
+- Fixed `useInfiniteQuery` (and primitives built on it, like `useInfiniteReadContracts`) not exposing `queryKey` on the result. ([`b7acad4`](https://github.com/wevm/wagmi/commit/b7acad401a9bf2d435a6eb490216a7cacb55863d))
+
+- Updated dependencies [[`768756e`](https://github.com/wevm/wagmi/commit/768756eb0b365b0980b7a82c02d669b834ed8c30)]:
+  - @wagmi/core@3.6.7
+  - @wagmi/connectors@8.2.2
+
+## 0.0.36
+
+### Patch Changes
+
+- Updated dependencies [[`cc0a32c`](https://github.com/wevm/wagmi/commit/cc0a32cb9f788f917bc2d54228a129576a8be25c), [`d026883`](https://github.com/wevm/wagmi/commit/d0268837a69d776ebe64c661d95890ce52a2b0fe), [`4fe6618`](https://github.com/wevm/wagmi/commit/4fe66185662af90c393f6efbe6be88a11435c6cc)]:
+  - @wagmi/core@3.6.6
+  - @wagmi/connectors@8.2.1
+
 ## 0.0.35
 
 ### Patch Changes
