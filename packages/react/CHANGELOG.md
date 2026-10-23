@@ -1,5 +1,45 @@
 # wagmi
 
+## 3.7.9
+
+### Patch Changes
+
+- Forwarded `includeTransactions` and `blockTag` to the block watcher in `useBlock` so watched updates match the query parameters ([#5226](https://github.com/wevm/wagmi/pull/5226))
+
+- Updated dependencies [[`768756e`](https://github.com/wevm/wagmi/commit/768756eb0b365b0980b7a82c02d669b834ed8c30)]:
+  - @wagmi/core@3.6.7
+  - @wagmi/connectors@8.2.2
+
+## 3.7.8
+
+### Patch Changes
+
+- Updated dependencies [[`cc0a32c`](https://github.com/wevm/wagmi/commit/cc0a32cb9f788f917bc2d54228a129576a8be25c), [`d026883`](https://github.com/wevm/wagmi/commit/d0268837a69d776ebe64c661d95890ce52a2b0fe), [`4fe6618`](https://github.com/wevm/wagmi/commit/4fe66185662af90c393f6efbe6be88a11435c6cc)]:
+  - @wagmi/core@3.6.6
+  - @wagmi/connectors@8.2.1
+
+## 3.7.7
+
+### Patch Changes
+
+- Updated dependencies [[`45c0b88`](https://github.com/wevm/wagmi/commit/45c0b88098669f00af624eee03ca5fd23730e4f5), [`45c0b88`](https://github.com/wevm/wagmi/commit/45c0b88098669f00af624eee03ca5fd23730e4f5), [`8fcb5f5`](https://github.com/wevm/wagmi/commit/8fcb5f50efcbaea5463ea402c1932508feb44a02)]:
+  - @wagmi/core@3.6.5
+  - @wagmi/connectors@8.2.0
+
+## 3.7.6
+
+### Patch Changes
+
+- Updated dependencies [[`77e4566`](https://github.com/wevm/wagmi/commit/77e4566c736df1c216568532deeb5e295541d608)]:
+  - @wagmi/connectors@8.1.0
+
+## 3.7.5
+
+### Patch Changes
+
+- Updated dependencies [[`a3c5483`](https://github.com/wevm/wagmi/commit/a3c5483b7c32f0eba1632f537f62688b5c23d546)]:
+  - @wagmi/connectors@8.0.26
+
 ## 3.7.4
 
 ### Patch Changes

@@ -41,7 +41,7 @@ import { type GetContractEventsParameters } from '@wagmi/core'
 
 `Abi`
 
-The contract's ABI. Check out the [TypeScript docs](/react/typescript#const-assert-abis-typed-data) for how to set up ABIs for maximum type inference and safety.
+The contract's ABI. Check out the [TypeScript docs](/core/typescript#const-assert-abis-typed-data) for how to set up ABIs for maximum type inference and safety.
 
 ::: code-group
 ```ts [index.ts]
@@ -279,7 +279,7 @@ With [`abi`](#abi) setup correctly, TypeScript will infer the correct types for 
 ## Error
 
 ```ts
-import { type GetContractEventsError } from '@wagmi/core'
+import { type GetContractEventsErrorType } from '@wagmi/core'
 ```
 
 <!--@include: @shared/query-imports.md-->
