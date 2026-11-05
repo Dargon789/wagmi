@@ -1,5 +1,17 @@
 # @wagmi/core
 
+## 3.6.9
+
+### Patch Changes
+
+- Improved `getConnectorClient` performance by reusing the connector chain ID it already read when `connector` is passed, instead of requesting it from the connector a second time. ([#5286](https://github.com/wevm/wagmi/pull/5286))
+
+## 3.6.8
+
+### Patch Changes
+
+- Fixed `simulateContractQueryOptions` requiring a connector when `account` is provided, which kept `useSimulateContract` disabled for an explicit `account` without a connected wallet. ([#5272](https://github.com/wevm/wagmi/pull/5272))
+
 ## 3.6.7
 
 ### Patch Changes
